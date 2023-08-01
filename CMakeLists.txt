@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.22)
+project(delta)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS "-Wall")
+
+if (UNIX)
+    set(SDL2_INCLUDE_DIR /usr/include/SDL2)
+endif(UNIX)
+
+add_executable(Movement movement.cpp)
+target_include_directories(Movement 
+    PRIVATE ${SDL2_INCLUDE_DIR}
+)
+target_link_libraries(
+    Movement 
+    PRIVATE SDL2main SDL2 SDL2_image
+)
