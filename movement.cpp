@@ -1,72 +1,27 @@
-#include "SDL_pixels.h"
-#include "SDL_render.h"
-#include "SDL_surface.h"
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 #include <cstdlib>
+#include <iostream>
 #include <stdio.h>
 #include <string>
 
-const int width = 640;
-const int height = 480;
+const int width = 840;
+const int height = 680;
 
-enum Direction { UP, DOWN, LEFT, RIGHT };
-
-class Player {
-public:
-  Player(SDL_Texture *texture, SDL_Rect *world)
-      : texture(texture), world(world) {
-    x = 0;
-    y = 0;
-    direction = DOWN;
-  }
-  ~Player() = default;
-
-  int x;
-  int y;
-
-public:
-  void Move(Direction direction) {
-    switch (direction) {
-    case UP:
-      Up();
-      break;
-    case DOWN:
-      Down();
-      break;
-    case LEFT:
-      Left();
-      break;
-    case RIGHT:
-      Right();
-      break;
-    }
-  }
-
-private:
-  void Left() {
-    // if (x > 0) {
-      x--;
-    // }
-  }
-  void Right() {
-    // if ( world->x) {
-      x++;
-    // }
-  }
-  void Up() {
-    y++;
-  }
-  void Down() {
-    y--;
-  }
-
-private:
-  SDL_Texture *texture;
-  SDL_Rect *world;
-
-  Direction direction;
-};
+/* 14 x 21
+ * Sprites
+ * Down frame 1 = 0 0
+ * Down frame 2 = 0 22
+ * Down frame 3 = 0 44
+ *
+ * Up frame 1 = 15 0
+ * Up frame 2 = 15 22
+ * Up frame 3 = 15 44
+ *
+ * Side frame 1 = 30 0
+ * Side frame 2 = 31 22
+ * Side frame 3 = 30 44
+ */
 
 // Modulation RGB 255,0,228
 SDL_Texture *loadTexture(SDL_Renderer *renderer, std::string path) {
@@ -87,11 +42,6 @@ SDL_Texture *loadTexture(SDL_Renderer *renderer, std::string path) {
     printf("Unable to load img: %s\n", SDL_GetError());
     return nullptr;
   }
-
-  // if (SDL_SetTextureColorMod(texture, 255, 0, 228) < 0) {
-  //   printf("Unable to modulate texture magenta: %s\n", SDL_GetError());
-  //   return nullptr;
-  // }
 
   delete surface;
   return texture;
@@ -119,7 +69,6 @@ int main() {
       SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
   if (window == nullptr) {
     printf("Unable to create renderer: %s\n", SDL_GetError());
-    exit(1);
   }
 
   SDL_Texture *texture = loadTexture(renderer, "p1.png");
@@ -128,10 +77,15 @@ int main() {
   }
 
   bool running = true;
-  SDL_Rect world{0, 0, width, height};
-  Player player = Player(texture, &world);
-
   SDL_Event event;
+
+  int playerXPos = 0;
+  int playerYPos = 0;
+  int inc = 12;
+
+  int playerX = 0;
+  int playerY = 0;
+
   while (running) {
     while (SDL_PollEvent(&event) != 0) {
       if (event.type == SDL_QUIT) {
@@ -141,34 +95,29 @@ int main() {
       else if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
         case SDLK_UP:
-          printf("%s\n", "UP");
-          player.Move(UP);
+          playerX = 15;
+          playerYPos -= inc;
           break;
-
         case SDLK_DOWN:
-          printf("%s\n", "DOWN");
-          player.Move(DOWN);
+          playerX = 0;
+          playerYPos += inc;
           break;
-
         case SDLK_LEFT:
-          printf("%s\n", "LEFT");
-          player.Move(LEFT);
+          playerX = 30;
+          playerXPos -= inc;
           break;
-
         case SDLK_RIGHT:
-          printf("%s\n", "RIGHT");
-          player.Move(RIGHT);
+          playerXPos += inc;
           break;
         }
       }
     }
+    SDL_Rect playerRect{playerX, playerY, 14, 21};
+    SDL_Rect worldRect{playerXPos, playerYPos, playerRect.w * 3,
+                       playerRect.h * 3};
 
-    SDL_Rect playerRect{player.x, player.y, 14, 22};
-
-    // Frame
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, &playerRect, &playerRect);
-    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0);
+    SDL_RenderCopy(renderer, texture, &playerRect, &worldRect);
     SDL_RenderPresent(renderer);
   }
 
