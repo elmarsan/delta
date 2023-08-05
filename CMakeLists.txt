@@ -10,11 +10,20 @@ if (UNIX)
     set(SDL2_INCLUDE_DIR /usr/include/SDL2)
 endif(UNIX)
 
-add_executable(Movement movement.cpp)
+add_executable(Movement Movement.cpp TextureManager.cpp)
 target_include_directories(Movement 
     PRIVATE ${SDL2_INCLUDE_DIR}
 )
 target_link_libraries(
     Movement 
+    PRIVATE SDL2main SDL2 SDL2_image
+)
+
+add_executable(Game main.cpp Game.cpp Player.cpp TextureManager.cpp)
+target_include_directories(Game 
+    PRIVATE ${SDL2_INCLUDE_DIR}
+)
+target_link_libraries(
+    Game 
     PRIVATE SDL2main SDL2 SDL2_image
 )
