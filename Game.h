@@ -14,8 +14,9 @@ class Game
     void clean();
     bool isRunning();
 
+    static SDL_Renderer* renderer;
+    static SDL_Event event;
   private:
     bool running;
     SDL_Window* window;
-    SDL_Renderer* renderer;
 };

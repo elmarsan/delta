@@ -1,13 +1,22 @@
 #include "Game.h"
 
-#include "Player.h"
+#include "SDL_image.h"
+#include "SDL_pixels.h"
 #include "SDL_render.h"
-#include "TextureManager.h"
+#include "engine/ECS.h"
+#include "engine/KeyboardControllerComponent.h"
+#include "engine/SpriteComponent.h"
+#include "engine/TextureManager.h"
+#include "engine/TransformComponent.h"
 
 #include <SDL2/SDL.h>
 #include <iostream>
 
-Player* player = nullptr;
+SDL_Renderer* Game::renderer = nullptr;
+SDL_Event Game::event;
+
+Manager manager;
+auto& newPlayer(manager.addEntity());
 
 Game::~Game()
 {
@@ -25,62 +34,36 @@ bool Game::init(int x, int y, int width, int height)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     running = true;
 
+    newPlayer.addComponent<TransformComponent>();
     SDL_Color modulation { 255, 0, 228 };
-    SDL_Texture* playerTexture = TextureManager::load("data/p1.png", renderer, modulation);
-    player = new Player(playerTexture);
+    newPlayer.addComponent<SpriteComponent>("data/p1.png", &modulation);
+    newPlayer.addComponent<KeyboardControllerComponent>();
     return true;
 }
 
 void Game::handleEvents()
 {
     SDL_Event event;
-    SDL_PollEvent(&event);
-
-    switch (event.type)
+    if (SDL_PollEvent(&event) != 0)
     {
-        case SDL_QUIT: running = false;
-        case SDL_KEYDOWN: {
-            switch (event.key.keysym.sym)
-            {
-                case SDLK_UP: {
-                    std::cout << "Up" << std::endl;
-                    player->up();
-                    break;
-                }
-                case SDLK_DOWN: {
-                    std::cout << "Down" << std::endl;
-                    player->down();
-                    break;
-                }
-                case SDLK_LEFT: {
-                    std::cout << "Left" << std::endl;
-                    player->left();
-                    break;
-                }
-                case SDLK_RIGHT: {
-                    std::cout << "Right" << std::endl;
-                    player->right();
-                    break;
-                }
-            }
-            break;
+        Game::event = event;
+
+        if (event.type == SDL_QUIT)
+        {
+            running = false;
         }
     }
 }
 void Game::update()
 {
-    // xPos += 4;
-    // yPos++;
-    // rect.h = 64;
-    // rect.w = 64;
-    // rect.x = xPos;
-    // rect.y = yPos;
+    manager.refresh();
+    manager.update();
 }
 
 void Game::render()
 {
     SDL_RenderClear(renderer);
-    player->render(renderer);
+    manager.draw();
     SDL_RenderPresent(renderer);
 }
 
