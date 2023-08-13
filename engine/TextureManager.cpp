@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-#include "../Game.h"
+#include "../delta/Game.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -22,9 +22,9 @@ SDL_Texture* TextureManager::load(std::string path, SDL_Color* colorMod)
 }
 
 void TextureManager::draw(SDL_Texture* texture,
-                          SDL_Rect srcRect,
-                          SDL_Rect dstRect,
+                          SDL_Rect* srcRect,
+                          SDL_Rect* dstRect,
                           SDL_RendererFlip renderFlip)
 {
-    SDL_RenderCopyEx(Game::renderer, texture, &srcRect, &dstRect, 0, NULL, renderFlip);
+    SDL_RenderCopyEx(Game::renderer, texture, srcRect, dstRect, 0, NULL, renderFlip);
 }

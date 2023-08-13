@@ -10,7 +10,14 @@ if (UNIX)
     set(SDL2_INCLUDE_DIR /usr/include/SDL2)
 endif(UNIX)
 
-add_executable(Game main.cpp Game.cpp Player.cpp engine/TextureManager.cpp engine/Vector2D.cpp)
+add_executable(Game 
+    main.cpp 
+    delta/Game.cpp 
+    delta/Map.cpp
+    engine/ECS.cpp
+    engine/TextureManager.cpp 
+    engine/Vector2D.cpp 
+)
 target_include_directories(Game 
     PRIVATE ${SDL2_INCLUDE_DIR}
 )

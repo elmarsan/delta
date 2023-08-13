@@ -1,4 +1,5 @@
-#include "Game.h"
+#include "SDL_video.h"
+#include "delta/Game.h"
 
 #include <SDL2/SDL.h>
 #include <iostream>

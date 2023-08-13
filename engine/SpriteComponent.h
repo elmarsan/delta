@@ -1,62 +1,132 @@
 #pragma once
 
+#include "Animation.h"
 #include "ECS.h"
-#include "SDL_render.h"
+#include "SDL_timer.h"
 #include "TextureManager.h"
 #include "TransformComponent.h"
+#include "Vector2D.h"
 
 #include <SDL.h>
+#include <algorithm>
+#include <map>
+#include <memory>
 
-class SpriteComponent: public Component
+namespace engine
 {
-  private:
-    TransformComponent* transform;
+struct FrameTexture
+{
+    Vector2D position;
+    SDL_RendererFlip flip;
     SDL_Texture* texture;
-    SDL_RendererFlip textureFlip;
+};
 
-    SDL_Rect srcRect;
-    SDL_Rect dstRect;
+using SpriteFrames = std::map<Direction, std::vector<Vector2D>>;
+using SpriteFlips = std::map<Direction, SDL_RendererFlip>;
 
+class Sprite
+{
   public:
-    SpriteComponent(const std::string texturePath, SDL_Color* color = nullptr): textureFlip(SDL_FLIP_NONE)
+    SpriteFrames frames;
+    SpriteFlips flips;
+    SDL_Texture* texture;
+
+    Sprite(SpriteFrames frames, std::string texturePath, SDL_Color* colorMod): frames(frames)
     {
-        texture = TextureManager::load(texturePath, color);
+        texture = TextureManager::load(texturePath, colorMod);
     }
 
-    void init() override
+    ~Sprite() { SDL_DestroyTexture(texture); }
+
+    void flipDirection(Direction direction, SDL_RendererFlip flip) { flips[direction] = flip; }
+
+    FrameTexture getFrame(Direction direction, int index)
     {
-        transform = &entity->getComponent<TransformComponent>();
-        srcRect = SDL_Rect { 0, 0, 14, 21 };
-        dstRect = SDL_Rect { 0, 0, 64, 64 };
+        return { frames[direction][index], getFlip(direction), texture };
     }
 
-    void update() override
+    SDL_RendererFlip getFlip(Direction direction)
     {
-        dstRect.x = transform->position.x;
-        dstRect.y = transform->position.y;
-
-        std::cout << transform->direction << std::endl;
-        switch (transform->direction)
+        auto it = flips.find(direction);
+        if (it != flips.end())
         {
-            case Direction::DOWN: {
-                srcRect.x = 0;
-                textureFlip = SDL_FLIP_NONE;
+            return it->second;
+        }
+        return SDL_FLIP_NONE;
+    }
+};
+
+namespace component
+{
+    class Sprite: public Component
+    {
+      private:
+        component::Transform* transform;
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
+        SDL_Rect src, dst;
+        engine::Sprite* sprite;
+        int width, height;
+        bool animated;
+
+      public:
+        int animIndex = 0;
+        int sdlTicks;
+
+        Sprite(engine::Sprite* sprite, int w, int h, bool animated):
+            sprite(sprite), width(w), height(h), animated(animated)
+        {
+        }
+
+        ~Sprite() = default;
+
+        void init() override { transform = &entity->getComponent<Transform>(); }
+
+        void update() override
+        {
+            dst.x = transform->position.x;
+            dst.y = transform->position.y;
+            dst.w = dst.h = 44;
+
+
+            auto frame = sprite->getFrame(transform->direction, animIndex);
+            if (animated)
+            {
+                animate();
             }
-            case Direction::UP: {
-                srcRect.x = 15;
-                textureFlip = SDL_FLIP_NONE;
+            else
+            {
+                src.x = frame.position.x;
+                src.y = frame.position.y;
             }
-            case Direction::LEFT: {
-                srcRect.x = 30;
-                textureFlip = SDL_FLIP_NONE;
+            // auto frame = sprite->getFrame(transform->direction, animIndex);
+            flip = frame.flip;
+            src.w = width;
+            src.h = height;
+
+            sdlTicks = SDL_GetTicks();
+        }
+
+        void draw() override { TextureManager::draw(sprite->texture, &src, &dst, flip); }
+
+        void animate()
+        {
+            int nframes = sprite->frames[transform->direction].size();
+            if (animIndex < nframes - 1)
+            {
+                animIndex++;
             }
-            case Direction::RIGHT: {
-                srcRect.x = 30;
-                textureFlip = SDL_FLIP_HORIZONTAL;
+            else
+            {
+                animIndex = 0;
+            }
+
+            if (SDL_GetTicks() > sdlTicks + 100)
+            {
+                auto frame = sprite->getFrame(transform->direction, animIndex);
+                src.x = frame.position.x;
+                src.y = frame.position.y;
             }
         }
-    }
-
-    void draw() override { TextureManager::draw(texture, srcRect, dstRect, textureFlip); }
-    // void setFlip(SDL_RendererFlip flip) { textureFlip = flip; }
-};
+    };
+}; // namespace component
+}; // namespace engine

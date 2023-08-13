@@ -24,6 +24,20 @@ Vector2D& Vector2D::operator+=(const Vector2D& v)
     return *this;
 }
 
+Vector2D& Vector2D::operator*(const int& i)
+{
+    this->x *= i;
+    this->y *= i;
+    return *this;
+}
+
+Vector2D& Vector2D::Zero()
+{
+    this->x = 0;
+    this->y = 0;
+    return *this;
+}
+
 std::ostream& operator<<(std::ostream& stream, const Vector2D& vec)
 {
     stream << "Vector2D[" << std::to_string(vec.x) + "," << std::to_string(vec.y) << "]" << std::endl;

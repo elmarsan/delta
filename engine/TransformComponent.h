@@ -3,32 +3,45 @@
 #include "ECS.h"
 #include "Vector2D.h"
 
+namespace engine
+{
 enum Direction
 {
     UP,
     DOWN,
     RIGHT,
-    LEFT
+    LEFT,
 };
 
-struct TransformComponent: Component
+namespace component
 {
-    Vector2D position;
-    Vector2D velocity;
-    Direction direction;
-    
-    int speed = 2;
-
-    void init() override
+    struct Transform: Component
     {
-        direction = Direction::DOWN;
-        position.x = 0;
-        position.y = 0;
-    }
+        Vector2D position;
+        Vector2D velocity;
+        Direction direction;
 
-    void update() override
-    {
-        position.y += velocity.y * speed;
-        position.x += velocity.x * speed;
-    }
-};
+        int width;
+        int height;
+        int scale;
+
+        int speed = 2;
+
+        Transform() { position.Zero(); }
+
+        Transform(int x, int y, int w, int h, int scale):
+            position(x, y), width(w), height(h), scale(scale)
+        {
+        }
+
+        void init() override { direction = Direction::DOWN; }
+
+        void update() override
+        {
+            position.y += velocity.y * speed;
+            position.x += velocity.x * speed;
+        }
+    };
+
+}; // namespace component
+}; // namespace engine
