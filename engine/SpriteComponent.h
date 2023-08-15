@@ -12,8 +12,6 @@
 #include <map>
 #include <memory>
 
-namespace engine
-{
 struct FrameTexture
 {
     Vector2D position;
@@ -56,77 +54,35 @@ class Sprite
     }
 };
 
-namespace component
+class SpriteComponent: public Component
 {
-    class Sprite: public Component
+  private:
+    TransformComponent* transform;
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+    SDL_Rect src, dst;
+    Sprite* sprite;
+    int w, h;
+
+  public:
+    SpriteComponent(Sprite* sprite, int w, int h): sprite(sprite), w(w), h(h) {}
+
+    ~SpriteComponent() = default;
+
+    void init() override { transform = &entity->getComponent<TransformComponent>(); }
+
+    void update() override
     {
-      private:
-        component::Transform* transform;
-        SDL_RendererFlip flip = SDL_FLIP_NONE;
-        SDL_Rect src, dst;
-        engine::Sprite* sprite;
-        int width, height;
-        bool animated;
+        dst.x = transform->position.x;
+        dst.y = transform->position.y;
+        dst.w = dst.h = 44;
 
-      public:
-        int animIndex = 0;
-        int sdlTicks;
+        auto frame = sprite->getFrame(transform->direction, 0);
+        flip = frame.flip;
+        src.x = frame.position.x;
+        src.y = frame.position.y;
+        src.w = w;
+        src.h = h;
+    }
 
-        Sprite(engine::Sprite* sprite, int w, int h, bool animated):
-            sprite(sprite), width(w), height(h), animated(animated)
-        {
-        }
-
-        ~Sprite() = default;
-
-        void init() override { transform = &entity->getComponent<Transform>(); }
-
-        void update() override
-        {
-            dst.x = transform->position.x;
-            dst.y = transform->position.y;
-            dst.w = dst.h = 44;
-
-
-            auto frame = sprite->getFrame(transform->direction, animIndex);
-            if (animated)
-            {
-                animate();
-            }
-            else
-            {
-                src.x = frame.position.x;
-                src.y = frame.position.y;
-            }
-            // auto frame = sprite->getFrame(transform->direction, animIndex);
-            flip = frame.flip;
-            src.w = width;
-            src.h = height;
-
-            sdlTicks = SDL_GetTicks();
-        }
-
-        void draw() override { TextureManager::draw(sprite->texture, &src, &dst, flip); }
-
-        void animate()
-        {
-            int nframes = sprite->frames[transform->direction].size();
-            if (animIndex < nframes - 1)
-            {
-                animIndex++;
-            }
-            else
-            {
-                animIndex = 0;
-            }
-
-            if (SDL_GetTicks() > sdlTicks + 100)
-            {
-                auto frame = sprite->getFrame(transform->direction, animIndex);
-                src.x = frame.position.x;
-                src.y = frame.position.y;
-            }
-        }
-    };
-}; // namespace component
-}; // namespace engine
+    void draw() override { TextureManager::draw(sprite->texture, &src, &dst, flip); }
+};

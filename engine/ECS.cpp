@@ -3,5 +3,5 @@
 void Entity::addGroup(Group group)
 {
     groupBitSet[group] = true;
-    manager.addGroup(this,group);
+    manager.addGroup(this, group);
 }

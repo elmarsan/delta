@@ -1,20 +1,21 @@
 #pragma once
 
 #include "SDL.h"
-class Map 
+class Map
 {
-public:
-    SDL_Texture *grassTexture;
-    SDL_Texture *waterTexture;
+  public:
+    SDL_Texture* grassTexture;
+    SDL_Texture* waterTexture;
 
     Map();
-    ~Map(); 
+    ~Map();
 
     void load();
     void draw();
-private:
+
+  private:
     SDL_Rect src;
     SDL_Rect dst;
 
-    int map [20][25];
+    int map[20][25];
 };

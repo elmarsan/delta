@@ -1,14 +1,10 @@
 #pragma once
 
-#include "../delta/Game.h"
 #include "ECS.h"
 #include "SDL.h"
 #include "SpriteComponent.h"
 #include "TextureManager.h"
 #include "TransformComponent.h"
-
-namespace engine
-{
 
 enum TileID
 {
@@ -16,35 +12,24 @@ enum TileID
     WATER,
 };
 
-namespace component
+class TileComponent: public Component
 {
+  public:
+    Sprite* sprite;
+    SDL_Texture* texture;
+    SDL_Rect rect;
+    TileID ID;
 
-    class Tile: public Component
+    TileComponent() = default;
+    TileComponent(int x, int y, int w, int h, TileID id)
     {
-      public:
-        engine::component::Sprite* sprite;
-        SDL_Texture* texture;
-        SDL_Rect rect;
-        TileID ID;
+        rect = SDL_Rect { x, y, w, h };
+        ID = id;
 
-        Tile() = default;
-        Tile(int x, int y, int w, int h, TileID id)
+        switch (ID)
         {
-            rect = SDL_Rect { x, y, w, h };
-            ID = id;
-
-            switch (ID)
-            {
-                case GRASS: texture = TextureManager::load("data/32grass.png"); break;
-                case WATER: texture = TextureManager::load("data/32water.png"); break;
-            }
+            case GRASS: texture = TextureManager::load("data/32grass.png"); break;
+            case WATER: texture = TextureManager::load("data/32water.png"); break;
         }
-
-        void init() override
-        {
-            // transform = &entity->addComponent<TransformComponent>(rect.x, rect.y, rect.w, rect.h, 1);
-            // sprite = &entity->addComponent<SpriteComponent>(texture);
-        }
-    };
-}; // namespace component
-}; // namespace engine
+    }
+};

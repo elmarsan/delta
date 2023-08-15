@@ -65,11 +65,8 @@ void Map::draw()
             dst.x = col * 44;
             dst.y = row * 44;
 
-            // SDL_SetRenderDrawColor(Game::renderer, 0, 0xff, 0, 0);
-            // SDL_RenderDrawRect(Game::renderer, &src);
             switch (type)
             {
-
                 case 0: {
                     TextureManager::draw(grassTexture, &src, &dst, SDL_FLIP_NONE);
                     break;
@@ -80,7 +77,6 @@ void Map::draw()
                 }
 
             }
-            // SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 0);
         }
     }
 }

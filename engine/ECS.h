@@ -150,10 +150,7 @@ class Manager
             std::end(entities));
     }
 
-    void addGroup(Entity* entity, Group group)
-    {
-        groupedEntities[group].emplace_back(entity);
-    }
+    void addGroup(Entity* entity, Group group) { groupedEntities[group].emplace_back(entity); }
 
     std::vector<Entity*>& getGroup(Group group) { return groupedEntities[group]; }
 
