@@ -23,7 +23,7 @@ struct TransformComponent: Component
 
     int speed = 2;
 
-    TransformComponent() { position.Zero(); }
+    TransformComponent() { position.zero(); }
 
     TransformComponent(int x, int y, int w, int h, int scale):
         position(x, y), width(w), height(h), scale(scale)
