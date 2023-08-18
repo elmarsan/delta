@@ -15,7 +15,7 @@ enum TileID
 class TileComponent: public Component
 {
   public:
-    Sprite* sprite;
+    // Sprite* sprite;
     SDL_Texture* texture;
     SDL_Rect rect;
     TileID ID;

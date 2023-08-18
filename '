@@ -2,7 +2,6 @@
 
 #include "Animation.h"
 #include "ECS.h"
-#include "SDL_render.h"
 #include "SDL_timer.h"
 #include "TextureManager.h"
 #include "TransformComponent.h"
@@ -22,8 +21,11 @@ class SpriteComponent: public Component
     int w, h;
 
     Vector2D framePosition;
+    // int speed;
     std::map<std::string, Animation> animations;
-    std::string currentAnimation;
+    Animation* currentAnimation;
+    // int animIndex = 0;
+    // std::string animName;
 
   public:
     SpriteComponent(int w, int h, std::string texturePath, SDL_Color* colorMod = nullptr):
@@ -41,7 +43,13 @@ class SpriteComponent: public Component
 
     void update() override
     {
-        if (isAnimated())
+        if (transform->velocity.x != 0 || transform->velocity.y != 0)
+        {
+            int index = static_cast<int>((SDL_GetTicks() / speed) % animations[animName].numFrames());
+            framePosition = animations[animName].getFramePos(index);
+        }
+
+        if (animName != "")
             playAnimation();
 
         dst.x = transform->position.x;
@@ -56,37 +64,16 @@ class SpriteComponent: public Component
 
     void draw() override { TextureManager::draw(texture, &src, &dst, flip); }
 
-    void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
-    {
-        currentAnimation = name;
-        flip = animFlip;
-    }
+    void setAnimation(const std::string& animation) { animName = animation; }
 
-    void stopAnimation()
-    {
-        if (currentAnimation != "")
-        {
-            auto animation = animations[currentAnimation];
-            framePosition = animation.getFramePos(0);
-            currentAnimation = "";
-        }
-    }
-
-    bool isAnimated() const { return animations.size() > 0 && currentAnimation != ""; }
+    void stopAnimation() { animName = ""; }
 
     void playAnimation()
     {
-        if (currentAnimation != "")
-        {
-            auto animation = animations[currentAnimation];
-            int numFrames = animation.numFrames();
-            int speed = animation.speed;
-
-            int index = static_cast<int>((SDL_GetTicks() / speed) % numFrames);
-            framePosition = animation.getFramePos(index);
-            animation.nextFrame();
-        }
+        if (animIndex == animations[animName].numFrames() - 1)
+            animIndex = 0;
+        else
+            animIndex++;
+        speed = animations[animName].speed;
     }
-
-    void setFlip(SDL_RendererFlip newFlip) { flip = newFlip; }
 };

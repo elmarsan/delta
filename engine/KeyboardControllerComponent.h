@@ -3,7 +3,9 @@
 #include "../delta/Game.h"
 #include "ECS.h"
 #include "SDL_keycode.h"
+#include "SDL_render.h"
 #include "SDL_timer.h"
+#include "SpriteComponent.h"
 #include "TransformComponent.h"
 
 #include <SDL.h>
@@ -12,10 +14,15 @@ class KeyboardControllerComponent: public Component
 {
   public:
     TransformComponent* transform;
+    SpriteComponent* sprite;
     int ticks;
     int keyEventDelay = 50;
 
-    void init() override { transform = &entity->getComponent<TransformComponent>(); }
+    void init() override
+    {
+        transform = &entity->getComponent<TransformComponent>();
+        sprite = &entity->getComponent<SpriteComponent>();
+    }
 
     void update() override
     {
@@ -41,6 +48,7 @@ class KeyboardControllerComponent: public Component
                     }
                     else
                     {
+                        sprite->setAnimation("walk_up");
                         transform->speed = 2;
                         transform->direction = Direction::UP;
                         transform->velocity.y = -1;
@@ -57,6 +65,7 @@ class KeyboardControllerComponent: public Component
                     }
                     else
                     {
+                        sprite->setAnimation("walk_down");
                         transform->speed = 2;
                         transform->direction = Direction::DOWN;
                         transform->velocity.y = 1;
@@ -73,6 +82,7 @@ class KeyboardControllerComponent: public Component
                     }
                     else
                     {
+                        sprite->setAnimation("walk_lateral");
                         transform->speed = 2;
                         transform->direction = Direction::LEFT;
                         transform->velocity.x = -1;
@@ -89,6 +99,7 @@ class KeyboardControllerComponent: public Component
                     }
                     else
                     {
+                        sprite->setAnimation("walk_lateral", SDL_FLIP_HORIZONTAL);
                         transform->speed = 2;
                         transform->direction = Direction::RIGHT;
                         transform->velocity.x = 1;
@@ -108,6 +119,7 @@ class KeyboardControllerComponent: public Component
                 case SDLK_LEFT: transform->velocity.zero(); break;
                 case SDLK_RIGHT: transform->velocity.zero(); break;
             }
+            sprite->stopAnimation();
         }
     }
 };

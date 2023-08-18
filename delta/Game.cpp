@@ -1,10 +1,11 @@
 #include "Game.h"
 
-#include "Map.h"
+#include "../engine/Animation.h"
 #include "../engine/Components.h"
 #include "../engine/ECS.h"
 #include "../engine/TextureManager.h"
 #include "../engine/Vector2D.h"
+#include "Map.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -44,16 +45,17 @@ bool Game::init(int x, int y, int width, int height)
     running = true;
 
     SDL_Color colorMod { 255, 0, 228 };
-    SpriteFrames playerFrames {
-        { Direction::DOWN, std::vector<Vector2D> { Vector2D(0, 0), Vector2D(0, 22), Vector2D(0, 44) } },
-        { Direction::UP, std::vector<Vector2D> { Vector2D(15, 0), Vector2D(15, 22), Vector2D(15, 44) } },
-        { Direction::RIGHT, std::vector<Vector2D> { Vector2D(30, 0), Vector2D(31, 22), Vector2D(30, 44) } },
-        { Direction::LEFT, std::vector<Vector2D> { Vector2D(30, 0), Vector2D(31, 22), Vector2D(30, 44) } },
-    };
-    auto playerSprite = new Sprite(playerFrames, "data/p1.png", &colorMod);
-    playerSprite->flipDirection(Direction::RIGHT, SDL_FLIP_HORIZONTAL);
     player.addComponent<TransformComponent>(0, 0, 44, 44, 1);
-    player.addComponent<SpriteComponent>(playerSprite, 14, 21);
+    auto& sprite = player.addComponent<SpriteComponent>(14, 21, "data/p1.png", &colorMod);
+    sprite.addAnimation(
+        "walk_up",
+        Animation(150, std::vector<Vector2D> { Vector2D(15, 0), Vector2D(15, 22), Vector2D(15, 44) }));
+    sprite.addAnimation(
+        "walk_down",
+        Animation(150, std::vector<Vector2D> { Vector2D(0, 0), Vector2D(0, 22), Vector2D(0, 44) }));
+    sprite.addAnimation(
+        "walk_lateral",
+        Animation(150, std::vector<Vector2D> { Vector2D(30, 0), Vector2D(31, 22), Vector2D(30, 44) }));
     player.addComponent<KeyboardControllerComponent>();
     player.addComponent<ColliderComponent>("Player");
     player.addGroup(GroupLabel::Players);
