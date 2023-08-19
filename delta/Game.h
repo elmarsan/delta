@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/AssetManager.h"
 #include <SDL.h>
 #include <string>
 #include <vector>
@@ -19,6 +20,7 @@ class Game
 
     static SDL_Renderer* renderer;
     static SDL_Event event;
+    static AssetManager* assets;
     enum groupLabels : std::size_t
     {
         groupMap,

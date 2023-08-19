@@ -21,6 +21,7 @@ add_executable(Game
     engine/ECS.cpp
     engine/TextureManager.cpp 
     engine/Vector2D.cpp 
+    engine/AssetManager.cpp
 )
 target_include_directories(Game 
     PRIVATE ${SDL2_INCLUDE_DIR}

@@ -11,18 +11,6 @@
 
 extern Manager manager;
 
-Map::Map()
-{
-    waterTexture = TextureManager::load("data/32water.png");
-    grassTexture = TextureManager::load("data/32grass.png");
-}
-
-Map::~Map()
-{
-    SDL_DestroyTexture(grassTexture);
-    SDL_DestroyTexture(waterTexture);
-}
-
 void Map::load(std::string path)
 {
     std::ifstream f(path);
@@ -53,24 +41,18 @@ void Map::load(std::string path)
 
 void Map::addTile(int x, int y, int tileId, bool hasCollider)
 {
-    SDL_Texture* texture;
-    std::string tag;
+    auto& tile(manager.addEntity());
+    tile.addGroup(Game::groupMap);
 
     switch (tileId)
     {
         case 1:
-            texture = waterTexture;
-            tag = "terrain_water";
+            tile.addComponent<TileComponent>(x, y, Game::assets->getTexture("terrain_water"));
             break;
         case 2:
-            texture = grassTexture;
-            tag = "terrain_grass";
+            tile.addComponent<TileComponent>(x, y, Game::assets->getTexture("terrain_grass"));
             break;
     }
-
-    auto& tile(manager.addEntity());
-    tile.addComponent<TileComponent>(x, y, texture);
-    tile.addGroup(Game::groupMap);
 
     if (hasCollider)
     {

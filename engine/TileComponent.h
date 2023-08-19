@@ -21,8 +21,6 @@ class TileComponent: public Component
         dst = SDL_Rect { x, y, 44, 44 };
     }
 
-    ~TileComponent() { SDL_DestroyTexture(texture); }
-
     void draw() override
     {
         TextureManager::draw(texture, &src, &dst, SDL_FLIP_NONE);

@@ -2,9 +2,9 @@
 
 #include "Animation.h"
 #include "ECS.h"
-#include "TextureManager.h"
 #include "TransformComponent.h"
 #include "Vector2D.h"
+#include "delta/Game.h"
 
 #include <SDL.h>
 #include <map>
@@ -24,16 +24,13 @@ class SpriteComponent: public Component
     std::string currentAnimation;
 
   public:
-    SpriteComponent(int w, int h, std::string texturePath, SDL_Color* colorMod = nullptr):
-        flip(SDL_FLIP_NONE), w(w), h(h)
+    SpriteComponent(int w, int h, std::string textureId): flip(SDL_FLIP_NONE), w(w), h(h)
     {
-        texture = TextureManager::load(texturePath, colorMod);
+        texture = Game::assets->getTexture(textureId);
         animations = std::map<std::string, Animation>();
     }
 
     void addAnimation(std::string name, const Animation& animation) { animations[name] = animation; }
-
-    ~SpriteComponent() = default;
 
     void init() override { transform = &entity->getComponent<TransformComponent>(); }
 

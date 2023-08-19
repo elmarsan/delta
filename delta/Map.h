@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SDL.h>
 #include <string>
 
 class Map
@@ -11,13 +10,9 @@ class Map
     int tileWidth;
     int tileHeight;
 
-    Map();
-    ~Map();
+    Map() = default;
+    ~Map() = default;
 
     void load(std::string path);
     void addTile(int x, int y, int tileID, bool hasCollider);
-
-  private:
-    SDL_Texture* grassTexture;
-    SDL_Texture* waterTexture;
 };

@@ -2,6 +2,7 @@
 
 #include "Map.h"
 #include "engine/Animation.h"
+#include "engine/AssetManager.h"
 #include "engine/Components.h"
 #include "engine/ECS.h"
 
@@ -10,10 +11,12 @@
 #include <iostream>
 #include <memory>
 
+Manager manager;
+
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
+AssetManager* Game::assets = new AssetManager(&manager);
 
-Manager manager;
 auto& player(manager.addEntity());
 
 auto& tiles(manager.getGroup(Game::groupMap));
@@ -39,8 +42,12 @@ bool Game::init(int x, int y, int width, int height)
     running = true;
 
     SDL_Color colorMod { 255, 0, 228 };
+    assets->addTexture("terrain_water", "data/32water.png");
+    assets->addTexture("terrain_grass", "data/32grass.png");
+    assets->addTexture("player", "data/p1.png", &colorMod);
+
     player.addComponent<TransformComponent>(132, 132, 44, 44, 1);
-    auto& sprite = player.addComponent<SpriteComponent>(14, 21, "data/p1.png", &colorMod);
+    auto& sprite = player.addComponent<SpriteComponent>(14, 21, "player");
     sprite.addAnimation(
         "walk_up",
         Animation(150, std::vector<Vector2D> { Vector2D(15, 0), Vector2D(15, 22), Vector2D(15, 44) }));
