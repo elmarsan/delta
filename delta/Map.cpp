@@ -1,40 +1,20 @@
 #include "Map.h"
 
-#include "../engine/TextureManager.h"
 #include "Game.h"
-#include "SDL_render.h"
+#include "engine/Components.h"
+#include "engine/ECS.h"
+#include "engine/TextureManager.h"
+#include "json.hpp"
 
-#include <iostream>
+#include <SDL.h>
+#include <fstream>
 
-int testMap[20][25] = { { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 },
-                        { 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2 } };
+extern Manager manager;
+
 Map::Map()
 {
-    grassTexture = TextureManager::load("data/32grass.png");
     waterTexture = TextureManager::load("data/32water.png");
-
-    src.x = src.y = 0;
-    dst.x = dst.y = 0;
-    src.w = dst.w = 32;
-    src.h = dst.h = 32;
+    grassTexture = TextureManager::load("data/32grass.png");
 }
 
 Map::~Map()
@@ -43,43 +23,59 @@ Map::~Map()
     SDL_DestroyTexture(waterTexture);
 }
 
-void Map::load()
+void Map::load(std::string path)
 {
-    for (int row = 0; row < 20; row++)
+    std::ifstream f(path);
+    nlohmann::json data = nlohmann::json::parse(f);
+
+    w = data["width"];
+    h = data["height"];
+    tileWidth = data["tileWidth"];
+    tileHeight = data["tileHeight"];
+    auto layers = data["layers"];
+
+    int yPos = 0;
+    int xPos = 0;
+    for (int y = 0; y < h; y++)
     {
-        for (int col = 0; col < 25; col++)
+        xPos = 0;
+        yPos += 44;
+        for (int x = 0; x < w; x++)
         {
-            map[row][col] = testMap[row][col];
+            int i = y * w + x;
+            int tileID = layers["terrain"][i];
+            bool hasCollider = layers["collision"][i] != 0;
+            addTile(xPos, yPos, tileID, hasCollider);
+            xPos += 44;
         }
     }
 }
 
-void Map::draw()
+void Map::addTile(int x, int y, int tileId, bool hasCollider)
 {
-    SDL_SetRenderDrawColor(Game::renderer, 0xff, 0, 0, 0);
-    int type = 0;
-    for (int row = 0; row < 20; row++)
-    {
-        for (int col = 0; col < 25; col++)
-        {
-            type = map[row][col];
-            dst.w = dst.h = 44;
-            dst.x = col * 44;
-            dst.y = row * 44;
+    SDL_Texture* texture;
+    std::string tag;
 
-            switch (type)
-            {
-                case 0: {
-                    TextureManager::draw(grassTexture, &src, &dst, SDL_FLIP_NONE);
-                    break;
-                }
-                case 2: {
-                    TextureManager::draw(waterTexture, &src, &dst, SDL_FLIP_NONE);
-                    break;
-                }
-            }
-            SDL_RenderDrawRect(Game::renderer, &dst);
-        }
+    switch (tileId)
+    {
+        case 1:
+            texture = waterTexture;
+            tag = "terrain_water";
+            break;
+        case 2:
+            texture = grassTexture;
+            tag = "terrain_grass";
+            break;
     }
-    SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 0);
+
+    auto& tile(manager.addEntity());
+    tile.addComponent<TileComponent>(x, y, texture);
+    tile.addGroup(Game::groupMap);
+
+    if (hasCollider)
+    {
+        tile.addComponent<TransformComponent>(x, y, 44, 44, 1);
+        tile.addComponent<ColliderComponent>("Tile");
+        tile.addGroup(Game::groupCollider);
+    }
 }

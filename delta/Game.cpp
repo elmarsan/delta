@@ -1,11 +1,9 @@
 #include "Game.h"
 
-#include "../engine/Animation.h"
-#include "../engine/Components.h"
-#include "../engine/ECS.h"
-#include "../engine/TextureManager.h"
-#include "../engine/Vector2D.h"
 #include "Map.h"
+#include "engine/Animation.h"
+#include "engine/Components.h"
+#include "engine/ECS.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -14,19 +12,15 @@
 
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
-std::vector<ColliderComponent*> Game::colliders;
 
 Manager manager;
 auto& player(manager.addEntity());
 
-Map* map;
+auto& tiles(manager.getGroup(Game::groupMap));
+auto& players(manager.getGroup(Game::groupPlayer));
+auto& colliders(manager.getGroup(Game::groupCollider));
 
-enum GroupLabel
-{
-    MMap,
-    Players,
-    Colliders,
-};
+Map* map;
 
 Game::~Game()
 {
@@ -45,7 +39,7 @@ bool Game::init(int x, int y, int width, int height)
     running = true;
 
     SDL_Color colorMod { 255, 0, 228 };
-    player.addComponent<TransformComponent>(0, 0, 44, 44, 1);
+    player.addComponent<TransformComponent>(132, 132, 44, 44, 1);
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "data/p1.png", &colorMod);
     sprite.addAnimation(
         "walk_up",
@@ -58,10 +52,10 @@ bool Game::init(int x, int y, int width, int height)
         Animation(150, std::vector<Vector2D> { Vector2D(30, 0), Vector2D(31, 22), Vector2D(30, 44) }));
     player.addComponent<KeyboardControllerComponent>();
     player.addComponent<ColliderComponent>("Player");
-    player.addGroup(GroupLabel::Players);
+    player.addGroup(Game::groupPlayer);
 
     map = new Map();
-    map->load();
+    map->load("data/test_map.json");
     return true;
 }
 
@@ -81,29 +75,36 @@ void Game::handleEvents()
 
 void Game::update()
 {
+    SDL_Rect playerCol = player.getComponent<ColliderComponent>().collider;
+    Vector2D playerPos = player.getComponent<TransformComponent>().position;
+
     manager.refresh();
     manager.update();
-}
 
-auto& tiles(manager.getGroup(GroupLabel::MMap));
-auto& players(manager.getGroup(GroupLabel::Players));
-auto& colliders(manager.getGroup(GroupLabel::Colliders));
+    for (auto& c: colliders)
+    {
+        ColliderComponent& cCol = c->getComponent<ColliderComponent>();
+        if (Collision::AABB(cCol.collider, playerCol))
+        {
+            player.getComponent<TransformComponent>().position = playerPos;
+        }
+    }
+}
 
 void Game::render()
 {
     SDL_RenderClear(renderer);
-    map->draw();
     for (auto& t: tiles)
     {
         t->draw();
     }
-    for (auto& p: players)
-    {
-        p->draw();
-    }
     for (auto& c: colliders)
     {
         c->draw();
+    }
+    for (auto& p: players)
+    {
+        p->draw();
     }
     SDL_RenderPresent(renderer);
 }

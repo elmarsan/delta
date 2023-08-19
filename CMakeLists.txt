@@ -10,6 +10,10 @@ if (UNIX)
     set(SDL2_INCLUDE_DIR /usr/include/SDL2)
 endif(UNIX)
 
+set(EXTERNAL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/external") 
+include_directories("${CMAKE_SOURCE_DIR}/external")
+include_directories(${CMAKE_SOURCE_DIR})
+
 add_executable(Game 
     main.cpp 
     delta/Game.cpp 

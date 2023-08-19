@@ -1,9 +1,8 @@
 #pragma once
 
 #include <SDL.h>
+#include <string>
 #include <vector>
-
-class ColliderComponent;
 
 class Game
 {
@@ -16,11 +15,16 @@ class Game
     void render();
     void clean();
     bool isRunning();
+    void addTile(int x, int y, int w, int h, std::string texturePath);
 
-    static void addTile(int id, int x, int y);
     static SDL_Renderer* renderer;
     static SDL_Event event;
-    static std::vector<ColliderComponent*> colliders;
+    enum groupLabels : std::size_t
+    {
+        groupMap,
+        groupPlayer,
+        groupCollider
+    };
 
   private:
     bool running;

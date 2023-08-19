@@ -2,8 +2,6 @@
 
 #include "Animation.h"
 #include "ECS.h"
-#include "SDL_render.h"
-#include "SDL_timer.h"
 #include "TextureManager.h"
 #include "TransformComponent.h"
 #include "Vector2D.h"

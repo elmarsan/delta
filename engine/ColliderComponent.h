@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../delta/Game.h"
 #include "ECS.h"
-#include "SDL.h"
 #include "TransformComponent.h"
+#include "delta/Game.h"
 
+#include <SDL.h>
 #include <string>
 
 class ColliderComponent: public Component
@@ -24,8 +24,6 @@ class ColliderComponent: public Component
             entity->addComponent<TransformComponent>();
         }
         transform = &entity->getComponent<TransformComponent>();
-
-        Game::colliders.push_back(this);
     }
 
     void update() override

@@ -1,10 +1,7 @@
 #pragma once
 
-#include "../delta/Game.h"
+#include "delta/Game.h"
 #include "ECS.h"
-#include "SDL_keycode.h"
-#include "SDL_render.h"
-#include "SDL_timer.h"
 #include "SpriteComponent.h"
 #include "TransformComponent.h"
 
@@ -29,7 +26,7 @@ class KeyboardControllerComponent: public Component
         // Key event cooldown
         if (Game::event.type == SDL_KEYDOWN || Game::event.type == SDLK_UP)
         {
-            if (SDL_GetTicks64() > ticks + keyEventDelay)
+            if (static_cast<int>(SDL_GetTicks64()) > ticks + keyEventDelay)
                 ticks = SDL_GetTicks64();
             else
                 return;
