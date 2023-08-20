@@ -1,0 +1,14 @@
+{ "columns":8,
+ "image":"..\/..\/assets\/outdoor.png",
+ "imageheight":31942,
+ "imagewidth":256,
+ "margin":0,
+ "name":"outdoor",
+ "spacing":0,
+ "tilecount":7984,
+ "tiledversion":"1.10.2",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":"1.10"
+}

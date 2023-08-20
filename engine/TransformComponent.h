@@ -20,13 +20,12 @@ struct TransformComponent: Component
     int width;
     int height;
     int scale;
-
     int speed = 2;
 
     TransformComponent() { position.zero(); }
 
-    TransformComponent(int x, int y, int w, int h, int scale):
-        position(x, y), width(w), height(h), scale(scale)
+    TransformComponent(Vector2D position, int w, int h, int scale):
+        position(position), width(w), height(h), scale(scale)
     {
     }
 

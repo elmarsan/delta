@@ -15,9 +15,10 @@ AssetManager::~AssetManager()
     }
 }
 
-void AssetManager::addTexture(std::string id, std::string path, SDL_Color* colorMod)
+SDL_Texture* AssetManager::addTexture(std::string id, std::string path, SDL_Color* colorMod)
 {
     textures[id] = TextureManager::load(path, colorMod);
+    return textures[id];
 }
 
 SDL_Texture* AssetManager::getTexture(std::string id)

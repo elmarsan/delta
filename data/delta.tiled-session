@@ -1,0 +1,125 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "maps/littleroot_town_house_1.tmx",
+    "expandedProjectPaths": [
+        ".",
+        "maps/export",
+        "maps",
+        "tiles"
+    ],
+    "fileStates": {
+        "maps/awesome.tmx": {
+            "expandedGroupLayers": [
+                8
+            ],
+            "scale": 1.6222098214285714,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 222.84416924664603,
+                "y": 222.84416924664603
+            }
+        },
+        "maps/export/littleroot_town_house_1.json": {
+            "scale": 2.012388392857143,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 224.36026842659865,
+                "y": 224.3602684265986
+            }
+        },
+        "maps/littleroot_town.tmx": {
+            "expandedGroupLayers": [
+                6
+            ],
+            "expandedObjectLayers": [
+                7,
+                6
+            ],
+            "scale": 1.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 359,
+                "y": 430.33333333333337
+            }
+        },
+        "maps/littleroot_town_house_1 (copy).tmx": {
+            "expandedGroupLayers": [
+                4,
+                8
+            ],
+            "scale": 1.3953125,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 255.49832026875697,
+                "y": 224.68085106382975
+            }
+        },
+        "maps/littleroot_town_house_1.tmx": {
+            "expandedGroupLayers": [
+                7,
+                2,
+                4,
+                8
+            ],
+            "expandedObjectLayers": [
+                12,
+                2
+            ],
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 283,
+                "y": 216.99999999999997
+            }
+        },
+        "maps/littleroot_town_house_1_new.tmx": {
+            "expandedGroupLayers": [
+                2,
+                7
+            ],
+            "scale": 1.3953125,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 254.78163493840984,
+                "y": 137.96192609182532
+            }
+        },
+        "tiles/collision.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tiles/indoor.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tiles/outdoor.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "/home/elmarsan/projects/delta/data/maps/export",
+    "lastUsedTilesetExportFilter": "JSON tileset files (*.tsj *.json)",
+    "map.height": 14,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.width": 14,
+    "openFiles": [
+        "maps/littleroot_town_house_1.tmx"
+    ],
+    "project": "delta.tiled-project",
+    "property.type": "int",
+    "recentFiles": [
+        "maps/littleroot_town_house_1.tmx",
+        "maps/littleroot_town.tmx",
+        "maps/export/littleroot_town_house_1.json",
+        "maps/littleroot_town_house_1_new.tmx",
+        "maps/littleroot_town_house_1 (copy).tmx",
+        "maps/awesome.tmx",
+        "tiles/collision.tsx",
+        "tiles/indoor.tsx",
+        "tiles/outdoor.tsx"
+    ]
+}

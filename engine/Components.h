@@ -3,3 +3,5 @@
 #include "SpriteComponent.h"
 #include "TileComponent.h"
 #include "TransformComponent.h"
+#include "TeleportComponent.h"
+#include "CameraComponent.h"

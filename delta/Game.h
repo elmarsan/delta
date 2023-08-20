@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/AssetManager.h"
+
 #include <SDL.h>
 #include <string>
 #include <vector>
@@ -25,7 +26,8 @@ class Game
     {
         groupMap,
         groupPlayer,
-        groupCollider
+        groupCollider,
+        groupTeleport
     };
 
   private:

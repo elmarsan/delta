@@ -135,18 +135,18 @@ class Manager
     {
         for (size_t i = 0; i < maxGroups; i++)
         {
-            std::vector<Entity*> entities(groupedEntities[i]);
-            entities.erase(
-                std::remove_if(std::begin(entities),
-                               std::end(entities),
-                               [i](Entity* entity) { return entity->isActive() || entity->hasGroup(i); }),
-                std::end(entities));
+            auto& v(groupedEntities[i]);
+            v.erase(std::remove_if(
+                        std::begin(v),
+                        std::end(v),
+                        [i](Entity* mEntity) { return !mEntity->isActive() || !mEntity->hasGroup(i); }),
+                    std::end(v));
         }
 
         entities.erase(
             std::remove_if(std::begin(entities),
                            std::end(entities),
-                           [](const std::unique_ptr<Entity>& entity) { return !entity->isActive(); }),
+                           [](const std::unique_ptr<Entity>& mEntity) { return !mEntity->isActive(); }),
             std::end(entities));
     }
 

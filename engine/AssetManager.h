@@ -13,7 +13,7 @@ class AssetManager
       AssetManager(Manager* manager);
       ~AssetManager();
 
-      void addTexture(std::string id, std::string path, SDL_Color* colorMod = nullptr);
+      SDL_Texture* addTexture(std::string id, std::string path, SDL_Color* colorMod = nullptr);
       SDL_Texture* getTexture(std::string id);
   private:
       Manager* manager;

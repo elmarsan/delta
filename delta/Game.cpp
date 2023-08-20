@@ -5,9 +5,13 @@
 #include "engine/AssetManager.h"
 #include "engine/Components.h"
 #include "engine/ECS.h"
+#include "engine/TeleportComponent.h"
+#include "engine/TransformComponent.h"
+#include "engine/Vector2D.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
+
 #include <iostream>
 #include <memory>
 
@@ -22,6 +26,9 @@ auto& player(manager.addEntity());
 auto& tiles(manager.getGroup(Game::groupMap));
 auto& players(manager.getGroup(Game::groupPlayer));
 auto& colliders(manager.getGroup(Game::groupCollider));
+auto& teleports(manager.getGroup(Game::groupTeleport));
+
+auto& camera(manager.addEntity());
 
 Map* map;
 
@@ -42,11 +49,9 @@ bool Game::init(int x, int y, int width, int height)
     running = true;
 
     SDL_Color colorMod { 255, 0, 228 };
-    assets->addTexture("terrain_water", "data/32water.png");
-    assets->addTexture("terrain_grass", "data/32grass.png");
-    assets->addTexture("player", "data/p1.png", &colorMod);
+    assets->addTexture("player", "data/assets/p1.png", &colorMod);
 
-    player.addComponent<TransformComponent>(132, 132, 44, 44, 1);
+    player.addComponent<TransformComponent>(Vector2D(500, 650), 44, 44, 1);
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "player");
     sprite.addAnimation(
         "walk_up",
@@ -61,8 +66,12 @@ bool Game::init(int x, int y, int width, int height)
     player.addComponent<ColliderComponent>("Player");
     player.addGroup(Game::groupPlayer);
 
+    camera.addComponent<CameraComponent>(5, 5);
+
     map = new Map();
-    map->load("data/test_map.json");
+    // map->load("littleroot_town_house_1");
+    map->load("littleroot_town");
+    map->draw("level_0");
     return true;
 }
 
@@ -85,6 +94,8 @@ void Game::update()
     SDL_Rect playerCol = player.getComponent<ColliderComponent>().collider;
     Vector2D playerPos = player.getComponent<TransformComponent>().position;
 
+    camera.getComponent<CameraComponent>().setPos(playerPos);
+
     manager.refresh();
     manager.update();
 
@@ -96,6 +107,36 @@ void Game::update()
             player.getComponent<TransformComponent>().position = playerPos;
         }
     }
+
+    for (auto& t: teleports)
+    {
+        auto teleport = t->getComponent<TeleportComponent>();
+        auto destiny = t->getComponent<TeleportComponent>().destiny;
+        auto mapID = t->getComponent<TeleportComponent>().mapID;
+
+        if (Collision::AABB(teleport.rect, playerCol))
+        {
+            if (teleport.level != "")
+            {
+                std::cout << "Teleport to level: " << teleport.level << destiny << std::endl;
+                map->destroyTiles();
+                map->draw(teleport.level);
+                player.getComponent<TransformComponent>().position.x = destiny.x * 44;
+                player.getComponent<TransformComponent>().position.y = destiny.y * 44;
+            }
+            else if (teleport.mapID != "")
+            {
+                std::cout << "Teleport to map: " << teleport.mapID << destiny << std::endl;
+                map->destroyTiles();
+                delete map;
+                map = new Map();
+                map->load(teleport.mapID);
+                map->draw("level_0");
+                player.getComponent<TransformComponent>().position.x = destiny.x * 44;
+                player.getComponent<TransformComponent>().position.y = destiny.y * 44;
+            }
+        }
+    }
 }
 
 void Game::render()
@@ -105,14 +146,19 @@ void Game::render()
     {
         t->draw();
     }
-    for (auto& c: colliders)
-    {
-        c->draw();
-    }
+    // for (auto& c: colliders)
+    // {
+    //     c->draw();
+    // }
     for (auto& p: players)
     {
         p->draw();
     }
+    for (auto& t: teleports)
+    {
+        t->draw();
+    }
+    camera.draw();
     SDL_RenderPresent(renderer);
 }
 

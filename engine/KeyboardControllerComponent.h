@@ -24,13 +24,13 @@ class KeyboardControllerComponent: public Component
     void update() override
     {
         // Key event cooldown
-        if (Game::event.type == SDL_KEYDOWN || Game::event.type == SDLK_UP)
-        {
-            if (static_cast<int>(SDL_GetTicks64()) > ticks + keyEventDelay)
-                ticks = SDL_GetTicks64();
-            else
-                return;
-        }
+        // if (Game::event.type == SDL_KEYDOWN || Game::event.type == SDLK_UP)
+        // {
+        //     if (static_cast<int>(SDL_GetTicks64()) > ticks + keyEventDelay)
+        //         ticks = SDL_GetTicks64();
+        //     else
+        //         return;
+        // }
 
         if (Game::event.type == SDL_KEYDOWN)
         {
