@@ -3,6 +3,7 @@
 #include "engine/AssetManager.h"
 
 #include <SDL.h>
+#include <absl/status/status.h>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,7 @@ class Game
   public:
     Game() = default;
     ~Game();
-    bool init(int x, int y, int width, int height);
+    absl::Status init(int x, int y, int width, int height);
     void handleEvents();
     void update();
     void render();

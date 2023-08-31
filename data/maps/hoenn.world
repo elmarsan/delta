@@ -1,0 +1,34 @@
+{
+    "maps": [
+        {
+            "fileName": "littleroot-town.tmx",
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+        },
+        {
+            "fileName": "hoenn-route-101.tmx",
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": -320
+        },
+        {
+            "fileName": "oldale-town.tmx",
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": -640
+        },
+        {
+            "fileName": "hoenn-route-103.tmx",
+            "height": 352,
+            "width": 1280,
+            "x": 0,
+            "y": -992
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}

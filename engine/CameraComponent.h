@@ -23,12 +23,14 @@ class CameraComponent: public Component
         rect.h = h * 44;
     }
 
+#ifdef DEBUG
     void draw() override
     {
         SDL_SetRenderDrawColor(Game::renderer, 0xff, 165, 0, 0);
         SDL_RenderDrawRect(Game::renderer, &rect);
         SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 0);
     }
+#endif
 
     void setPos(Vector2D newPos)
     {

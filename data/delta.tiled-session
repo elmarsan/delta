@@ -3,12 +3,13 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps/littleroot_town_house_1.tmx",
+    "activeFile": "tiles/outdoor_16x16.tsx",
     "expandedProjectPaths": [
-        ".",
+        "tiles/export",
         "maps/export",
         "maps",
-        "tiles"
+        "tiles",
+        "."
     ],
     "fileStates": {
         "maps/awesome.tmx": {
@@ -30,6 +31,30 @@
                 "y": 224.3602684265986
             }
         },
+        "maps/hoenn-route-101.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 139.5,
+                "y": -97.25
+            }
+        },
+        "maps/hoenn-route-103.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 336.66666666666663,
+                "y": 224.33333333333331
+            }
+        },
+        "maps/littleroot-town.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 119.5,
+                "y": -759.25
+            }
+        },
         "maps/littleroot_town.tmx": {
             "expandedGroupLayers": [
                 6
@@ -41,8 +66,8 @@
             "scale": 1.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 359,
-                "y": 430.33333333333337
+                "x": 357.3333333333333,
+                "y": 522.3333333333334
             }
         },
         "maps/littleroot_town_house_1 (copy).tmx": {
@@ -59,10 +84,10 @@
         },
         "maps/littleroot_town_house_1.tmx": {
             "expandedGroupLayers": [
-                7,
-                2,
                 4,
-                8
+                8,
+                7,
+                2
             ],
             "expandedObjectLayers": [
                 12,
@@ -71,8 +96,8 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 283,
-                "y": 216.99999999999997
+                "x": 282,
+                "y": 216.33333333333331
             }
         },
         "maps/littleroot_town_house_1_new.tmx": {
@@ -87,6 +112,14 @@
                 "y": 137.96192609182532
             }
         },
+        "maps/oldale-town.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 145.66666666666666,
+                "y": 726.5
+            }
+        },
         "tiles/collision.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
@@ -98,22 +131,37 @@
         "tiles/outdoor.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "tiles/outdoor_16x16.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 3
+        },
+        "tiles/tileset.tsx": {
+            "scaleInDock": 1
         }
     },
-    "last.exportedFilePath": "/home/elmarsan/projects/delta/data/maps/export",
+    "frame.defaultDuration": 320,
+    "last.exportedFilePath": "/home/elmarsan/projects/delta/data/tiles/export",
+    "last.worldFilePath": "/home/elmarsan/projects/delta/data/maps",
     "lastUsedTilesetExportFilter": "JSON tileset files (*.tsj *.json)",
+    "loadedWorlds": [
+        "/home/elmarsan/projects/delta/data/maps/hoenn.world"
+    ],
     "map.height": 14,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.width": 14,
     "openFiles": [
-        "maps/littleroot_town_house_1.tmx"
+        "tiles/outdoor_16x16.tsx"
     ],
     "project": "delta.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "maps/littleroot_town_house_1.tmx",
+        "maps/hoenn-route-103.tmx",
+        "tiles/outdoor_16x16.tsx",
+        "maps/littleroot-town.tmx",
         "maps/littleroot_town.tmx",
+        "maps/littleroot_town_house_1.tmx",
         "maps/export/littleroot_town_house_1.json",
         "maps/littleroot_town_house_1_new.tmx",
         "maps/littleroot_town_house_1 (copy).tmx",

@@ -1,17 +1,18 @@
 #include "Game.h"
 
-#include "Map.h"
+#include "MapManager.h"
+#include "absl/status/status.h"
 #include "engine/Animation.h"
 #include "engine/AssetManager.h"
 #include "engine/Components.h"
 #include "engine/ECS.h"
 #include "engine/TeleportComponent.h"
+#include "engine/TileManager.h"
 #include "engine/TransformComponent.h"
 #include "engine/Vector2D.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
-
 #include <iostream>
 #include <memory>
 
@@ -30,19 +31,23 @@ auto& teleports(manager.getGroup(Game::groupTeleport));
 
 auto& camera(manager.addEntity());
 
-Map* map;
-
 Game::~Game()
 {
     clean();
 }
 
-bool Game::init(int x, int y, int width, int height)
+absl::Status Game::init(int x, int y, int width, int height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
-        return 0;
+    {
+        return absl::InternalError("Unable to init SDL Video");
+    }
+
     if (IMG_Init(IMG_INIT_PNG) == 0)
-        return 0;
+    {
+        return absl::InternalError("Unable to init SDL Image ");
+    }
+
     window = SDL_CreateWindow(
         "Delta", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
@@ -55,24 +60,27 @@ bool Game::init(int x, int y, int width, int height)
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "player");
     sprite.addAnimation(
         "walk_up",
-        Animation(150, std::vector<Vector2D> { Vector2D(15, 0), Vector2D(15, 22), Vector2D(15, 44) }));
+        new Animation(150, std::vector<Vector2D> { Vector2D(15, 0), Vector2D(15, 22), Vector2D(15, 44) }));
     sprite.addAnimation(
         "walk_down",
-        Animation(150, std::vector<Vector2D> { Vector2D(0, 0), Vector2D(0, 22), Vector2D(0, 44) }));
+        new Animation(150, std::vector<Vector2D> { Vector2D(0, 0), Vector2D(0, 22), Vector2D(0, 44) }));
     sprite.addAnimation(
         "walk_lateral",
-        Animation(150, std::vector<Vector2D> { Vector2D(30, 0), Vector2D(31, 22), Vector2D(30, 44) }));
+        new Animation(150, std::vector<Vector2D> { Vector2D(30, 0), Vector2D(31, 22), Vector2D(30, 44) }));
     player.addComponent<KeyboardControllerComponent>();
     player.addComponent<ColliderComponent>("Player");
     player.addGroup(Game::groupPlayer);
 
     camera.addComponent<CameraComponent>(5, 5);
 
-    map = new Map();
-    // map->load("littleroot_town_house_1");
-    map->load("littleroot_town");
-    map->draw("level_0");
-    return true;
+    MapManager::loadJSON("hoenn-route-103");
+    MapManager::loadJSON("littleroot-town");
+    // MapManager::draw("hoenn-route-103");
+    MapManager::draw("littleroot-town");
+
+    // TileManager::addAnimatedTile(Vector2D(44, 44), "outdoor_16x16", std::vector<int>{2374, 2375, 2376,
+    // 2377, 2378, 2379, 2380, 2380}, 150); MapManager::draw("littleroot-town");
+    return absl::OkStatus();
 }
 
 void Game::handleEvents()
@@ -108,35 +116,35 @@ void Game::update()
         }
     }
 
-    for (auto& t: teleports)
-    {
-        auto teleport = t->getComponent<TeleportComponent>();
-        auto destiny = t->getComponent<TeleportComponent>().destiny;
-        auto mapID = t->getComponent<TeleportComponent>().mapID;
+    // for (auto& t: teleports)
+    // {
+    //     auto teleport = t->getComponent<TeleportComponent>();
+    //     auto destiny = t->getComponent<TeleportComponent>().destiny;
+    //     auto mapID = t->getComponent<TeleportComponent>().mapID;
 
-        if (Collision::AABB(teleport.rect, playerCol))
-        {
-            if (teleport.level != "")
-            {
-                std::cout << "Teleport to level: " << teleport.level << destiny << std::endl;
-                map->destroyTiles();
-                map->draw(teleport.level);
-                player.getComponent<TransformComponent>().position.x = destiny.x * 44;
-                player.getComponent<TransformComponent>().position.y = destiny.y * 44;
-            }
-            else if (teleport.mapID != "")
-            {
-                std::cout << "Teleport to map: " << teleport.mapID << destiny << std::endl;
-                map->destroyTiles();
-                delete map;
-                map = new Map();
-                map->load(teleport.mapID);
-                map->draw("level_0");
-                player.getComponent<TransformComponent>().position.x = destiny.x * 44;
-                player.getComponent<TransformComponent>().position.y = destiny.y * 44;
-            }
-        }
-    }
+    //     if (Collision::AABB(teleport.rect, playerCol))
+    //     {
+    //         if (teleport.level != "")
+    //         {
+    //             std::cout << "Teleport to level: " << teleport.level << destiny << std::endl;
+    //             map->destroyTiles();
+    //             map->draw(teleport.level);
+    //             player.getComponent<TransformComponent>().position.x = destiny.x * 44;
+    //             player.getComponent<TransformComponent>().position.y = destiny.y * 44;
+    //         }
+    //         else if (teleport.mapID != "")
+    //         {
+    //             std::cout << "Teleport to map: " << teleport.mapID << destiny << std::endl;
+    //             map->destroyTiles();
+    //             delete map;
+    //             map = new Map();
+    //             map->load(teleport.mapID);
+    //             map->draw("level_0");
+    //             player.getComponent<TransformComponent>().position.x = destiny.x * 44;
+    //             player.getComponent<TransformComponent>().position.y = destiny.y * 44;
+    //         }
+    //     }
+    // }
 }
 
 void Game::render()

@@ -34,12 +34,14 @@ class ColliderComponent: public Component
         collider.h = transform->height * transform->scale;
     }
 
+#ifdef DEBUG
     void draw() override
     {
         SDL_SetRenderDrawColor(Game::renderer, 0xff, 0, 0, 0);
         SDL_RenderDrawRect(Game::renderer, &collider);
         SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 0);
     }
+#endif
 };
 
 class Collision

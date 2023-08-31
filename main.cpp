@@ -13,7 +13,8 @@ int main()
     int frameTime;
 
     Game game;
-    if (!game.init(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 920))
+    absl::Status status = game.init(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 920);
+    if (!status.ok())
     {
         std::cout << "Unable to init SDL" << std::endl;
         return 1;
