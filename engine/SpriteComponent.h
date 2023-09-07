@@ -3,6 +3,7 @@
 #include "Animation.h"
 #include "ECS.h"
 #include "TransformComponent.h"
+#include "TextureManager.h"
 #include "Vector2D.h"
 #include "delta/Game.h"
 #include "engine/Texture.h"
@@ -15,7 +16,7 @@ class SpriteComponent: public Component
 {
   private:
     TransformComponent* transform;
-    Texture texture;
+    std::shared_ptr<TextureV2> texture;
     SDL_Rect src, dst;
     int w, h;
 
@@ -26,14 +27,15 @@ class SpriteComponent: public Component
   public:
     SpriteComponent(int w, int h, std::string textureId): w(w), h(h)
     {
-        texture = Texture{Game::assets->getTexture(textureId), SDL_FLIP_NONE};
+        // std::cout << "Sprite needs textuuuuuure" << std::endl;
+        texture = Game::assetManager->get<TextureV2>(textureId);
         animations = std::map<std::string, Animation*>();
     }
 
-    SpriteComponent(int w, int h, Texture texture): texture(texture), w(w), h(h)
-    {
-        animations = std::map<std::string, Animation*>();
-    }
+    // SpriteComponent(int w, int h, TextureV2 texture): texture(texture), w(w), h(h)
+    // {
+    //     animations = std::map<std::string, Animation*>();
+    // }
 
     void addAnimation(std::string name, Animation* animation) { animations[name] = animation; }
 
@@ -54,12 +56,12 @@ class SpriteComponent: public Component
         src.h = h;
     }
 
-    void draw() override { TextureManager::draw(texture.sdlTexture, &src, &dst, texture.flip); }
+    void draw() override { TextureManager::draw(texture->sdlTexture, &src, &dst, texture->flip); }
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
     {
         currentAnimation = name;
-        texture.flip = animFlip;
+        texture->flip = animFlip;
     }
 
     void stopAnimation()
@@ -88,5 +90,5 @@ class SpriteComponent: public Component
         }
     }
 
-    void setFlip(SDL_RendererFlip newFlip) { texture.flip = newFlip; }
+    // void setFlip(SDL_RendererFlip newFlip) { texture->flip = newFlip; }
 };

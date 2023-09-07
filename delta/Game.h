@@ -4,6 +4,7 @@
 
 #include <SDL.h>
 #include <absl/status/status.h>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,11 +19,11 @@ class Game
     void render();
     void clean();
     bool isRunning();
-    void addTile(int x, int y, int w, int h, std::string texturePath);
 
     static SDL_Renderer* renderer;
     static SDL_Event event;
-    static AssetManager* assets;
+    static std::unique_ptr<AssetManager> assetManager;
+    // static AssetManager* assets;
     enum groupLabels : std::size_t
     {
         groupMap,

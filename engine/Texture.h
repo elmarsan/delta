@@ -3,7 +3,7 @@
 #include "engine/Vector2D.h"
 #include <SDL.h>
 
-struct Texture 
+struct Texture
 {
     SDL_Texture* sdlTexture;
     SDL_RendererFlip flip;

@@ -29,8 +29,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 add_executable(Delta 
     main.cpp 
-    delta/Game.cpp 
     delta/Map.cpp
+    delta/Game.cpp 
     delta/MapManager.cpp
     delta/Tileset.cpp
     delta/TilesetManager.cpp
@@ -38,7 +38,7 @@ add_executable(Delta
     engine/ECS.cpp
     engine/TextureManager.cpp 
     engine/Vector2D.cpp 
-    engine/AssetManager.cpp
+    engine/AssetLoader.cpp
 )
 target_include_directories(Delta 
     PRIVATE ${SDL2_INCLUDE_DIR}

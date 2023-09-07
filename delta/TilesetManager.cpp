@@ -85,16 +85,6 @@ void TilesetManager::loadJSON(const std::string tilesetID)
     tilesets[tilesetID] = tileset;
 }
 
-// Vector2D TilesetManager::getTilePosition(const std::string tilesetID, const unsigned flaggedTileID)
-// {
-//     Tileset tileset = getTileset(tilesetID);
-//     int tileID = flaggedTileID;
-//     tileID &= ~(TiledFlippedHorizontally | TiledFlippedVertically);
-//     int x = (tileID % tileset.columns) * (tileset.tileWidth + tileset.margin) + tileset.margin;
-//     int y = (tileID / tileset.columns) * (tileset.tileHeight + tileset.margin) + tileset.margin;
-//     return Vector2D(x, y);
-// }
-
 Texture TilesetManager::getTileTexture(const std::string tilesetID, const unsigned flaggedTileID)
 {
     Tileset tileset = getTileset(tilesetID);
@@ -112,8 +102,3 @@ Texture TilesetManager::getTileTexture(const std::string tilesetID, const unsign
 
     return Texture { tileset.texture, flip, tileset.getTile(tileID).pos };
 }
-
-// Animation TilesetManager::getTileAnimation(const std::string tilesetID, const int tileID)
-// {
-//     return getTileset(tilesetID).getTileAnimation(tileID);
-// }

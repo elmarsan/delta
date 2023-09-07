@@ -421,7 +421,7 @@ add_library(absl::crc_internal STATIC IMPORTED)
 
 set_target_properties(absl::crc_internal PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "absl::crc_cpu_detect;absl::base;absl::config;absl::core_headers;absl::dynamic_annotations;absl::endian;absl::prefetch;absl::raw_logging_internal;absl::memory;absl::bits"
+  INTERFACE_LINK_LIBRARIES "absl::crc_cpu_detect;absl::config;absl::core_headers;absl::endian;absl::prefetch;absl::raw_logging_internal;absl::memory;absl::bits"
 )
 
 # Create imported target absl::crc32c
@@ -429,7 +429,7 @@ add_library(absl::crc32c STATIC IMPORTED)
 
 set_target_properties(absl::crc32c PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "absl::crc_cpu_detect;absl::crc_internal;absl::non_temporal_memcpy;absl::config;absl::core_headers;absl::dynamic_annotations;absl::endian;absl::prefetch;absl::str_format;absl::strings"
+  INTERFACE_LINK_LIBRARIES "absl::crc_cpu_detect;absl::crc_internal;absl::non_temporal_memcpy;absl::config;absl::core_headers;absl::endian;absl::prefetch;absl::str_format;absl::strings"
 )
 
 # Create imported target absl::non_temporal_arm_intrinsics

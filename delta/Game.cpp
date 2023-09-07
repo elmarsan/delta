@@ -20,7 +20,7 @@ Manager manager;
 
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
-AssetManager* Game::assets = new AssetManager(&manager);
+std::unique_ptr<AssetManager> Game::assetManager = std::make_unique<AssetManager>();
 
 auto& player(manager.addEntity());
 
@@ -53,11 +53,13 @@ absl::Status Game::init(int x, int y, int width, int height)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     running = true;
 
-    SDL_Color colorMod { 255, 0, 228 };
-    assets->addTexture("player", "data/assets/p1.png", &colorMod);
+    // SDL_Color colorMod { 255, 0, 228 };
+    // AssetMetadata meta;
+    // meta = TextureMetadata{ &colorMod};
+    auto miau = assetManager->load<TextureV2>("p1");
 
     player.addComponent<TransformComponent>(Vector2D(500, 650), 44, 44, 1);
-    auto& sprite = player.addComponent<SpriteComponent>(14, 21, "player");
+    auto& sprite = player.addComponent<SpriteComponent>(14, 21, "p1");
     sprite.addAnimation(
         "walk_up",
         new Animation(150, std::vector<Vector2D> { Vector2D(15, 0), Vector2D(15, 22), Vector2D(15, 44) }));
@@ -75,11 +77,9 @@ absl::Status Game::init(int x, int y, int width, int height)
 
     MapManager::loadJSON("hoenn-route-103");
     MapManager::loadJSON("littleroot-town");
-    // MapManager::draw("hoenn-route-103");
-    MapManager::draw("littleroot-town");
+    MapManager::draw("hoenn-route-103");
+    // MapManager::draw("littleroot-town");
 
-    // TileManager::addAnimatedTile(Vector2D(44, 44), "outdoor_16x16", std::vector<int>{2374, 2375, 2376,
-    // 2377, 2378, 2379, 2380, 2380}, 150); MapManager::draw("littleroot-town");
     return absl::OkStatus();
 }
 
@@ -154,10 +154,10 @@ void Game::render()
     {
         t->draw();
     }
-    // for (auto& c: colliders)
-    // {
-    //     c->draw();
-    // }
+    for (auto& c: colliders)
+    {
+        c->draw();
+    }
     for (auto& p: players)
     {
         p->draw();
