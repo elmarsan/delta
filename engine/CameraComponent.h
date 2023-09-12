@@ -3,8 +3,6 @@
 #include "Vector2D.h"
 #include "delta/Game.h"
 
-#include <SDL.h>
-
 class CameraComponent: public Component
 {
   private:

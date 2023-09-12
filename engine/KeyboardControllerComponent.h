@@ -4,8 +4,7 @@
 #include "ECS.h"
 #include "SpriteComponent.h"
 #include "TransformComponent.h"
-
-#include <SDL.h>
+#include <SDL2/SDL_events.h>
 
 class KeyboardControllerComponent: public Component
 {

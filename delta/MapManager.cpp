@@ -2,7 +2,7 @@
 
 #include "TilesetManager.h"
 #include "engine/TileManager.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <absl/status/status.h>
 #include <absl/strings/str_format.h>
@@ -96,7 +96,6 @@ void MapManager::draw(const std::string mapID)
                     auto tile = tileset.getTile(tileID);
                     if (tile.isAnimated())
                     {
-                        // std::cout << "Animated tile: " << tileID << std::endl;
                         auto tileIDs = std::get<0>(tile.frames);
                         auto speed = std::get<1>(tile.frames);
                         TileManager::addAnimatedTile(gridPos, tilesetID, tileIDs, speed);

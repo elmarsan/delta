@@ -5,8 +5,8 @@
 #include "delta/Game.h"
 #include "delta/TilesetManager.h"
 #include "engine/Texture.h"
+#include <SDL2/SDL_timer.h>
 
-#include <SDL.h>
 
 class AnimatedTileComponent: public Component
 {

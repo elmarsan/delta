@@ -4,7 +4,6 @@
 #include "TransformComponent.h"
 #include "delta/Game.h"
 
-#include <SDL.h>
 #include <string>
 
 class ColliderComponent: public Component

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL.h>
+#include <SDL2/SDL_render.h>
 #include <string>
 #include <variant>
 
@@ -16,7 +16,7 @@ class TextureV2: public Asset
     SDL_Texture* sdlTexture;
     SDL_RendererFlip flip;
 
-    TextureV2(std::string ID, SDL_Texture* sdlTexture): ID(ID), sdlTexture(sdlTexture) {}
+    TextureV2(std::string ID, SDL_Texture* sdlTexture): sdlTexture(sdlTexture), ID(ID) {}
 
     std::string getID() override { return ID; }
 
@@ -28,7 +28,7 @@ struct TextureMetadata
 {
     SDL_Color* colorMod;
 
-    ~TextureMetadata() { delete colorMod; }
+    // ~TextureMetadata() { delete colorMod; }
 };
 
 using AssetMetadata = std::variant<TextureMetadata>;

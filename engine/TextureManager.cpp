@@ -2,8 +2,7 @@
 
 #include "delta/Game.h"
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include <string>
 
 SDL_Texture* TextureManager::load(std::string path, SDL_Color* colorMod)

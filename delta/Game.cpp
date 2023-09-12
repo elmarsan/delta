@@ -1,18 +1,21 @@
 #include "Game.h"
 
+#include "ColliderComponent.h"
 #include "MapManager.h"
+#include "SpriteComponent.h"
 #include "absl/status/status.h"
 #include "engine/Animation.h"
+#include "engine/CameraComponent.h"
 #include "engine/AssetManager.h"
-#include "engine/Components.h"
 #include "engine/ECS.h"
 #include "engine/TeleportComponent.h"
 #include "engine/TileManager.h"
 #include "engine/TransformComponent.h"
+#include "engine/KeyboardControllerComponent.h"
 #include "engine/Vector2D.h"
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <memory>
 
@@ -53,10 +56,10 @@ absl::Status Game::init(int x, int y, int width, int height)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     running = true;
 
-    // SDL_Color colorMod { 255, 0, 228 };
-    // AssetMetadata meta;
-    // meta = TextureMetadata{ &colorMod};
-    auto miau = assetManager->load<TextureV2>("p1");
+    SDL_Color colorMod { 255, 0, 228 };
+    AssetMetadata meta;
+    meta = TextureMetadata{ &colorMod};
+    assetManager->load<TextureV2>("p1", &meta);
 
     player.addComponent<TransformComponent>(Vector2D(500, 650), 44, 44, 1);
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "p1");
@@ -77,8 +80,8 @@ absl::Status Game::init(int x, int y, int width, int height)
 
     MapManager::loadJSON("hoenn-route-103");
     MapManager::loadJSON("littleroot-town");
-    MapManager::draw("hoenn-route-103");
-    // MapManager::draw("littleroot-town");
+    // MapManager::draw("hoenn-route-103");
+    MapManager::draw("littleroot-town");
 
     return absl::OkStatus();
 }

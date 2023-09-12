@@ -8,7 +8,7 @@
 #include "delta/Game.h"
 #include "engine/Texture.h"
 
-#include <SDL.h>
+#include <SDL2/SDL_timer.h>
 #include <map>
 #include <string_view>
 
@@ -27,15 +27,9 @@ class SpriteComponent: public Component
   public:
     SpriteComponent(int w, int h, std::string textureId): w(w), h(h)
     {
-        // std::cout << "Sprite needs textuuuuuure" << std::endl;
         texture = Game::assetManager->get<TextureV2>(textureId);
         animations = std::map<std::string, Animation*>();
     }
-
-    // SpriteComponent(int w, int h, TextureV2 texture): texture(texture), w(w), h(h)
-    // {
-    //     animations = std::map<std::string, Animation*>();
-    // }
 
     void addAnimation(std::string name, Animation* animation) { animations[name] = animation; }
 
@@ -89,6 +83,4 @@ class SpriteComponent: public Component
             animation->nextFrame();
         }
     }
-
-    // void setFlip(SDL_RendererFlip newFlip) { texture->flip = newFlip; }
 };

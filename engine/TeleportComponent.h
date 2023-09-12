@@ -5,8 +5,6 @@
 #include "engine/TransformComponent.h"
 #include "engine/Vector2D.h"
 
-#include <SDL.h>
-
 class TeleportComponent: public Component
 {
   public:

@@ -2,7 +2,7 @@
 
 #include "engine/Animation.h"
 #include "engine/TextureManager.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include <fstream>
 
@@ -64,23 +64,11 @@ void TilesetManager::loadJSON(const std::string tilesetID)
         }
     }
   
-    std::cout << "***********************************" << std::endl;
-    std::cout << "Animated tiles" << std::endl;
     for (auto& [k, v]: tileset.tileFrames)
     {
         auto frames = std::get<0>(v);
         auto speed = std::get<1>(v);
-
-        std::cout << "Speed: " <<  speed << std::endl;
-        std::cout << "Tile " << k << ": ";
-        for (auto& f: frames)
-        {
-            std::cout << f << ", ";
-        }
-        std::cout << "\n";
     }
-    std::cout << "***********************************" << std::endl;
-    std::cout << "\n";
 
     tilesets[tilesetID] = tileset;
 }

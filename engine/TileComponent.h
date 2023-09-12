@@ -1,12 +1,9 @@
 #pragma once
 
 #include "ECS.h"
-#include "SDL_render.h"
 #include "TextureManager.h"
 #include "delta/Game.h"
 #include "engine/Texture.h"
-
-#include <SDL.h>
 
 class TileComponent: public Component
 {

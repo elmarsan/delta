@@ -3,7 +3,6 @@
 #include "engine/Animation.h"
 #include "engine/Texture.h"
 
-#include <SDL.h>
 #include <map>
 #include <vector>
 #include <string>

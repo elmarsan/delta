@@ -1,4 +1,3 @@
-#include "SDL_video.h"
 #include "delta/Game.h"
 
 #include <SDL2/SDL.h>

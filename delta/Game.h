@@ -2,7 +2,7 @@
 
 #include "engine/AssetManager.h"
 
-#include <SDL.h>
+#include <SDL2/SDL_events.h>
 #include <absl/status/status.h>
 #include <memory>
 #include <string>
