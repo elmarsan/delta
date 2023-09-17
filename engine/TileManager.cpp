@@ -1,24 +1,25 @@
 #include "TileManager.h"
+#include "ColliderComponent.h"
+#include "TileComponent.h"
 #include "delta/Game.h"
 #include "ECS.h"
-#include "TileComponent.h"
-#include "engine/AnimatedTileComponent.h"
 #include "engine/Animation.h"
 #include "engine/SpriteComponent.h"
 #include "engine/TransformComponent.h"
+#include "engine/Asset.h"
 
 extern Manager manager;
 
-void TileManager::addTile(Vector2D gridPos, Texture texture)
+void TileManager::addTile(Vector2D gridPos, Tile tile) 
 {
     auto& tileEntity(manager.addEntity());
     tileEntity.addGroup(Game::groupMap);
-    tileEntity.addComponent<TileComponent>(gridPos, texture);
-}
+    tileEntity.addComponent<TileComponent>(gridPos, tile);
 
-void TileManager::addAnimatedTile(Vector2D gridPos, std::string tilesetID, std::vector<int> tileIDs, int speed)
-{
-    auto& tileEntity(manager.addEntity());
-    tileEntity.addGroup(Game::groupMap);
-    tileEntity.addComponent<AnimatedTileComponent>(gridPos, tilesetID, tileIDs, speed);
+    if (tile.collides)
+    {
+        tileEntity.addComponent<TransformComponent>(gridPos, 44, 44, 1);
+        tileEntity.addComponent<ColliderComponent>("tile");
+        tileEntity.addGroup(Game::groupCollider);
+    }
 }

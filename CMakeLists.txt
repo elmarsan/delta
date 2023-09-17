@@ -25,11 +25,8 @@ include_directories(
 
 add_executable(Delta 
     main.cpp 
-    delta/Map.cpp
     delta/Game.cpp 
     delta/MapManager.cpp
-    delta/Tileset.cpp
-    delta/TilesetManager.cpp
     engine/TileManager.cpp
     engine/ECS.cpp
     engine/TextureManager.cpp 
@@ -42,5 +39,5 @@ target_include_directories(Delta
 target_link_libraries(
     Delta 
     PRIVATE SDL2main SDL2 SDL2_image
-    PRIVATE absl::status absl::statusor absl::strings
+    PRIVATE absl::status absl::statusor absl::strings absl::log
 )

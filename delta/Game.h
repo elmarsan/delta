@@ -23,7 +23,6 @@ class Game
     static SDL_Renderer* renderer;
     static SDL_Event event;
     static std::unique_ptr<AssetManager> assetManager;
-    // static AssetManager* assets;
     enum groupLabels : std::size_t
     {
         groupMap,

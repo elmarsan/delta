@@ -1,113 +1,96 @@
 #include "MapManager.h"
 
-#include "TilesetManager.h"
+#include "Asset.h"
+#include "delta/Game.h"
 #include "engine/TileManager.h"
 #include "nlohmann/json.hpp"
 
+#include <absl/log/log.h>
 #include <absl/status/status.h>
 #include <absl/strings/str_format.h>
 #include <filesystem>
 #include <fstream>
+#include <memory>
 
-std::map<std::string, Map> MapManager::maps = std::map<std::string, Map>();
+const unsigned TiledFlippedHorizontally = 0x80000000;
+const unsigned TiledFlippedVertically = 0x40000000;
 
-absl::Status MapManager::loadJSON(const std::string mapID)
+Tile MapManager::getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets,
+                           int tileGID,
+                           int mapTilesetFirstGID)
 {
-    std::string path = absl::StrFormat("data/maps/export/%s.json", mapID);
-    if (!std::filesystem::exists(path))
+    Tile tile;
+    for (auto& mapTileset: tilesets)
+    {
+        if (tileGID >= mapTilesetFirstGID && tileGID <= mapTileset->numTiles - 1)
+        {
+            int tileID = tileGID - mapTilesetFirstGID;
+            return mapTileset->getTile(tileID);
+        }
+    }
+
+    return tile;
+}
+
+absl::Status MapManager::draw(const std::string mapID)
+{
+    auto map = Game::assetManager->get<Map>(mapID);
+
+    if (map == nullptr)
     {
         return absl::NotFoundError(absl::StrFormat("Map: %s not found", mapID));
     }
 
-    std::ifstream file(path);
-    if (!file.is_open())
+    // Load tilesets
+    std::vector<std::shared_ptr<Tileset>> tilesets;
+    for (auto& tileset: map->tilesets)
     {
-        return absl::InternalError("Unable to open the map file");
-    }
-
-    nlohmann::json data = nlohmann::json::parse(file);
-    Map map;
-    map.width = data["width"];
-    map.height = data["height"];
-    map.tileWidth = data["tilewidth"];
-    map.tileHeight = data["tileheight"];
-    map.tilesets = std::vector<std::tuple<int, std::string>>();
-
-    for (auto& tileset: data["tilesets"])
-    {
-        std::string source = tileset["source"];
-        size_t lastSlash = source.find_last_of("/\\");
-        std::string filename = source.substr(lastSlash + 1);
-        size_t lastDot = filename.find_last_of(".");
-        std::string tilesetID = filename.substr(0, lastDot);
-
-        TilesetManager::loadJSON(tilesetID);
-        map.tilesets.push_back({ tileset["firstgid"], tilesetID });
-    }
-
-    // Not checking layer name, type and dimensions.
-    // Here we assume every layer has same dimensions and must be
-    // drawn at given order.
-    for (auto& tiledLayer: data["layers"])
-    {
-        int width = tiledLayer["width"];
-        int height = tiledLayer["height"];
-        auto data = tiledLayer["data"];
-        std::vector<int> mapLayer;
-
-        for (int y = 0; y < height; y++)
+        int mapTilesetFirstGID = std::get<0>(tileset);
+        std::string tilesetID = std::get<1>(tileset);
+        LOG(INFO) << "Tileset: " << tilesetID << " first GID: " << mapTilesetFirstGID;
+        auto loadRes = Game::assetManager->getOrLoad<Tileset>(tilesetID);
+        if (!loadRes.ok())
         {
-            for (int x = 0; x < width; x++)
-            {
-                int i = y * width + x;
-                int tileID = data[i];
-                mapLayer.push_back(tileID);
-            }
+            LOG(ERROR) << loadRes.status().message();
         }
-        map.layers.emplace_back(mapLayer);
+        else
+        {
+            tilesets.push_back(loadRes.value());
+        }
     }
 
-    maps[mapID] = map;
-    return absl::OkStatus();
-}
-
-void MapManager::draw(const std::string mapID)
-{
-    auto map = maps[mapID];
-
-    for (auto& layer: map.layers)
+    for (auto& layer: map->layers)
     {
         int yPos = 0;
         int xPos = 0;
-        for (int y = 0; y < map.height; y++)
+        for (int y = 0; y < map->height; y++)
         {
             xPos = 0;
             yPos += 44;
-            for (int x = 0; x < map.width; x++)
+            for (int x = 0; x < map->width; x++)
             {
-                int i = y * map.width + x;
+                int i = y * map->width + x;
                 const unsigned tileGID = layer[i];
                 if (tileGID > 0)
                 {
+                    // bool flippedHorizontally = (tileGID & TiledFlippedHorizontally);
+                    // bool flippedVertically = (tileGID & TiledFlippedVertically);
+                    // auto flip = SDL_FLIP_NONE;
+                    // if (flippedHorizontally)
+                    //     flip = SDL_FLIP_HORIZONTAL;
+                    // else if (flippedVertically)
+                    //     flip = SDL_FLIP_VERTICAL;
+                    int tileID = tileGID;
+                    tileID &= ~(TiledFlippedHorizontally | TiledFlippedVertically);
+
                     auto gridPos = Vector2D(xPos, yPos);
-                    std::string tilesetID = std::get<1>(map.tilesets[0]);
-                    int tileID = map.getTileID(tileGID);
-                    auto tileset = TilesetManager::getTileset(tilesetID);
-                    auto tile = tileset.getTile(tileID);
-                    if (tile.isAnimated())
-                    {
-                        auto tileIDs = std::get<0>(tile.frames);
-                        auto speed = std::get<1>(tile.frames);
-                        TileManager::addAnimatedTile(gridPos, tilesetID, tileIDs, speed);
-                    }
-                    else
-                    {
-                        auto texture = TilesetManager::getTileTexture(tilesetID, tileID);
-                        TileManager::addTile(gridPos, texture);
-                    }
+                    auto tile = getTileV2(tilesets, tileID, 1);
+                    TileManager::addTile(gridPos, tile);
                 }
                 xPos += 44;
             }
         }
     }
+
+    return absl::OkStatus();
 }

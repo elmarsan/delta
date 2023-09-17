@@ -14,11 +14,13 @@ class AssetManager
   public:
     AssetManager()
     {
-        loaders[typeid(TextureV2).name()] = std::make_shared<TextureLoader>();
+        loaders[typeid(Texture).name()] = std::make_shared<TextureLoader>();
+        loaders[typeid(Tileset).name()] = std::make_shared<TilesetLoader>();
+        loaders[typeid(Map).name()] = std::make_shared<MapLoader>();
     }
 
     template <typename T>
-    absl::StatusOr<std::shared_ptr<T>> load(const std::string& assetId, AssetMetadata* metadata = nullptr)
+    absl::StatusOr<std::shared_ptr<T>> load(const std::string& assetID, AssetMetadata* metadata = nullptr)
     {
         const std::string typeName = typeid(T).name();
         if (!std::is_base_of<Asset, T>::value)
@@ -32,20 +34,20 @@ class AssetManager
         {
             return noLoaderErr;
         }
-        auto asset = loader->second->load(assetId, metadata);
+        auto asset = loader->second->load(assetID, metadata);
         if (!asset.ok())
         {
             return asset.status();
         }
 
-        assets[assetId] = asset.value();
+        assets[assetID] = asset.value();
         return std::dynamic_pointer_cast<T>(asset.value());
     }
 
     template <typename T>
-    std::shared_ptr<T> get(const std::string& assetId) const
+    std::shared_ptr<T> get(const std::string& assetID) const
     {
-        auto it = assets.find(assetId);
+        auto it = assets.find(assetID);
         if (it != assets.end())
         {
             auto asset = std::dynamic_pointer_cast<T>(it->second);
@@ -55,6 +57,24 @@ class AssetManager
             }
         }
         return nullptr;
+    }
+
+    bool isLoaded(const std::string& assetID) const
+    {
+        auto it = assets.find(assetID);
+        return it != assets.end();
+    }
+
+    template <typename T>
+    absl::StatusOr<std::shared_ptr<T>> getOrLoad(const std::string& assetID, AssetMetadata* metadata = nullptr)
+    {
+        std::shared_ptr<T> asset = get<T>(assetID);
+        if (asset == nullptr)
+        {
+            return load<T>(assetID);
+        }
+
+        return asset;
     }
 
   private:

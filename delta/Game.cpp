@@ -1,8 +1,8 @@
 #include "Game.h"
 
 #include "ColliderComponent.h"
-#include "MapManager.h"
 #include "SpriteComponent.h"
+#include "MapManager.h"
 #include "absl/status/status.h"
 #include "engine/Animation.h"
 #include "engine/CameraComponent.h"
@@ -14,8 +14,10 @@
 #include "engine/KeyboardControllerComponent.h"
 #include "engine/Vector2D.h"
 
+#include "absl/log/log.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 
@@ -59,7 +61,8 @@ absl::Status Game::init(int x, int y, int width, int height)
     SDL_Color colorMod { 255, 0, 228 };
     AssetMetadata meta;
     meta = TextureMetadata{ &colorMod};
-    assetManager->load<TextureV2>("p1", &meta);
+    auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
+    LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
     player.addComponent<TransformComponent>(Vector2D(500, 650), 44, 44, 1);
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "p1");
@@ -78,10 +81,11 @@ absl::Status Game::init(int x, int y, int width, int height)
 
     camera.addComponent<CameraComponent>(5, 5);
 
-    MapManager::loadJSON("hoenn-route-103");
-    MapManager::loadJSON("littleroot-town");
-    // MapManager::draw("hoenn-route-103");
-    MapManager::draw("littleroot-town");
+    auto loadMapRes = Game::assetManager->load<Map>("littleroot-town");
+    LOG_IF(FATAL, !loadTextureRes.ok()) << loadTextureRes.status().message();
+    
+    auto drawMapRes = MapManager::draw("littleroot-town");
+    LOG_IF(FATAL, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
     return absl::OkStatus();
 }

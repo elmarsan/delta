@@ -1,6 +1,7 @@
 #pragma once
 
-#include "delta/Map.h"
+#include "Asset.h"
+
 #include <absl/status/status.h>
 #include <map>
 #include <string>
@@ -8,9 +9,7 @@
 class MapManager
 {
   public:
-    [[nodiscard]] static absl::Status loadJSON(const std::string mapID);
-    static void draw(const std::string mapID);
-
-  private:
-    static std::map<std::string, Map> maps;
+    static absl::Status draw(const AssetID mapID);
+    static int getTileID(std::vector<std::tuple<int, std::string>> tilesets, int tileGID);
+    static Tile getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets, int tileGID, int mapTilesetFirstGID);
 };

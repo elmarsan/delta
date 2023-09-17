@@ -6,7 +6,6 @@
 #include "TextureManager.h"
 #include "Vector2D.h"
 #include "delta/Game.h"
-#include "engine/Texture.h"
 
 #include <SDL2/SDL_timer.h>
 #include <map>
@@ -16,7 +15,7 @@ class SpriteComponent: public Component
 {
   private:
     TransformComponent* transform;
-    std::shared_ptr<TextureV2> texture;
+    std::shared_ptr<Texture> texture;
     SDL_Rect src, dst;
     int w, h;
 
@@ -27,7 +26,7 @@ class SpriteComponent: public Component
   public:
     SpriteComponent(int w, int h, std::string textureId): w(w), h(h)
     {
-        texture = Game::assetManager->get<TextureV2>(textureId);
+        texture = Game::assetManager->get<Texture>(textureId);
         animations = std::map<std::string, Animation*>();
     }
 

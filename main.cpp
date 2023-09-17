@@ -1,3 +1,4 @@
+#include "absl/log/initialize.h"
 #include "delta/Game.h"
 
 #include <SDL2/SDL.h>
