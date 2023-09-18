@@ -3,6 +3,7 @@
 #include "ColliderComponent.h"
 #include "SpriteComponent.h"
 #include "MapManager.h"
+#include "TileComponent.h"
 #include "absl/status/status.h"
 #include "engine/Animation.h"
 #include "engine/CameraComponent.h"
@@ -159,7 +160,10 @@ void Game::render()
     SDL_RenderClear(renderer);
     for (auto& t: tiles)
     {
-        t->draw();
+        if (t->getComponent<TileComponent>().zindex() == 0)
+        {
+            t->draw();
+        }
     }
     for (auto& c: colliders)
     {
@@ -169,10 +173,17 @@ void Game::render()
     {
         p->draw();
     }
-    for (auto& t: teleports)
+    for (auto& t: tiles)
     {
-        t->draw();
+        if (t->getComponent<TileComponent>().zindex() > 0)
+        {
+            t->draw();
+        }
     }
+    // for (auto& t: teleports)
+    // {
+    //     t->draw();
+    // }
     camera.draw();
     SDL_RenderPresent(renderer);
 }

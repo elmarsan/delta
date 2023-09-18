@@ -73,10 +73,10 @@ struct Tile
     int height;
     TileFrames frames;
     bool collides;
+    int zindex = 0;
+
     bool isAnimated() { return std::get<TileFrame::FrameIDs>(frames).size() > 0; }
-
     int numFrames() { return std::get<TileFrame::FrameIDs>(frames).size(); }
-
     int animSpeed() { return std::get<TileFrame::Speed>(frames); }
 };
 
@@ -86,11 +86,11 @@ class Tileset: public Asset
     Tileset() = default;
     Tileset(const AssetID assetID): ID(assetID) {}
 
-    // std::shared_ptr<Texture> texture;
     AssetID textureID;
     std::string image;
     std::map<TileID, TileFrames> tileFrame;
     std::map<TileID, bool> tileCollider;
+    std::map<TileID, int> tileZindex;
     int columns;
     int tileWidth;
     int tileHeight;
@@ -114,6 +114,7 @@ class Tileset: public Asset
         tile.width = tileWidth;
         tile.height = tileHeight;
         tile.collides = tileCollider[tileID];
+        tile.zindex = tileZindex[tileID];
         return tile;
     }
 

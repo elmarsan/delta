@@ -53,9 +53,6 @@ AssetLoadResult TilesetLoader::load(const std::string& assetID, AssetMetadata* m
     Tileset tileset;
     tileset.setID(assetID);
     tileset.columns = data["columns"];
-    // tileset.image = data["image"];
-    // tileset.imageWidth = data["imagewidth"];
-    // tileset.imageHeight = data["imageheight"];
     tileset.margin = data["margin"];
     tileset.spacing = data["spacing"];
     tileset.numTiles = data["tilecount"];
@@ -92,6 +89,21 @@ AssetLoadResult TilesetLoader::load(const std::string& assetID, AssetMetadata* m
         if (!objectGroup.is_null())
         {
             tileset.tileCollider[tile["id"]] = true;
+        }
+
+        auto properties = tile["properties"];
+        if (!properties.is_null() && properties.is_array())
+        {
+            for (auto& p: properties)
+            {
+                auto name = p["name"];
+                if (!name.is_null() && name == "zindex")
+                {
+                    auto zindex = p["value"];
+                    LOG(INFO) << "Tile " << tile["id"] << " zindex: " << zindex;
+                    tileset.tileZindex[tile["id"]] = zindex;
+                }
+            }
         }
     }
 

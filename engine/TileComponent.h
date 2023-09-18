@@ -25,6 +25,8 @@ class TileComponent: public Component
         dst = SDL_Rect { gridPos.x, gridPos.y, 44, 44 };
     }
 
+    int zindex() { return tile.zindex; }
+
     void init() override
     {
         auto res = Game::assetManager->getOrLoad<Texture>(tile.textureID);
