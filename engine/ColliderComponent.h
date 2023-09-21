@@ -2,7 +2,7 @@
 
 #include "ECS.h"
 #include "TransformComponent.h"
-#include "delta/Game.h"
+#include "WindowManager.h"
 
 #include <string>
 
@@ -27,8 +27,8 @@ class ColliderComponent: public Component
 
     void update() override
     {
-        collider.x = transform->position.x;
-        collider.y = transform->position.y;
+        collider.x = transform->position.x - WindowManager::Instance()->camera.x;
+        collider.y = transform->position.y - WindowManager::Instance()->camera.y;
         collider.w = transform->width * transform->scale;
         collider.h = transform->height * transform->scale;
     }
@@ -36,9 +36,9 @@ class ColliderComponent: public Component
 #ifdef DEBUG
     void draw() override
     {
-        SDL_SetRenderDrawColor(Game::renderer, 0xff, 0, 0, 0);
-        SDL_RenderDrawRect(Game::renderer, &collider);
-        SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 0);
+        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
+        SDL_RenderDrawRect(WindowManager::Instance()->renderer, &collider);
+        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     }
 #endif
 };

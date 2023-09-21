@@ -1,30 +1,33 @@
 #include "Game.h"
 
 #include "ColliderComponent.h"
-#include "SpriteComponent.h"
 #include "MapManager.h"
+#include "SpriteComponent.h"
 #include "TileComponent.h"
+#include "WindowManager.h"
+#include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "engine/Animation.h"
-#include "engine/CameraComponent.h"
 #include "engine/AssetManager.h"
 #include "engine/ECS.h"
-#include "engine/TeleportComponent.h"
-#include "engine/TileManager.h"
-#include "engine/TransformComponent.h"
 #include "engine/KeyboardControllerComponent.h"
+#include "engine/TransformComponent.h"
 #include "engine/Vector2D.h"
 
-#include "absl/log/log.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
-#include <cstdlib>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 #include <iostream>
 #include <memory>
 
+const int mapWidth = 1024;
+const int mapHeight = 1024;
+
+std::shared_ptr<Texture> background;
+
 Manager manager;
 
-SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 std::unique_ptr<AssetManager> Game::assetManager = std::make_unique<AssetManager>();
 
@@ -35,37 +38,17 @@ auto& players(manager.getGroup(Game::groupPlayer));
 auto& colliders(manager.getGroup(Game::groupCollider));
 auto& teleports(manager.getGroup(Game::groupTeleport));
 
-auto& camera(manager.addEntity());
-
-Game::~Game()
+absl::Status Game::init()
 {
-    clean();
-}
-
-absl::Status Game::init(int x, int y, int width, int height)
-{
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
-        return absl::InternalError("Unable to init SDL Video");
-    }
-
-    if (IMG_Init(IMG_INIT_PNG) == 0)
-    {
-        return absl::InternalError("Unable to init SDL Image ");
-    }
-
-    window = SDL_CreateWindow(
-        "Delta", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     running = true;
 
     SDL_Color colorMod { 255, 0, 228 };
     AssetMetadata meta;
-    meta = TextureMetadata{ &colorMod};
+    meta = TextureMetadata { &colorMod };
     auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
-    player.addComponent<TransformComponent>(Vector2D(500, 650), 44, 44, 1);
+    player.addComponent<TransformComponent>(Vector2D(444, 400), 44, 44, 1);
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "p1");
     sprite.addAnimation(
         "walk_up",
@@ -80,11 +63,9 @@ absl::Status Game::init(int x, int y, int width, int height)
     player.addComponent<ColliderComponent>("Player");
     player.addGroup(Game::groupPlayer);
 
-    camera.addComponent<CameraComponent>(5, 5);
-
     auto loadMapRes = Game::assetManager->load<Map>("littleroot-town");
     LOG_IF(FATAL, !loadTextureRes.ok()) << loadTextureRes.status().message();
-    
+
     auto drawMapRes = MapManager::draw("littleroot-town");
     LOG_IF(FATAL, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
@@ -110,10 +91,23 @@ void Game::update()
     SDL_Rect playerCol = player.getComponent<ColliderComponent>().collider;
     Vector2D playerPos = player.getComponent<TransformComponent>().position;
 
-    camera.getComponent<CameraComponent>().setPos(playerPos);
-
     manager.refresh();
     manager.update();
+
+    auto camera = WindowManager::Instance()->camera;
+    camera.x = playerPos.x - WindowManager::Instance()->width() / 2;
+    camera.y = playerPos.y - WindowManager::Instance()->height() / 2;
+
+    if (camera.x < 0)
+        camera.x = 0;
+    if (camera.x > mapWidth - camera.w)
+        camera.x = mapWidth - camera.w;
+    if (camera.y < 0)
+        camera.y = 0;
+    if (camera.y > mapHeight - camera.h)
+        camera.y = mapHeight - camera.h;
+
+    WindowManager::Instance()->camera = camera;
 
     for (auto& c: colliders)
     {
@@ -157,7 +151,7 @@ void Game::update()
 
 void Game::render()
 {
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(WindowManager::Instance()->renderer);
     for (auto& t: tiles)
     {
         if (t->getComponent<TileComponent>().zindex() == 0)
@@ -180,18 +174,7 @@ void Game::render()
             t->draw();
         }
     }
-    // for (auto& t: teleports)
-    // {
-    //     t->draw();
-    // }
-    camera.draw();
-    SDL_RenderPresent(renderer);
-}
-
-void Game::clean()
-{
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_RenderPresent(WindowManager::Instance()->renderer);
 }
 
 bool Game::isRunning()

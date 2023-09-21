@@ -12,15 +12,13 @@ class Game
 {
   public:
     Game() = default;
-    ~Game();
-    absl::Status init(int x, int y, int width, int height);
+    absl::Status init();
     void handleEvents();
     void update();
     void render();
     void clean();
     bool isRunning();
 
-    static SDL_Renderer* renderer;
     static SDL_Event event;
     static std::unique_ptr<AssetManager> assetManager;
     enum groupLabels : std::size_t
@@ -33,5 +31,4 @@ class Game
 
   private:
     bool running;
-    SDL_Window* window;
 };

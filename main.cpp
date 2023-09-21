@@ -1,5 +1,7 @@
-#include "absl/log/initialize.h"
+#include "absl/log/log.h"
+#include "absl/status/status.h"
 #include "delta/Game.h"
+#include "engine/WindowManager.h"
 
 #include <SDL2/SDL.h>
 #include <iostream>
@@ -12,13 +14,12 @@ int main()
     Uint64 frameStart;
     int frameTime;
 
+    absl::Status windowManagerStatus = WindowManager::init(640, 480);
+    LOG_IF(FATAL, !windowManagerStatus.ok()) << windowManagerStatus.message();
+
     Game game;
-    absl::Status status = game.init(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 920);
-    if (!status.ok())
-    {
-        std::cout << "Unable to init SDL" << std::endl;
-        return 1;
-    }
+    absl::Status status = game.init();
+    LOG_IF(FATAL, !status.ok()) << status.message();
 
     while (game.isRunning())
     {
@@ -34,6 +35,4 @@ int main()
             SDL_Delay(frameDelay - frameTime);
         }
     }
-
-    game.clean();
 }

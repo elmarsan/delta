@@ -2,7 +2,7 @@
 
 #include "Asset.h"
 #include "ECS.h"
-#include "TextureManager.h"
+#include "WindowManager.h"
 #include "absl/log/log.h"
 #include "delta/Game.h"
 
@@ -32,13 +32,10 @@ class TileComponent: public Component
         auto res = Game::assetManager->getOrLoad<Texture>(tile.textureID);
         LOG_IF(ERROR, !res.ok()) << res.status().message();
         if (res.ok())
-        {
             texture = res.value();
-        }
 
         if (tile.isAnimated())
         {
-            LOG(INFO) << "Animated tile: " << tile.ID;
             auto res = Game::assetManager->getOrLoad<Tileset>(tile.tilesetID);
             LOG_IF(ERROR, !res.ok()) << res.status().message();
             if (res.ok())
@@ -59,15 +56,20 @@ class TileComponent: public Component
             pos = tileset->getTile(frames[tileIndex]).pos;
             src = SDL_Rect { pos.x, pos.y, tile.width, tile.height };
         }
+
+        dst = SDL_Rect { pos.x - WindowManager::Instance()->camera.x,
+                         pos.y - WindowManager::Instance()->camera.y,
+                         44,
+                         44 };
     }
 
     void draw() override
     {
-        TextureManager::draw(texture->sdlTexture, &src, &dst, texture->flip);
+        WindowManager::Instance()->renderTexture(texture, &src, &dst);
 #ifdef DEBUG
-        SDL_SetRenderDrawColor(Game::renderer, 0, 0xff, 0, 0);
-        SDL_RenderDrawRect(Game::renderer, &dst);
-        SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 0);
+        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0xff, 0, 0);
+        SDL_RenderDrawRect(WindowManager::Instance()->renderer, &dst);
+        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
 #endif
     }
 };

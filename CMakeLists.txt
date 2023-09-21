@@ -29,9 +29,9 @@ add_executable(Delta
     delta/MapManager.cpp
     engine/TileManager.cpp
     engine/ECS.cpp
-    engine/TextureManager.cpp 
     engine/Vector2D.cpp 
     engine/AssetLoader.cpp
+    engine/WindowManager.cpp
 )
 target_include_directories(Delta 
     PRIVATE ${SDL2_INCLUDE_DIR}

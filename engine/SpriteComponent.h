@@ -3,9 +3,10 @@
 #include "Animation.h"
 #include "ECS.h"
 #include "TransformComponent.h"
-#include "TextureManager.h"
 #include "Vector2D.h"
+#include "WindowManager.h"
 #include "delta/Game.h"
+#include "absl/log/log.h"
 
 #include <SDL2/SDL_timer.h>
 #include <map>
@@ -38,9 +39,9 @@ class SpriteComponent: public Component
     {
         if (isAnimated())
             playAnimation();
-
-        dst.x = transform->position.x;
-        dst.y = transform->position.y;
+       
+        dst.x = transform->position.x - WindowManager::Instance()->camera.x;
+        dst.y = transform->position.y - WindowManager::Instance()->camera.y;        // dst.x = transform->position.x; 
         dst.w = dst.h = 44;
 
         src.x = framePosition.x;
@@ -49,7 +50,15 @@ class SpriteComponent: public Component
         src.h = h;
     }
 
-    void draw() override { TextureManager::draw(texture->sdlTexture, &src, &dst, texture->flip); }
+    void draw() override 
+    { 
+        WindowManager::Instance()->renderTexture(texture, &src, &dst);
+        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0xff, 0);
+        dst.w += 10;
+        SDL_RenderDrawRect(WindowManager::Instance()->renderer, &dst);
+        dst.w -= 10;
+        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
+    } 
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
     {

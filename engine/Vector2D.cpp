@@ -40,6 +40,6 @@ Vector2D& Vector2D::zero()
 
 std::ostream& operator<<(std::ostream& stream, const Vector2D& vec)
 {
-    stream << "Vector2D[" << std::to_string(vec.x) + "," << std::to_string(vec.y) << "]" << std::endl;
+    stream << "Vector2D[" << std::to_string(vec.x) + "," << std::to_string(vec.y) << "]";
     return stream;
 }

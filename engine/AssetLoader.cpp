@@ -1,7 +1,7 @@
 #include "AssetLoader.h"
 
 #include "Asset.h"
-#include "delta/Game.h"
+#include "WindowManager.h"
 #include "nlohmann/json.hpp"
 #include "absl/log/log.h"
 
@@ -32,7 +32,7 @@ AssetLoadResult TextureLoader::load(const std::string& assetID, AssetMetadata* m
         }
     }
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(WindowManager::Instance()->renderer, surface);
     SDL_FreeSurface(surface);
     return std::make_shared<Texture>(assetID, texture);
 }
@@ -100,7 +100,6 @@ AssetLoadResult TilesetLoader::load(const std::string& assetID, AssetMetadata* m
                 if (!name.is_null() && name == "zindex")
                 {
                     auto zindex = p["value"];
-                    LOG(INFO) << "Tile " << tile["id"] << " zindex: " << zindex;
                     tileset.tileZindex[tile["id"]] = zindex;
                 }
             }

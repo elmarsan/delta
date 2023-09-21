@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ECS.h"
+#include "Game.h"
 #include "Vector2D.h"
 
 enum Direction
@@ -33,7 +34,7 @@ struct TransformComponent: Component
 
     void update() override
     {
-        position.y += velocity.y * speed;
         position.x += velocity.x * speed;
+        position.y += velocity.y * speed;
     }
 };

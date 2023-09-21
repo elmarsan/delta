@@ -18,11 +18,4 @@ class TeleportComponent: public Component
     {
         rect = SDL_Rect { source.x, source.y, 44, 44 };
     }
-
-    void draw() override
-    {
-        SDL_SetRenderDrawColor(Game::renderer, 90, 34, 139, 0);
-        SDL_RenderFillRect(Game::renderer, &rect);
-        SDL_SetRenderDrawColor(Game::renderer, 0, 0, 0, 0);
-    }
 };
