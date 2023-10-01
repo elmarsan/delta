@@ -2,24 +2,38 @@
     "maps": [
         {
             "fileName": "littleroot-town.tmx",
-            "height": 0,
-            "width": 0,
+            "height": 320,
+            "width": 320,
             "x": 0,
             "y": 0
         },
         {
             "fileName": "hoenn-route-101.tmx",
-            "height": 0,
-            "width": 0,
+            "height": 320,
+            "width": 320,
             "x": 0,
             "y": -320
         },
         {
             "fileName": "oldale-town.tmx",
-            "height": 0,
-            "width": 0,
+            "height": 320,
+            "width": 320,
             "x": 0,
             "y": -640
+        },
+        {
+            "fileName": "hoenn-route-102.tmx",
+            "height": 320,
+            "width": 800,
+            "x": -800,
+            "y": -640
+        },
+        {
+            "fileName": "petalburg-city.tmx",
+            "height": 480,
+            "width": 480,
+            "x": -1280,
+            "y": -800
         },
         {
             "fileName": "hoenn-route-103.tmx",

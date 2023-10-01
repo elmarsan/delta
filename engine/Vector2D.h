@@ -1,5 +1,7 @@
 #pragma once
 
+#include "absl/strings/str_format.h"
+
 #include <iostream>
 
 class Vector2D
@@ -16,6 +18,12 @@ class Vector2D
     Vector2D& zero();
 
     friend std::ostream& operator<<(std::ostream& stream, const Vector2D& vec);
+
+    template <typename Sink>
+    friend void AbslStringify(Sink& sink, const Vector2D& vec)
+    {
+        absl::Format(&sink, "Vec2(%d, %d)", vec.x, vec.y);
+    }
 
     int x;
     int y;

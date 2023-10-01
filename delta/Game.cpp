@@ -4,9 +4,12 @@
 #include "MapManager.h"
 #include "SpriteComponent.h"
 #include "TileComponent.h"
+#include "TileManager.h"
 #include "WindowManager.h"
+#include "WorldManager.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
+#include "absl/strings/str_format.h"
 #include "engine/Animation.h"
 #include "engine/AssetManager.h"
 #include "engine/ECS.h"
@@ -16,9 +19,9 @@
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
-#include <iostream>
 #include <memory>
 
 const int mapWidth = 1024;
@@ -38,6 +41,8 @@ auto& players(manager.getGroup(Game::groupPlayer));
 auto& colliders(manager.getGroup(Game::groupCollider));
 auto& teleports(manager.getGroup(Game::groupTeleport));
 
+WorldMap currentMap;
+
 absl::Status Game::init()
 {
     running = true;
@@ -48,7 +53,7 @@ absl::Status Game::init()
     auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
-    player.addComponent<TransformComponent>(Vector2D(444, 400), 44, 44, 1);
+    auto playerTransform = player.addComponent<TransformComponent>(Vector2D(444, 400), 44, 44, 1);
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "p1");
     sprite.addAnimation(
         "walk_up",
@@ -63,12 +68,11 @@ absl::Status Game::init()
     player.addComponent<ColliderComponent>("Player");
     player.addGroup(Game::groupPlayer);
 
-    auto loadMapRes = Game::assetManager->load<Map>("littleroot-town");
-    LOG_IF(FATAL, !loadTextureRes.ok()) << loadTextureRes.status().message();
-
-    auto drawMapRes = MapManager::draw("littleroot-town");
-    LOG_IF(FATAL, !loadTextureRes.ok()) << loadTextureRes.status().message();
-
+    auto initialMapRes = WorldManager::Instance()->findMapFromPos(playerTransform.position);
+    LOG_IF(FATAL, !initialMapRes.ok()) << initialMapRes.status().message();
+    auto setMapRes = WorldManager::Instance()->setCurrentMap(initialMapRes.value().getID());
+    LOG_IF(FATAL, !setMapRes.ok()) << setMapRes.message();
+    
     return absl::OkStatus();
 }
 
@@ -91,6 +95,15 @@ void Game::update()
     SDL_Rect playerCol = player.getComponent<ColliderComponent>().collider;
     Vector2D playerPos = player.getComponent<TransformComponent>().position;
 
+    auto playerMap = WorldManager::Instance()->findMapFromPos(playerPos);
+    auto currentMapID = WorldManager::Instance()->getCurrentMapID();
+    if (playerMap->getID() != currentMapID)
+    {
+        std::cout << "\n\n";
+        auto setCurrentRes = WorldManager::Instance()->setCurrentMap(playerMap->getID());
+        LOG_IF(ERROR, !setCurrentRes.ok()) << setCurrentRes.message();
+    }
+
     manager.refresh();
     manager.update();
 
@@ -102,8 +115,8 @@ void Game::update()
         camera.x = 0;
     if (camera.x > mapWidth - camera.w)
         camera.x = mapWidth - camera.w;
-    if (camera.y < 0)
-        camera.y = 0;
+    // if (camera.y < 0)
+    //     camera.y = 0;
     if (camera.y > mapHeight - camera.h)
         camera.y = mapHeight - camera.h;
 
@@ -117,36 +130,6 @@ void Game::update()
             player.getComponent<TransformComponent>().position = playerPos;
         }
     }
-
-    // for (auto& t: teleports)
-    // {
-    //     auto teleport = t->getComponent<TeleportComponent>();
-    //     auto destiny = t->getComponent<TeleportComponent>().destiny;
-    //     auto mapID = t->getComponent<TeleportComponent>().mapID;
-
-    //     if (Collision::AABB(teleport.rect, playerCol))
-    //     {
-    //         if (teleport.level != "")
-    //         {
-    //             std::cout << "Teleport to level: " << teleport.level << destiny << std::endl;
-    //             map->destroyTiles();
-    //             map->draw(teleport.level);
-    //             player.getComponent<TransformComponent>().position.x = destiny.x * 44;
-    //             player.getComponent<TransformComponent>().position.y = destiny.y * 44;
-    //         }
-    //         else if (teleport.mapID != "")
-    //         {
-    //             std::cout << "Teleport to map: " << teleport.mapID << destiny << std::endl;
-    //             map->destroyTiles();
-    //             delete map;
-    //             map = new Map();
-    //             map->load(teleport.mapID);
-    //             map->draw("level_0");
-    //             player.getComponent<TransformComponent>().position.x = destiny.x * 44;
-    //             player.getComponent<TransformComponent>().position.y = destiny.y * 44;
-    //         }
-    //     }
-    // }
 }
 
 void Game::render()

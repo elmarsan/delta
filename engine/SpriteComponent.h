@@ -53,11 +53,6 @@ class SpriteComponent: public Component
     void draw() override 
     { 
         WindowManager::Instance()->renderTexture(texture, &src, &dst);
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0xff, 0);
-        dst.w += 10;
-        SDL_RenderDrawRect(WindowManager::Instance()->renderer, &dst);
-        dst.w -= 10;
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     } 
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)

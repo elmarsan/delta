@@ -3,6 +3,7 @@
 #include "Asset.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "nlohmann/json.hpp"
 
 #include <SDL2/SDL_image.h>
@@ -39,14 +40,12 @@ AssetLoadResult TextureLoader::load(const std::string& assetID, AssetMetadata* m
 
 AssetLoadResult TilesetLoader::load(const std::string& assetID, AssetMetadata* metadata)
 {
-    LOG(INFO) << "Loading Tileset: " << assetID;
+    LOG(INFO) << absl::StrFormat("Loading Tileset: %s", assetID);
     std::string path = absl::StrFormat("data/tiles/export/%s.json", assetID);
     if (!std::filesystem::exists(path))
-    {
         return absl::NotFoundError(absl::StrFormat("Tileset: %s not found", assetID));
-    }
 
-    std::ifstream f("data/tiles/export/" + assetID + ".json");
+    std::ifstream f(path);
     nlohmann::json data = nlohmann::json::parse(f);
 
     // Tileset tileset(assetID);
@@ -114,15 +113,11 @@ AssetLoadResult MapLoader::load(const std::string& assetID, AssetMetadata* metad
     LOG(INFO) << "Loading Map: " << assetID;
     std::string path = absl::StrFormat("data/maps/export/%s.json", assetID);
     if (!std::filesystem::exists(path))
-    {
         return absl::NotFoundError(absl::StrFormat("Map: %s not found", assetID));
-    }
 
     std::ifstream file(path);
     if (!file.is_open())
-    {
         return absl::InternalError("Unable to open the map file");
-    }
 
     nlohmann::json data = nlohmann::json::parse(file);
     Map map;

@@ -34,12 +34,12 @@ Tile MapManager::getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets,
 
 absl::Status MapManager::draw(const std::string mapID, const Vector2D gridPos)
 {
-    auto map = Game::assetManager->get<Map>(mapID);
+    LOG(INFO) << absl::StrFormat("Drawing map: %s", mapID);
+    auto mapRes = Game::assetManager->getOrLoad<Map>(mapID);
+    if (!mapRes.ok())
+        return mapRes.status();
 
-    if (map == nullptr)
-    {
-        return absl::NotFoundError(absl::StrFormat("Map: %s not found", mapID));
-    }
+    auto map = mapRes.value();
 
     // Load tilesets
     std::vector<std::shared_ptr<Tileset>> tilesets;
@@ -47,16 +47,12 @@ absl::Status MapManager::draw(const std::string mapID, const Vector2D gridPos)
     {
         int mapTilesetFirstGID = std::get<0>(tileset);
         std::string tilesetID = std::get<1>(tileset);
-        LOG(INFO) << "Tileset: " << tilesetID << " first GID: " << mapTilesetFirstGID;
+
         auto loadRes = Game::assetManager->getOrLoad<Tileset>(tilesetID);
         if (!loadRes.ok())
-        {
             LOG(ERROR) << loadRes.status().message();
-        }
         else
-        {
             tilesets.push_back(loadRes.value());
-        }
     }
 
     for (auto& layer: map->layers)

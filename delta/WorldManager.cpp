@@ -1,14 +1,18 @@
 #include "WorldManager.h"
 
+#include "MapManager.h"
+#include "TileManager.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
+#include "absl/strings/str_format.h"
 #include "nlohmann/json.hpp"
 
 #include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_stdinc.h>
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
-#include <cmath>
 
 WorldMap::WorldMap(std::string filename, int x, int y, int w, int h): x(x), y(y), w(w), h(h)
 {
@@ -16,6 +20,7 @@ WorldMap::WorldMap(std::string filename, int x, int y, int w, int h): x(x), y(y)
     if (lastDotPos != std::string::npos)
         mapID = filename.substr(0, lastDotPos);
 
+    worldPos = Vector2D(x, y);
     rect = { x, y, w, h };
 }
 
@@ -38,6 +43,12 @@ bool WorldMap::isAdjacent(const WorldMap& map) const
     return false;
 }
 
+bool WorldMap::pointIn(const Vector2D& point) const
+{
+    SDL_Point p { point.x, point.y };
+    return SDL_PointInRect(&p, &rect) == SDL_TRUE;
+}
+
 MapID WorldMap::getID() const
 {
     return mapID;
@@ -48,6 +59,10 @@ SDL_Rect WorldMap::getRect() const
     return rect;
 }
 
+Vector2D WorldMap::getWorldPos() const
+{
+    return worldPos;
+}
 std::shared_ptr<WorldManager> WorldManager::instance = nullptr;
 
 std::shared_ptr<WorldManager> WorldManager::Instance()
@@ -63,7 +78,6 @@ std::shared_ptr<WorldManager> WorldManager::Instance()
 
 absl::Status WorldManager::init()
 {
-    LOG(INFO) << "Initialising WorldManager";
     std::string path = "data/maps/hoenn.world";
     if (!std::filesystem::exists(path))
         return absl::NotFoundError("World not found");
@@ -88,43 +102,113 @@ absl::Status WorldManager::init()
     return absl::OkStatus();
 }
 
-MapID WorldManager::mapFromPos(Vector2D pos)
+absl::Status WorldManager::setCurrentMap(MapID mapID)
+{
+    LOG(INFO) << absl::StrFormat("Setting current map to: %s", mapID);
+    auto findMapRes = findMapFromID(mapID);
+    if (!findMapRes.ok())
+        return findMapRes.status();
+
+    currentMap = findMapRes.value();
+   
+    auto oldAdjMaps = adjMaps;
+    auto loadRes = loadAdjMaps();
+    if (!loadRes.ok())
+        return loadRes;
+
+    auto destroyRes = destroyNonAdjMaps();
+    if (!destroyRes.ok())
+        return destroyRes;
+
+    auto loadedMaps = oldAdjMaps;
+    loadedMaps.emplace_back(currentMap);
+    auto maps = adjMaps;
+    maps.emplace_back(currentMap);
+    for (auto &m: maps) 
+    {
+        bool alreadyLoaded = false;
+        for (auto& oldMap: oldAdjMaps)
+        {
+            if (oldMap.getID() == m.getID())
+                alreadyLoaded = true;
+        }
+
+        if (!alreadyLoaded)
+        {
+            auto drawRes = MapManager::draw(m.getID(), m.getWorldPos());
+            LOG_IF(ERROR, !drawRes.ok()) << drawRes.message(); 
+        }
+    }
+
+    return absl::OkStatus();
+}
+
+
+absl::StatusOr<WorldMap> WorldManager::findMapFromPos(Vector2D pos) const
 {
     SDL_Point point = { pos.x, pos.y };
     for (auto& map: maps)
     {
         auto rect = map.getRect();
         if (SDL_PointInRect(&point, &rect))
-            return map.getID();
+            return map;
     }
 
-    LOG(ERROR) << "Unable to find map for position: " << pos;
-    return "";
+    return absl::NotFoundError(absl::StrFormat("Unable to get map from position: %v", pos));
 }
 
-std::vector<WorldMap> WorldManager::adjacentMapIDs(MapID mapID)
-{
-    WorldMap targetMap {};
-    std::vector<WorldMap> otherMaps;
 
+MapID WorldManager::getCurrentMapID() const
+{
+    return currentMap.getID();
+}
+
+absl::Status WorldManager::loadAdjMaps()
+{
+    LOG(INFO) << absl::StrFormat("Loading adj maps to: %s", currentMap.getID());
+    std::vector<WorldMap> otherMaps;
     for (auto& m: maps)
     {
-        if (m.getID() == mapID)
-            targetMap = m;
-        else
+        if (m.getID() != currentMap.getID())
             otherMaps.push_back(m);
     }
 
-    std::sort(otherMaps.begin(), otherMaps.end(), [&targetMap](const WorldMap& a, const WorldMap& b) {
-        return a.distance(targetMap) < b.distance(targetMap);
+    std::sort(otherMaps.begin(), otherMaps.end(), [this](const WorldMap& a, const WorldMap& b) {
+        return a.distance(currentMap) < b.distance(currentMap);
     });
 
-    auto adjacentMaps = std::vector<WorldMap>();
+    adjMaps.clear();
+    nonAdjMaps.clear();
     for (auto it = otherMaps.begin(); it != otherMaps.begin() + 3; ++it)
     {
-        if (targetMap.isAdjacent(*it))
-            adjacentMaps.emplace_back(*it);
+        if (currentMap.isAdjacent(*it))
+            adjMaps.emplace_back(*it);
+        else
+         nonAdjMaps.emplace_back(*it);
     }
 
-    return adjacentMaps;
+    return absl::OkStatus();
+}
+
+absl::Status WorldManager::destroyNonAdjMaps()
+{
+    if (nonAdjMaps.size() > 0) 
+        return absl::OkStatus();
+
+    LOG(INFO) << absl::StrFormat("Destroying non adj maps to: %s", currentMap.getID());
+    for (auto& m: nonAdjMaps)
+        TileManager::destroyMapTiles(m);
+
+    return absl::OkStatus();
+}
+
+absl::StatusOr<WorldMap> WorldManager::findMapFromID(MapID mapID)
+{
+    for (auto& map: maps)
+    {
+         if (map.getID() == mapID)
+            return map;
+    }
+
+    return absl::NotFoundError(absl::StrFormat("Unable to find map: %s", mapID));
 }

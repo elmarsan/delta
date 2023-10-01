@@ -3,7 +3,7 @@
  <editorsettings>
   <export target="export/outdoor_16x16.json" format="json"/>
  </editorsettings>
- <image source="../assets/outdoor_16x16.png" trans="000000" width="2036" height="1010"/>
+ <image source="../assets/outdoor_tiles_16x16.png" trans="000000" width="2036" height="1010"/>
  <tile id="204">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="16" height="16"/>
