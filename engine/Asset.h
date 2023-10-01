@@ -39,6 +39,8 @@ struct TextureMetadata
 class Map: public Asset
 {
   public:
+    int worldX;
+    int worldY;
     int width;
     int height;
     int tileWidth;
@@ -50,6 +52,12 @@ class Map: public Asset
 
   private:
     AssetID ID;
+};
+
+struct MapMetadata
+{
+    int worldX;
+    int worldY;
 };
 
 using TileID = int;
@@ -125,4 +133,4 @@ class Tileset: public Asset
     AssetID ID;
 };
 
-using AssetMetadata = std::variant<TextureMetadata>;
+using AssetMetadata = std::variant<TextureMetadata, MapMetadata>;

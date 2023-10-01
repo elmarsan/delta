@@ -32,7 +32,7 @@ Tile MapManager::getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets,
     return tile;
 }
 
-absl::Status MapManager::draw(const std::string mapID)
+absl::Status MapManager::draw(const std::string mapID, const Vector2D gridPos)
 {
     auto map = Game::assetManager->get<Map>(mapID);
 
@@ -61,8 +61,9 @@ absl::Status MapManager::draw(const std::string mapID)
 
     for (auto& layer: map->layers)
     {
-        int yPos = 0;
+        int yPos = gridPos.y;
         int xPos = 0;
+
         for (int y = 0; y < map->height; y++)
         {
             xPos = 0;

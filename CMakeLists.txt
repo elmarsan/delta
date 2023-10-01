@@ -27,6 +27,7 @@ add_executable(Delta
     main.cpp 
     delta/Game.cpp 
     delta/MapManager.cpp
+    delta/WorldManager.cpp
     engine/TileManager.cpp
     engine/ECS.cpp
     engine/Vector2D.cpp 

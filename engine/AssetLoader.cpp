@@ -2,8 +2,8 @@
 
 #include "Asset.h"
 #include "WindowManager.h"
-#include "nlohmann/json.hpp"
 #include "absl/log/log.h"
+#include "nlohmann/json.hpp"
 
 #include <SDL2/SDL_image.h>
 #include <cstdlib>
@@ -14,7 +14,7 @@
 
 AssetLoadResult TextureLoader::load(const std::string& assetID, AssetMetadata* metadata)
 {
-    LOG(INFO) << "Loading Texture: " << assetID;
+    LOG(INFO) << absl::StrFormat("Loading Texture: %s", assetID);
     std::string path = absl::StrFormat("data/assets/%s.png", assetID);
     if (!std::filesystem::exists(path))
     {
@@ -109,7 +109,7 @@ AssetLoadResult TilesetLoader::load(const std::string& assetID, AssetMetadata* m
     return std::make_shared<Tileset>(tileset);
 }
 
-AssetLoadResult MapLoader::load(const std::string& assetID, AssetMetadata* metadata) 
+AssetLoadResult MapLoader::load(const std::string& assetID, AssetMetadata* metadata)
 {
     LOG(INFO) << "Loading Map: " << assetID;
     std::string path = absl::StrFormat("data/maps/export/%s.json", assetID);
@@ -165,6 +165,12 @@ AssetLoadResult MapLoader::load(const std::string& assetID, AssetMetadata* metad
         map.layers.emplace_back(mapLayer);
     }
 
-    return std::make_shared<Map>(map);
+    if (metadata != nullptr)
+    {
+        auto mapMetadata = std::get<MapMetadata>(*metadata);
+        map.worldX = mapMetadata.worldX;
+        map.worldY = mapMetadata.worldY;
+    }
 
+    return std::make_shared<Map>(map);
 }
