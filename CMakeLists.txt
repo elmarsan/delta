@@ -16,6 +16,8 @@ set(EXTERNAL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/external")
 add_subdirectory("${CMAKE_SOURCE_DIR}/external/abseil-cpp")
 set(ABSL_PROPAGATE_CXX_STD TRUE) 
 
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/Catch2")
+
 include_directories(
     "${CMAKE_SOURCE_DIR}/external"
     "${CMAKE_SOURCE_DIR}/delta"
@@ -34,6 +36,10 @@ add_executable(Delta
     engine/AssetLoader.cpp
     engine/WindowManager.cpp
 )
+
+add_executable(tests delta/WorldManagerTest.cpp)
+target_link_libraries(tests Catch2::Catch2WithMain)
+
 target_include_directories(Delta 
     PRIVATE ${SDL2_INCLUDE_DIR}
 )
