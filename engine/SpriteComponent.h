@@ -3,7 +3,7 @@
 #include "Animation.h"
 #include "ECS.h"
 #include "TransformComponent.h"
-#include "Vector2D.h"
+#include "Vector2.h"
 #include "WindowManager.h"
 #include "delta/Game.h"
 #include "absl/log/log.h"
@@ -20,7 +20,7 @@ class SpriteComponent: public Component
     SDL_Rect src, dst;
     int w, h;
 
-    Vector2D framePosition;
+    Point2 framePosition;
     std::map<std::string, Animation*> animations;
     std::string currentAnimation;
 
@@ -40,8 +40,8 @@ class SpriteComponent: public Component
         if (isAnimated())
             playAnimation();
        
-        dst.x = transform->position.x - WindowManager::Instance()->camera.x;
-        dst.y = transform->position.y - WindowManager::Instance()->camera.y;        // dst.x = transform->position.x; 
+        dst.x = transform->point2.x - WindowManager::Instance()->camera.x;
+        dst.y = transform->point2.y - WindowManager::Instance()->camera.y;        // dst.x = transform->position.x; 
         dst.w = dst.h = 44;
 
         src.x = framePosition.x;

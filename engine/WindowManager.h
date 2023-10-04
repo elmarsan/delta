@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Asset.h"
-#include "Vector2D.h"
+#include "Vector2.h"
 #include "absl/status/status.h"
 
 #include <SDL2/SDL_render.h>

@@ -2,6 +2,7 @@
 
 #include "MapManager.h"
 #include "TileManager.h"
+#include "Vector2.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_format.h"
@@ -14,36 +15,37 @@
 #include <filesystem>
 #include <fstream>
 
-WorldMap::WorldMap(std::string filename, int x, int y, int w, int h): x(x), y(y), w(w), h(h)
+WorldMap::WorldMap(std::string filename, int x, int y, int w, int h)
 {
     size_t lastDotPos = filename.find_last_of('.');
     if (lastDotPos != std::string::npos)
         mapID = filename.substr(0, lastDotPos);
 
-    worldPos = Vector2D(x, y);
+    point2 = Point2(x, y);
+    size2 = Size2(x, y);
     rect = { x, y, w, h };
 }
 
 double WorldMap::distance(const WorldMap& map) const
 {
-    return std::sqrt(std::pow(map.x - x, 2) + std::pow(map.y - y, 2));
+    return map.point2.distanceTo(point2);
 }
 
 bool WorldMap::isAdjacent(const WorldMap& map) const
 {
-    if (map.x - map.w == x)
+    if (map.point2.x - map.size2.w == point2.x)
         return true;
-    if (map.x + map.w == x)
+    if (map.point2.x + map.size2.w == point2.x)
         return true;
-    if (map.y + map.h == y)
+    if (map.point2.y + map.size2.h == point2.y)
         return true;
-    if (map.y - map.h == y)
+    if (map.point2.y - map.size2.h == point2.y)
         return true;
 
     return false;
 }
 
-bool WorldMap::pointIn(const Vector2D& point) const
+bool WorldMap::pointIn(const Vector2& point) const
 {
     SDL_Point p { point.x, point.y };
     return SDL_PointInRect(&p, &rect) == SDL_TRUE;
@@ -59,9 +61,9 @@ SDL_Rect WorldMap::getRect() const
     return rect;
 }
 
-Vector2D WorldMap::getWorldPos() const
+Vector2 WorldMap::getWorldPos() const
 {
-    return worldPos;
+    return point2;
 }
 std::shared_ptr<WorldManager> WorldManager::instance = nullptr;
 
@@ -144,7 +146,7 @@ absl::Status WorldManager::setCurrentMap(MapID mapID)
 }
 
 
-absl::StatusOr<WorldMap> WorldManager::findMapFromPos(Vector2D pos) const
+absl::StatusOr<WorldMap> WorldManager::findMapFromPos(Vector2 pos) const
 {
     SDL_Point point = { pos.x, pos.y };
     for (auto& map: maps)

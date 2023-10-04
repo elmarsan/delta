@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Vector2D.h"
+#include "Vector2.h"
 #include "WorldManager.h"
 #include "engine/Asset.h"
 
 class TileManager
 {
   public:
-    static void addTile(Vector2D gridPos, Tile tile);
+    static void addTile(Point2 point2, Tile tile);
     static void destroyMapTiles(WorldMap map);
 };

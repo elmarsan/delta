@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector2D.h"
+#include "Vector2.h"
 
 #include <SDL2/SDL_render.h>
 #include <map>
@@ -76,9 +76,8 @@ struct Tile
     TileID ID;
     AssetID textureID;
     AssetID tilesetID;
-    Vector2D pos;
-    int width;
-    int height;
+    Point2 point2;
+    Size2 size2;
     TileFrames frames;
     bool collides;
     int zindex = 0;
@@ -118,9 +117,8 @@ class Tileset: public Asset
         tile.textureID = textureID;
         tile.tilesetID = ID;
         tile.frames = tileFrame[tileID];
-        tile.pos = Vector2D(x, y);
-        tile.width = tileWidth;
-        tile.height = tileHeight;
+        tile.point2 = Point2(x, y);
+        tile.size2 = Size2(tileWidth, tileHeight);
         tile.collides = tileCollider[tileID];
         tile.zindex = tileZindex[tileID];
         return tile;

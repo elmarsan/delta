@@ -27,8 +27,8 @@ class ColliderComponent: public Component
 
     void update() override
     {
-        collider.x = transform->position.x - WindowManager::Instance()->camera.x;
-        collider.y = transform->position.y - WindowManager::Instance()->camera.y;
+        collider.x = transform->point2.x - WindowManager::Instance()->camera.x;
+        collider.y = transform->point2.y - WindowManager::Instance()->camera.y;
         collider.w = transform->width * transform->scale;
         collider.h = transform->height * transform->scale;
     }

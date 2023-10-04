@@ -32,7 +32,7 @@ Tile MapManager::getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets,
     return tile;
 }
 
-absl::Status MapManager::draw(const std::string mapID, const Vector2D gridPos)
+absl::Status MapManager::draw(const std::string mapID, const Vector2 gridPos)
 {
     LOG(INFO) << absl::StrFormat("Drawing map: %s", mapID);
     auto mapRes = Game::assetManager->getOrLoad<Map>(mapID);
@@ -80,9 +80,9 @@ absl::Status MapManager::draw(const std::string mapID, const Vector2D gridPos)
                     int tileID = tileGID;
                     tileID &= ~(TiledFlippedHorizontally | TiledFlippedVertically);
 
-                    auto gridPos = Vector2D(xPos, yPos);
+                    auto gridPoint2 = Point2(xPos, yPos);
                     auto tile = getTileV2(tilesets, tileID, 1);
-                    TileManager::addTile(gridPos, tile);
+                    TileManager::addTile(gridPoint2, tile);
                 }
                 xPos += 44;
             }

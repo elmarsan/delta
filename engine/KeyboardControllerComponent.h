@@ -39,7 +39,7 @@ class KeyboardControllerComponent: public Component
                     if (transform->direction != Direction::UP)
                     {
                         transform->direction = Direction::UP;
-                        transform->velocity.zero();
+                        transform->vel2.zero();
                         transform->speed = 0;
                     }
                     else
@@ -47,8 +47,8 @@ class KeyboardControllerComponent: public Component
                         sprite->setAnimation("walk_up");
                         transform->speed = 2;
                         transform->direction = Direction::UP;
-                        transform->velocity.y = -1;
-                        transform->velocity.x = 0;
+                        transform->vel2.y = -1;
+                        transform->vel2.x = 0;
                     }
                     break;
                 }
@@ -56,7 +56,7 @@ class KeyboardControllerComponent: public Component
                     if (transform->direction != Direction::DOWN)
                     {
                         transform->direction = Direction::DOWN;
-                        transform->velocity.zero();
+                        transform->vel2.zero();
                         transform->speed = 0;
                     }
                     else
@@ -64,8 +64,8 @@ class KeyboardControllerComponent: public Component
                         sprite->setAnimation("walk_down");
                         transform->speed = 2;
                         transform->direction = Direction::DOWN;
-                        transform->velocity.y = 1;
-                        transform->velocity.x = 0;
+                        transform->vel2.y = 1;
+                        transform->vel2.x = 0;
                     }
                     break;
                 }
@@ -73,7 +73,7 @@ class KeyboardControllerComponent: public Component
                     if (transform->direction != Direction::LEFT)
                     {
                         transform->direction = Direction::LEFT;
-                        transform->velocity.zero();
+                        transform->vel2.zero();
                         transform->speed = 0;
                     }
                     else
@@ -81,8 +81,8 @@ class KeyboardControllerComponent: public Component
                         sprite->setAnimation("walk_lateral");
                         transform->speed = 2;
                         transform->direction = Direction::LEFT;
-                        transform->velocity.x = -1;
-                        transform->velocity.y = 0;
+                        transform->vel2.x = -1;
+                        transform->vel2.y = 0;
                     }
                     break;
                 }
@@ -90,7 +90,7 @@ class KeyboardControllerComponent: public Component
                     if (transform->direction != Direction::RIGHT)
                     {
                         transform->direction = Direction::RIGHT;
-                        transform->velocity.zero();
+                        transform->vel2.zero();
                         transform->speed = 0;
                     }
                     else
@@ -98,8 +98,8 @@ class KeyboardControllerComponent: public Component
                         sprite->setAnimation("walk_lateral", SDL_FLIP_HORIZONTAL);
                         transform->speed = 2;
                         transform->direction = Direction::RIGHT;
-                        transform->velocity.x = 1;
-                        transform->velocity.y = 0;
+                        transform->vel2.x = 1;
+                        transform->vel2.y = 0;
                     }
                     break;
                 }
@@ -110,10 +110,10 @@ class KeyboardControllerComponent: public Component
         {
             switch (Game::event.key.keysym.sym)
             {
-                case SDLK_UP: transform->velocity.zero(); break;
-                case SDLK_DOWN: transform->velocity.zero(); break;
-                case SDLK_LEFT: transform->velocity.zero(); break;
-                case SDLK_RIGHT: transform->velocity.zero(); break;
+                case SDLK_UP: transform->vel2.zero(); break;
+                case SDLK_DOWN: transform->vel2.zero(); break;
+                case SDLK_LEFT: transform->vel2.zero(); break;
+                case SDLK_RIGHT: transform->vel2.zero(); break;
             }
             sprite->stopAnimation();
         }

@@ -30,7 +30,7 @@ add_executable(Delta
     delta/WorldManager.cpp
     engine/TileManager.cpp
     engine/ECS.cpp
-    engine/Vector2D.cpp 
+    engine/Vector2.cpp 
     engine/AssetLoader.cpp
     engine/WindowManager.cpp
 )

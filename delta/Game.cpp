@@ -15,7 +15,7 @@
 #include "engine/ECS.h"
 #include "engine/KeyboardControllerComponent.h"
 #include "engine/TransformComponent.h"
-#include "engine/Vector2D.h"
+#include "engine/Vector2.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -53,22 +53,22 @@ absl::Status Game::init()
     auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
-    auto playerTransform = player.addComponent<TransformComponent>(Vector2D(444, 400), 44, 44, 1);
+    auto playerTransform = player.addComponent<TransformComponent>(Point2(444, 400), 44, 44, 1);
     auto& sprite = player.addComponent<SpriteComponent>(14, 21, "p1");
     sprite.addAnimation(
         "walk_up",
-        new Animation(150, std::vector<Vector2D> { Vector2D(15, 0), Vector2D(15, 22), Vector2D(15, 44) }));
+        new Animation(150, std::vector<Point2> { Point2(15, 0), Point2(15, 22), Point2(15, 44) }));
     sprite.addAnimation(
         "walk_down",
-        new Animation(150, std::vector<Vector2D> { Vector2D(0, 0), Vector2D(0, 22), Vector2D(0, 44) }));
+        new Animation(150, std::vector<Point2> { Point2(0, 0), Point2(0, 22), Point2(0, 44) }));
     sprite.addAnimation(
         "walk_lateral",
-        new Animation(150, std::vector<Vector2D> { Vector2D(30, 0), Vector2D(31, 22), Vector2D(30, 44) }));
+        new Animation(150, std::vector<Point2> { Point2(30, 0), Point2(31, 22), Point2(30, 44) }));
     player.addComponent<KeyboardControllerComponent>();
     player.addComponent<ColliderComponent>("Player");
     player.addGroup(Game::groupPlayer);
 
-    auto initialMapRes = WorldManager::Instance()->findMapFromPos(playerTransform.position);
+    auto initialMapRes = WorldManager::Instance()->findMapFromPos(playerTransform.point2);
     LOG_IF(FATAL, !initialMapRes.ok()) << initialMapRes.status().message();
     auto setMapRes = WorldManager::Instance()->setCurrentMap(initialMapRes.value().getID());
     LOG_IF(FATAL, !setMapRes.ok()) << setMapRes.message();
@@ -93,7 +93,7 @@ void Game::handleEvents()
 void Game::update()
 {
     SDL_Rect playerCol = player.getComponent<ColliderComponent>().collider;
-    Vector2D playerPos = player.getComponent<TransformComponent>().position;
+    Point2 playerPos = player.getComponent<TransformComponent>().point2;
 
     auto playerMap = WorldManager::Instance()->findMapFromPos(playerPos);
     auto currentMapID = WorldManager::Instance()->getCurrentMapID();
@@ -127,7 +127,7 @@ void Game::update()
         ColliderComponent& cCol = c->getComponent<ColliderComponent>();
         if (Collision::AABB(cCol.collider, playerCol))
         {
-            player.getComponent<TransformComponent>().position = playerPos;
+            player.getComponent<TransformComponent>().point2 = playerPos;
         }
     }
 }

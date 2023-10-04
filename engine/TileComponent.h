@@ -16,14 +16,14 @@ class TileComponent: public Component
     Tile tile;
     std::shared_ptr<Tileset> tileset;
     std::shared_ptr<Texture> texture;
-    Vector2D tilePos;
+    Point2 tilePoint2;
 
   public:
-    Vector2D gridPos;
+    Point2 gridPoint2;
 
-    TileComponent(Vector2D gridPos, const Tile& tile): tile(tile), tilePos(gridPos), gridPos(gridPos)
+    TileComponent(Vector2 gridPos, const Tile& tile): tile(tile), tilePoint2(gridPos), gridPoint2(gridPos)
     {
-        src = SDL_Rect { tile.pos.x, tile.pos.y, 16, 16 };
+        src = SDL_Rect { tile.point2.x, tile.point2.y, 16, 16 };
         dst = SDL_Rect { gridPos.x, gridPos.y, 44, 44 };
     }
 
@@ -53,12 +53,12 @@ class TileComponent: public Component
             int speed = tile.animSpeed();
             int tileIndex = static_cast<int>((SDL_GetTicks() / speed) % numFrames);
             auto frames = std::get<FrameIDs>(tile.frames);
-            tilePos = tileset->getTile(frames[tileIndex]).pos;
-            src = SDL_Rect { tilePos.x, tilePos.y, tile.width, tile.height };
+            tilePoint2 = tileset->getTile(frames[tileIndex]).point2;
+            src = SDL_Rect { tilePoint2.x, tilePoint2.y, tile.size2.w, tile.size2.h};
         }
 
-        dst = SDL_Rect { gridPos.x - WindowManager::Instance()->camera.x,
-                         gridPos.y - WindowManager::Instance()->camera.y,
+        dst = SDL_Rect { gridPoint2.x - WindowManager::Instance()->camera.x,
+                         gridPoint2.y - WindowManager::Instance()->camera.y,
                          44,
                          44 };
     }

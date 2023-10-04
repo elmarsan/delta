@@ -12,7 +12,7 @@
 
 extern Manager manager;
 
-void TileManager::addTile(Vector2D gridPos, Tile tile) 
+void TileManager::addTile(Vector2 gridPos, Tile tile) 
 {
     auto& tileEntity(manager.addEntity());
     tileEntity.addGroup(Game::groupMap);
@@ -33,7 +33,7 @@ void TileManager::destroyMapTiles(WorldMap map)
     auto tiles = manager.getGroup(Game::groupMap);
     for (auto& tile: tiles)
     {
-        auto pos = tile->getComponent<TileComponent>().gridPos;
+        auto pos = tile->getComponent<TileComponent>().gridPoint2;
         if (map.pointIn(pos))
         {
             LOG(INFO) << absl::StrFormat("Tile of map %s must be delete", map.getID());

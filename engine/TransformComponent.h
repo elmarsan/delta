@@ -2,7 +2,7 @@
 
 #include "ECS.h"
 #include "Game.h"
-#include "Vector2D.h"
+#include "Vector2.h"
 
 enum Direction
 {
@@ -14,8 +14,8 @@ enum Direction
 
 struct TransformComponent: Component
 {
-    Vector2D position;
-    Vector2D velocity;
+    Point2 point2;
+    Point2 vel2;
     Direction direction;
 
     int width;
@@ -23,10 +23,10 @@ struct TransformComponent: Component
     int scale;
     int speed = 2;
 
-    TransformComponent() { position.zero(); }
+    TransformComponent() { point2.zero(); }
 
-    TransformComponent(Vector2D position, int w, int h, int scale):
-        position(position), width(w), height(h), scale(scale)
+    TransformComponent(Point2 point2, int w, int h, int scale):
+        point2(point2), width(w), height(h), scale(scale)
     {
     }
 
@@ -34,7 +34,7 @@ struct TransformComponent: Component
 
     void update() override
     {
-        position.x += velocity.x * speed;
-        position.y += velocity.y * speed;
+        point2.x += vel2.x * speed;
+        point2.y += vel2.y * speed;
     }
 };
