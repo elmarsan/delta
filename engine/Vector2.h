@@ -20,17 +20,17 @@ struct Vector2
 
     Vector2();
     Vector2(int x, int y);
-    
-    Vector2 operator+(const Vector2 &v) const;
-	void operator+=(const Vector2 &v);
-    Vector2 operator-(const Vector2 &v) const;
-	void operator-=(const Vector2 &v);
-	Vector2 operator*(const Vector2 &v) const;
-    
+
+    Vector2 operator+(const Vector2& v) const;
+    void operator+=(const Vector2& v);
+    Vector2 operator-(const Vector2& v) const;
+    void operator-=(const Vector2& v);
+    Vector2 operator*(const Vector2& v) const;
+
     void operator*=(const int& rval);
     Vector2 operator*(const int& rval) const;
-    Vector2 operator*(const Vector2& v); 
-    void operator*=(const Vector2& v); 
+    Vector2 operator*(const Vector2& v);
+    void operator*=(const Vector2& v);
 
     void zero();
 
