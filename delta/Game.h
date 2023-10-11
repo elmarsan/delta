@@ -19,14 +19,14 @@ class Game
     void clean();
     bool isRunning();
 
-    static SDL_Event event;
     static std::unique_ptr<AssetManager> assetManager;
     enum groupLabels : std::size_t
     {
         groupMap,
         groupPlayer,
         groupCollider,
-        groupTeleport
+        groupTeleport,
+        groupNpc
     };
 
   private:

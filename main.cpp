@@ -14,7 +14,7 @@ int main()
     Uint64 frameStart;
     int frameTime;
 
-    absl::Status windowManagerStatus = WindowManager::init(640, 480);
+    absl::Status windowManagerStatus = WindowManager::init(840, 680);
     LOG_IF(FATAL, !windowManagerStatus.ok()) << windowManagerStatus.message();
 
     Game game;

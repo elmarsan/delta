@@ -33,6 +33,7 @@ add_executable(Delta
     engine/Vector2.cpp 
     engine/AssetLoader.cpp
     engine/WindowManager.cpp
+    engine/CharacterController.cpp
 )
 target_include_directories(Delta 
     PRIVATE ${SDL2_INCLUDE_DIR}

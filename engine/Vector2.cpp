@@ -3,7 +3,6 @@
 #include <ostream>
 #include <string>
 
-
 Vector2::Vector2(): x(0), y(0)
 {
 }
@@ -56,10 +55,25 @@ void Vector2::operator*=(const int& rval)
     y *= rval;
 }
 
+bool Vector2::operator==(const Vector2& v) const
+{
+    return x == v.x && y == v.y;
+}
+
+bool Vector2::operator!=(const Vector2& v) const
+{
+    return x != v.x || y != v.y;
+}
+
 void Vector2::zero()
 {
     x = 0;
     y = 0;
+}
+
+bool Vector2::isZero() const
+{
+    return x == 0 && y == 0;
 }
 
 double Vector2::distanceTo(const Vector2& v) const

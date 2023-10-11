@@ -29,8 +29,8 @@ class ColliderComponent: public Component
     {
         collider.x = transform->point2.x - WindowManager::Instance()->camera.x;
         collider.y = transform->point2.y - WindowManager::Instance()->camera.y;
-        collider.w = transform->width * transform->scale;
-        collider.h = transform->height * transform->scale;
+        collider.w = transform->size2.w; 
+        collider.h = transform->size2.h;
     }
 
 #ifdef DEBUG

@@ -4,12 +4,12 @@
 #include "Game.h"
 #include "Vector2.h"
 
-enum Direction
+enum class Direction
 {
-    UP,
-    DOWN,
-    RIGHT,
-    LEFT,
+    North,
+    South,
+    East,
+    West,
 };
 
 struct TransformComponent: Component
@@ -18,23 +18,21 @@ struct TransformComponent: Component
     Point2 vel2;
     Direction direction;
 
-    int width;
-    int height;
-    int scale;
-    int speed = 2;
+    Size2 size2;
+    double speed = 2.0f;
 
     TransformComponent() { point2.zero(); }
 
-    TransformComponent(Point2 point2, int w, int h, int scale):
-        point2(point2), width(w), height(h), scale(scale)
+    TransformComponent(Point2 point2, Size2 size2):
+        point2(point2), size2(size2)
     {
     }
 
-    void init() override { direction = Direction::DOWN; }
+    void init() override { direction = Direction::South; }
 
     void update() override
     {
-        point2.x += vel2.x * speed;
-        point2.y += vel2.y * speed;
+        point2.x += static_cast<int>(vel2.x * speed);
+        point2.y += static_cast<int>(vel2.y * speed);
     }
 };

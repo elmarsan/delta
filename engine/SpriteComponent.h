@@ -5,9 +5,10 @@
 #include "TransformComponent.h"
 #include "Vector2.h"
 #include "WindowManager.h"
-#include "delta/Game.h"
 #include "absl/log/log.h"
+#include "delta/Game.h"
 
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <map>
 #include <string_view>
@@ -39,9 +40,9 @@ class SpriteComponent: public Component
     {
         if (isAnimated())
             playAnimation();
-       
+
         dst.x = transform->point2.x - WindowManager::Instance()->camera.x;
-        dst.y = transform->point2.y - WindowManager::Instance()->camera.y;        // dst.x = transform->position.x; 
+        dst.y = transform->point2.y - WindowManager::Instance()->camera.y;
         dst.w = dst.h = 44;
 
         src.x = framePosition.x;
@@ -50,10 +51,7 @@ class SpriteComponent: public Component
         src.h = h;
     }
 
-    void draw() override 
-    { 
-        WindowManager::Instance()->renderTexture(texture, &src, &dst);
-    } 
+    void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst); }
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
     {
@@ -61,11 +59,27 @@ class SpriteComponent: public Component
         texture->flip = animFlip;
     }
 
+    void setAnimationFrame(const std::string& name, int frame, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
+    {
+        if (animations.size() == 0 || frame > animations.size() - 1 || frame < 0)
+            return;
+
+        auto animation = animations[name];
+        if (animation != nullptr)
+        {
+            texture->flip = animFlip;
+            framePosition = animation->getFramePos(frame);
+        }
+    }
+
     void stopAnimation()
     {
-        if (currentAnimation != "")
+        if (currentAnimation == "")
+            return;
+
+        auto animation = animations[currentAnimation];
+        if (animation != nullptr)
         {
-            auto animation = animations[currentAnimation];
             framePosition = animation->getFramePos(0);
             currentAnimation = "";
         }
@@ -75,12 +89,14 @@ class SpriteComponent: public Component
 
     void playAnimation()
     {
-        if (currentAnimation != "")
+        if (currentAnimation == "")
+            return;
+
+        auto animation = animations[currentAnimation];
+        if (animation != nullptr)
         {
-            auto animation = animations[currentAnimation];
             int numFrames = animation->numFrames();
             int speed = animation->speed;
-
             int index = static_cast<int>((SDL_GetTicks() / speed) % numFrames);
             framePosition = animation->getFramePos(index);
             animation->nextFrame();
