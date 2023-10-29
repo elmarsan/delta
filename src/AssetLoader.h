@@ -1,7 +1,7 @@
 #pragma once
 
 #include "absl/status/statusor.h"
-#include "engine/Asset.h"
+#include "Asset.h"
 
 using AssetLoadResult = absl::StatusOr<std::shared_ptr<Asset>>;
 

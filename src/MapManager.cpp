@@ -1,8 +1,8 @@
 #include "MapManager.h"
 
 #include "Asset.h"
-#include "delta/Game.h"
-#include "engine/TileManager.h"
+#include "Game.h"
+#include "TileManager.h"
 #include "nlohmann/json.hpp"
 
 #include <absl/log/log.h>

@@ -13,11 +13,11 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_format.h"
-#include "engine/Animation.h"
-#include "engine/AssetManager.h"
-#include "engine/ECS.h"
-#include "engine/TransformComponent.h"
-#include "engine/Vector2.h"
+#include "Animation.h"
+#include "AssetManager.h"
+#include "ECS.h"
+#include "TransformComponent.h"
+#include "Vector2.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -85,7 +85,7 @@ absl::Status Game::init()
 
     npcEntity.addComponent<ColliderComponent>("tile");
     npcEntity.addComponent<CharacterController>();
-    // npcEntity.addComponent<BehaviourComponent>();
+    npcEntity.addComponent<BehaviourComponent>();
     npcEntity.addComponent<DetectorComponent>(Size2(0, 44 * 3));
     npcEntity.addGroup(Game::groupCollider);
     npcEntity.addGroup(Game::groupNpc);

@@ -24,16 +24,16 @@ include_directories(
 )
 
 add_executable(Delta 
-    main.cpp 
-    delta/Game.cpp 
-    delta/MapManager.cpp
-    delta/WorldManager.cpp
-    engine/TileManager.cpp
-    engine/ECS.cpp
-    engine/Vector2.cpp 
-    engine/AssetLoader.cpp
-    engine/WindowManager.cpp
-    engine/CharacterController.cpp
+    src/main.cpp 
+    src/Game.cpp 
+    src/MapManager.cpp
+    src/WorldManager.cpp
+    src/TileManager.cpp
+    src/ECS.cpp
+    src/Vector2.cpp 
+    src/AssetLoader.cpp
+    src/WindowManager.cpp
+    src/CharacterController.cpp
 )
 target_include_directories(Delta 
     PRIVATE ${SDL2_INCLUDE_DIR}

@@ -40,10 +40,15 @@ class BehaviourComponent: public Component
             LOG(INFO) << "Player random action: " << randAction;
             switch (randAction)
             {
-                case 0: character->goNorth(); break;
-                case 1: character->goSouth(); break;
-                case 2: character->goEast(); break;
-                case 3: character->goWest(); break;
+                // case 0: character->goNorth(); break;
+                // case 1: character->goSouth(); break;
+                // case 2: character->goEast(); break;
+                // case 3: character->goWest(); break;
+                case 0: character->setDirection(Direction::North); break;
+                case 1: character->setDirection(Direction::South); break;
+                case 2: character->setDirection(Direction::East); break;
+                case 3: character->setDirection(Direction::West); break;
+
             }
             lastMovementTick = ticks;
         }

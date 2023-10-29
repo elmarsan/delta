@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/AssetManager.h"
+#include "AssetManager.h"
 
 #include <SDL2/SDL_events.h>
 #include <absl/status/status.h>

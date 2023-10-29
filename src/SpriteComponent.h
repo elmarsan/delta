@@ -6,7 +6,7 @@
 #include "Vector2.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
-#include "delta/Game.h"
+#include "Game.h"
 
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>

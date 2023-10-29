@@ -6,7 +6,7 @@ void CharacterController::init()
     sprite = &entity->getComponent<SpriteComponent>();
 }
 
-void CharacterController::update() 
+void CharacterController::update()
 {
     if (transform->point2 == targetPoint2)
         onTargetPoint2Reached();
@@ -148,6 +148,29 @@ void CharacterController::goWest()
     }
     else
         collidePoint2();
+}
+
+void CharacterController::setDirection(Direction direction)
+{
+    switch (direction)
+    {
+        case Direction::North:
+            transform->direction = Direction::North;
+            sprite->setAnimationFrame("walk_up", 0);
+            break;
+        case Direction::South:
+            transform->direction = Direction::South;
+            sprite->setAnimationFrame("walk_down", 0);
+            break;
+        case Direction::East:
+            transform->direction = Direction::East;
+            sprite->setAnimationFrame("walk_lateral", 0, SDL_FLIP_HORIZONTAL);
+            break;
+        case Direction::West:
+            transform->direction = Direction::West;
+            sprite->setAnimationFrame("walk_lateral", 0);
+            break;
+    }
 }
 
 void CharacterController::collidePoint2()

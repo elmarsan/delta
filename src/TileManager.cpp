@@ -5,11 +5,11 @@
 #include "TileComponent.h"
 #include "WorldManager.h"
 #include "absl/strings/str_format.h"
-#include "delta/Game.h"
-#include "engine/Animation.h"
-#include "engine/Asset.h"
-#include "engine/SpriteComponent.h"
-#include "engine/TransformComponent.h"
+#include "Game.h"
+#include "Animation.h"
+#include "Asset.h"
+#include "SpriteComponent.h"
+#include "TransformComponent.h"
 
 extern Manager manager;
 

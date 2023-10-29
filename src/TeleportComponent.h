@@ -1,9 +1,9 @@
 #pragma once
 
-#include "delta/Game.h"
-#include "engine/ECS.h"
-#include "engine/TransformComponent.h"
-#include "engine/Vector2.h"
+#include "Game.h"
+#include "ECS.h"
+#include "TransformComponent.h"
+#include "Vector2.h"
 
 class TeleportComponent: public Component
 {

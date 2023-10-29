@@ -1,7 +1,7 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
-#include "delta/Game.h"
-#include "engine/WindowManager.h"
+#include "Game.h"
+#include "WindowManager.h"
 
 #include <SDL2/SDL.h>
 #include <iostream>

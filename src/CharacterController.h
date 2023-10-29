@@ -22,6 +22,7 @@ class CharacterController: public Component
     void goSouth();
     void goEast();
     void goWest();
+    void setDirection(Direction direction);
     void collidePoint2();
 
   private:

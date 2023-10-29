@@ -4,7 +4,7 @@
 #include "ECS.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
-#include "delta/Game.h"
+#include "Game.h"
 
 #include <SDL2/SDL_timer.h>
 #include <memory>
