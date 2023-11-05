@@ -104,7 +104,6 @@ void Game::handleEvents()
             LOG(INFO) << "Stopping delta...";
             running = false;
         }
-
         if (event.type == SDL_KEYDOWN)
         {
             auto& playerController = player.getComponent<CharacterController>();
