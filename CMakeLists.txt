@@ -37,6 +37,7 @@ add_executable(Delta
     src/AssetLoader.cpp
     src/WindowManager.cpp
     src/CharacterController.cpp
+    src/Player.cpp
 )
 target_include_directories(Delta 
     PRIVATE ${SDL2_INCLUDE_DIR}

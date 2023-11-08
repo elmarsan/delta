@@ -4,7 +4,6 @@
 #include "ECS.h"
 #include "TransformComponent.h"
 #include "absl/log/log.h"
-#include "src/Script.h"
 
 #include <SDL2/SDL_timer.h>
 #include <cstdlib>
@@ -38,7 +37,7 @@ class BehaviourComponent: public Component
         if (ticks - lastMovementTick > delay)
         {
             int randAction = rand() % 4 + 1;
-            LOG(INFO) << "Player random action: " << randAction;
+            // LOG(INFO) << "Player random action: " << randAction;
             switch (randAction)
             {
                 // case 0: character->goNorth(); break;
@@ -62,9 +61,6 @@ class BehaviourComponent2: public Component
     TransformComponent* transform;
     Uint64 lastMovementTick;
 
-    std::vector<Script::Keyword> behaviour;
-
-    BehaviourComponent2(std::vector<Script::Keyword> behaviour): behaviour(behaviour) {}
 
     void init() override
     {

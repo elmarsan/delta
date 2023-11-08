@@ -15,15 +15,15 @@ extern Manager manager;
 
 void TileManager::addTile(Vector2 gridPos, Tile tile)
 {
-    auto& tileEntity(manager.addEntity());
-    tileEntity.addGroup(Game::groupMap);
-    tileEntity.addComponent<TileComponent>(gridPos, tile);
+    auto tileEntity(manager.addEntity());
+    tileEntity->addGroup(Game::groupMap);
+    tileEntity->addComponent<TileComponent>(gridPos, tile);
 
     if (tile.collides)
     {
-        tileEntity.addComponent<TransformComponent>(gridPos, Size2(44, 44));
-        tileEntity.addComponent<ColliderComponent>("tile");
-        tileEntity.addGroup(Game::groupCollider);
+        tileEntity->addComponent<TransformComponent>(gridPos, Size2(44, 44));
+        tileEntity->addComponent<ColliderComponent>("tile");
+        tileEntity->addGroup(Game::groupCollider);
     }
 }
 

@@ -21,6 +21,7 @@ struct TransformComponent: Component
     Size2 size2;
     double speed = 2.0f;
 
+    void operator=(const TransformComponent&) { LOG(INFO) << "mOVIIIING"; }
     TransformComponent() { point2.zero(); }
 
     TransformComponent(Point2 point2, Size2 size2):

@@ -2,11 +2,9 @@
 
 #include "AssetManager.h"
 
-#include <SDL2/SDL_events.h>
 #include <absl/status/status.h>
 #include <memory>
 #include <string>
-#include <vector>
 
 class Game
 {

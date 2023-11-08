@@ -36,11 +36,11 @@ class DetectorComponent: public Component
         {
             case Direction::North:
                 if (-distance.y == -size2.y)
-                    LOG(INFO) << "North detection";
+                    // LOG(INFO) << "North detection";
                 break;
             case Direction::South:
                 if (distance.y <= size2.y)
-                    LOG(INFO) << "South detection";
+                    // LOG(INFO) << "South detection";
                 break;
 
             case Direction::East: break;

@@ -1,23 +1,19 @@
 #include "Game.h"
 
-#include "BehaviourComponent.h"
+#include "AssetManager.h"
 #include "CharacterController.h"
 #include "ColliderComponent.h"
-#include "DetectorComponent.h"
+#include "ECS.h"
 #include "MapManager.h"
+#include "Player.h"
 #include "SpriteComponent.h"
 #include "TileComponent.h"
-#include "TileManager.h"
+#include "TransformComponent.h"
+#include "Vector2.h"
 #include "WindowManager.h"
 #include "WorldManager.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
-#include "absl/strings/str_format.h"
-#include "Animation.h"
-#include "AssetManager.h"
-#include "ECS.h"
-#include "TransformComponent.h"
-#include "Vector2.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -26,6 +22,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <memory>
+#include <sol/sol.hpp>
 
 const int mapWidth = 1024;
 const int mapHeight = 1024;
@@ -36,7 +33,7 @@ Manager manager;
 
 std::unique_ptr<AssetManager> Game::assetManager = std::make_unique<AssetManager>();
 
-auto& player(manager.addEntity());
+std::shared_ptr<Player> player;
 
 auto& tiles(manager.getGroup(Game::groupMap));
 auto& players(manager.getGroup(Game::groupPlayer));
@@ -45,51 +42,42 @@ auto& teleports(manager.getGroup(Game::groupTeleport));
 
 WorldMap currentMap;
 
+sol::state lua;
+
 absl::Status Game::init()
 {
-    running = true;
+    // Creates lua types
+    lua.open_libraries(sol::lib::base);
 
-    SDL_Color colorMod { 255, 0, 228 };
-    AssetMetadata meta;
-    meta = TextureMetadata { &colorMod };
-    auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
-    LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
+    sol::usertype<Entity> entityType = lua.new_usertype<Entity>("entity");
+    entityType["active"] = &Entity::isActive;
 
-    auto playerTransform = player.addComponent<TransformComponent>(Point2(440, 396), Size2(44, 44));
-    auto& sprite = player.addComponent<SpriteComponent>(14, 21, "p1");
-    sprite.addAnimation(
-        "walk_up", new Animation(150, std::vector<Point2> { Point2(15, 0), Point2(15, 22), Point2(15, 44) }));
-    sprite.addAnimation(
-        "walk_down", new Animation(150, std::vector<Point2> { Point2(0, 0), Point2(0, 22), Point2(0, 44) }));
-    sprite.addAnimation(
-        "walk_lateral",
-        new Animation(150, std::vector<Point2> { Point2(30, 0), Point2(31, 22), Point2(30, 44) }));
-    player.addComponent<CharacterController>();
-    player.addComponent<ColliderComponent>("Player");
-    player.addGroup(Game::groupPlayer);
-    auto initialMapRes = WorldManager::Instance()->findMapFromPos(playerTransform.point2);
+    sol::usertype<Vector2> vec2Type = lua.new_usertype<Vector2>("vec2");
+    vec2Type.set("x", sol::readonly(&Vector2::x));
+    vec2Type.set("y", sol::readonly(&Vector2::y));
+
+    sol::usertype<TransformComponent> transformComponentType =
+        lua.new_usertype<TransformComponent>("transform");
+    transformComponentType.set("point2", sol::readonly<Point2>(&TransformComponent::point2));
+    transformComponentType.set("size2", sol::readonly<Size2>(&TransformComponent::size2));
+
+    sol::usertype<SDL_Rect> cameraType = lua.new_usertype<SDL_Rect>("camera");
+    cameraType.set("x", sol::readonly(&SDL_Rect::x));
+    cameraType.set("y", sol::readonly(&SDL_Rect::y));
+    cameraType.set("w", sol::readonly(&SDL_Rect::w));
+    cameraType.set("h", sol::readonly(&SDL_Rect::h));
+
+    player = manager.addEntity<Player>();
+    auto initialMapRes = WorldManager::Instance()->findMapFromPos(player->currentPos());
     LOG_IF(FATAL, !initialMapRes.ok()) << initialMapRes.status().message();
     auto setMapRes = WorldManager::Instance()->setCurrentMap(initialMapRes.value().getID());
     LOG_IF(FATAL, !setMapRes.ok()) << setMapRes.message();
 
-    auto& npcEntity(manager.addEntity());
-    npcEntity.addComponent<TransformComponent>(Point2(440, 308), Size2(44, 44));
-    auto& npcSprite = npcEntity.addComponent<SpriteComponent>(14, 21, "p1");
-    npcSprite.addAnimation(
-        "walk_up", new Animation(150, std::vector<Point2> { Point2(15, 0), Point2(15, 22), Point2(15, 44) }));
-    npcSprite.addAnimation(
-        "walk_down", new Animation(150, std::vector<Point2> { Point2(0, 0), Point2(0, 22), Point2(0, 44) }));
-    npcSprite.addAnimation(
-        "walk_lateral",
-        new Animation(150, std::vector<Point2> { Point2(30, 0), Point2(31, 22), Point2(30, 44) }));
+    // Link
+    lua["camera"] = &WindowManager::Instance()->camera;
+    lua["player_transform"] = &player->getComponent<TransformComponent>();
 
-    npcEntity.addComponent<ColliderComponent>("tile");
-    npcEntity.addComponent<CharacterController>();
-    npcEntity.addComponent<BehaviourComponent>();
-    npcEntity.addComponent<DetectorComponent>(Size2(0, 44 * 3));
-    npcEntity.addGroup(Game::groupCollider);
-    npcEntity.addGroup(Game::groupNpc);
-
+    running = true;
     return absl::OkStatus();
 }
 
@@ -106,26 +94,13 @@ void Game::handleEvents()
         }
         if (event.type == SDL_KEYDOWN)
         {
-            auto& playerController = player.getComponent<CharacterController>();
             auto key = event.key.keysym.sym;
             switch (key)
             {
-                case SDLK_UP: {
-                    playerController.goNorth();
-                    break;
-                }
-                case SDLK_DOWN: {
-                    playerController.goSouth();
-                    break;
-                }
-                case SDLK_LEFT: {
-                    playerController.goWest();
-                    break;
-                }
-                case SDLK_RIGHT: {
-                    playerController.goEast();
-                    break;
-                }
+                case SDLK_UP: player->goNorth(); break;
+                case SDLK_DOWN: player->goSouth(); break;
+                case SDLK_LEFT: player->goWest(); break;
+                case SDLK_RIGHT: player->goEast(); break;
             }
         }
     }
@@ -133,14 +108,12 @@ void Game::handleEvents()
 
 void Game::update()
 {
-    // SDL_Rect playerCol = player.getComponent<ColliderComponent>().collider;
-    auto playerPoint2 = player.getComponent<TransformComponent>().point2;
-
-    auto playerMap = WorldManager::Instance()->findMapFromPos(playerPoint2);
+    auto playerPos = player->currentPos();
+    auto map = WorldManager::Instance()->findMapFromPos(playerPos);
     auto currentMapID = WorldManager::Instance()->getCurrentMapID();
-    if (playerMap->getID() != currentMapID)
+    if (map->getID() != currentMapID)
     {
-        auto setCurrentRes = WorldManager::Instance()->setCurrentMap(playerMap->getID());
+        auto setCurrentRes = WorldManager::Instance()->setCurrentMap(map->getID());
         LOG_IF(ERROR, !setCurrentRes.ok()) << setCurrentRes.message();
     }
 
@@ -148,8 +121,8 @@ void Game::update()
     manager.update();
 
     auto camera = WindowManager::Instance()->camera;
-    camera.x = playerPoint2.x - WindowManager::Instance()->width() / 2;
-    camera.y = playerPoint2.y - WindowManager::Instance()->height() / 2;
+    camera.x = playerPos.x - WindowManager::Instance()->width() / 2;
+    camera.y = playerPos.y - WindowManager::Instance()->height() / 2;
 
     if (camera.x < 0)
         camera.x = 0;
@@ -162,12 +135,20 @@ void Game::update()
 
     WindowManager::Instance()->camera = camera;
 
-    // for (auto& c: colliders)
-    // {
-    //     ColliderComponent& cCol = c->getComponent<ColliderComponent>();
-    //     if (Collision::AABB(cCol.collider, playerCol))
-    //     {
-    //     }
+    // lua.script("cam = camera");
+    // if (lua["cam"].valid()) {
+    //     LOG(INFO) << "X camera " << lua["cam"].get<SDL_Rect>().x;
+    //     LOG(INFO) << "Y camera " << lua["cam"].get<SDL_Rect>().y;
+    //     LOG(INFO) << "W camera " << lua["cam"].get<SDL_Rect>().w;
+    // }
+
+    // lua.script("pt = player_transform.point2");
+    // lua.script("psize = player_transform.size2");
+    // if (lua["pt"].valid()) {
+    //     LOG(INFO) << "Player point2: " << lua["pt"].get<Point2>();
+    // }
+    // if (lua["psize"].valid()) {
+    //     LOG(INFO) << "Player size2: " << lua["psize"].get<Size2>();
     // }
 }
 
@@ -183,12 +164,6 @@ void Game::render()
     }
     for (auto& c: colliders)
     {
-        // if (c->hasGroup(Game::groupCollider))
-        // {
-        //     auto& transform = c->getComponent<TransformComponent>();
-        //     if (transform.point2 == Point2(308, 396))
-        //         LOG(INFO) << "Find collision in point:" << transform.point2;
-        // }
         c->draw();
     }
     for (auto& p: players)

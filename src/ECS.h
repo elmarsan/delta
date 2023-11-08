@@ -54,6 +54,8 @@ class Entity
   public:
     Entity(Manager& manager): manager(manager) {}
 
+    virtual void init() {}
+
     void update()
     {
         for (auto& c: components)
@@ -95,6 +97,20 @@ class Entity
         return *component;
     }
 
+    // template <typename T, typename... TArgs>
+    // std::shared_ptr<T> addComponent(TArgs&&... args)
+    // {
+    //     auto componentPtr = std::make_shared<T>(args...);
+    //     componentPtr->entity = this;
+
+    //     components.emplace_back(componentPtr.get());
+    //     componentArray[getComponentTypeID<T>()] = componentPtr.get();
+    //     componentBitSet[getComponentTypeID<T>()] = true;
+
+    //     componentPtr->init();
+    //     return componentPtr;
+    // }
+
     template <typename T>
     T& getComponent() const
     {
@@ -105,7 +121,7 @@ class Entity
   private:
     Manager& manager;
     bool active = true;
-    std::vector<std::unique_ptr<Component>> components;
+    std::vector<std::shared_ptr<Component>> components;
 
     ComponentArray componentArray;
     ComponentBitSet componentBitSet;
@@ -115,7 +131,7 @@ class Entity
 class Manager
 {
   private:
-    std::vector<std::unique_ptr<Entity>> entities;
+    std::vector<std::shared_ptr<Entity>> entities;
     std::array<std::vector<Entity*>, maxGroups> groupedEntities;
 
   public:
@@ -146,7 +162,7 @@ class Manager
         entities.erase(
             std::remove_if(std::begin(entities),
                            std::end(entities),
-                           [](const std::unique_ptr<Entity>& mEntity) { return !mEntity->isActive(); }),
+                           [](const std::shared_ptr<Entity> entity) { return !entity->isActive(); }),
             std::end(entities));
     }
 
@@ -154,11 +170,12 @@ class Manager
 
     std::vector<Entity*>& getGroup(Group group) { return groupedEntities[group]; }
 
-    Entity& addEntity()
+    template <typename EntityClass = Entity>
+    std::shared_ptr<EntityClass> addEntity()
     {
-        Entity* entity = new Entity(*this);
-        std::unique_ptr<Entity> entityPtr(entity);
-        entities.emplace_back(std::move(entityPtr));
-        return *entity;
+        auto entityPtr = std::make_shared<EntityClass>(*this);
+        entityPtr->init();
+        entities.emplace_back(entityPtr);
+        return entityPtr;
     }
 };
