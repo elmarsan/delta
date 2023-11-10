@@ -1,4 +1,6 @@
 #include "CharacterController.h"
+#include "absl/log/log.h"
+#include "src/ColliderComponent.h"
 
 void CharacterController::init()
 {

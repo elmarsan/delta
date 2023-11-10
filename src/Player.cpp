@@ -10,10 +10,11 @@ void Player::init()
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
     transform = &addComponent<TransformComponent>(Point2(440, 396), Size2(44, 44));
-    sprite = &addComponent<SpriteComponent>(14, 21, "p1");
+    sprite = &addComponent<SpriteComponent>("p1", Size2(14, 21));
     controller = &addComponent<CharacterController>();
     collider = &addComponent<ColliderComponent>("Player");
     addGroup(Game::groupPlayer);
+    addGroup(Game::groupCollider);
 
     initAnimations();
 }

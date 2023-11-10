@@ -5,6 +5,7 @@
 #include "ColliderComponent.h"
 #include "ECS.h"
 #include "MapManager.h"
+#include "Npc.h"
 #include "Player.h"
 #include "SpriteComponent.h"
 #include "TileComponent.h"
@@ -14,6 +15,8 @@
 #include "WorldManager.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
+#include "sol/types.hpp"
+#include "src/RoutineComponent.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -52,7 +55,8 @@ absl::Status Game::init()
     sol::usertype<Entity> entityType = lua.new_usertype<Entity>("entity");
     entityType["active"] = &Entity::isActive;
 
-    sol::usertype<Vector2> vec2Type = lua.new_usertype<Vector2>("vec2");
+    sol::usertype<Vector2> vec2Type =
+        lua.new_usertype<Vector2>("vec2", sol::constructors<Vector2(int, int)>());
     vec2Type.set("x", sol::readonly(&Vector2::x));
     vec2Type.set("y", sol::readonly(&Vector2::y));
 
@@ -76,6 +80,25 @@ absl::Status Game::init()
     // Link
     lua["camera"] = &WindowManager::Instance()->camera;
     lua["player_transform"] = &player->getComponent<TransformComponent>();
+
+    lua.new_usertype<GoNorthAction>("GoNorthAction", sol::constructors<GoNorthAction()>());
+    lua.new_usertype<GoSouthAction>("GoSouthAction", sol::constructors<GoSouthAction()>());
+    lua.set_function("action_go_north",
+                     []() -> std::shared_ptr<Action> { return std::make_shared<GoNorthAction>(); });
+    lua.set_function("action_go_south",
+                     []() -> std::shared_ptr<Action> { return std::make_shared<GoSouthAction>(); });
+
+    lua.set_function("add_npc", AddNpc);
+    lua.script(R"(
+         v = vec2.new(440, 220)
+         actions = {action_go_north, action_go_south}
+         npc = add_npc(v, "npc", actions)
+    )");
+    if (lua["v"].valid())
+    {
+        LOG(INFO) << "Vector2: " << lua["v"].get<Vector2>();
+    }
+    // AddNpc(Point2(440, 220), "npc");
 
     running = true;
     return absl::OkStatus();

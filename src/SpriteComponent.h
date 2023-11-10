@@ -7,6 +7,7 @@
 #include "WindowManager.h"
 #include "absl/log/log.h"
 #include "Game.h"
+#include "src/Asset.h"
 
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
@@ -19,16 +20,28 @@ class SpriteComponent: public Component
     TransformComponent* transform;
     std::shared_ptr<Texture> texture;
     SDL_Rect src, dst;
-    int w, h;
+    Size2 size2;
+    Point2 textureSrc;
 
-    Point2 framePosition;
     std::map<std::string, Animation*> animations;
     std::string currentAnimation;
 
   public:
-    SpriteComponent(int w, int h, std::string textureId): w(w), h(h)
+    SpriteComponent(AssetID textureID, Size2 size2): size2(size2)
     {
-        texture = Game::assetManager->get<Texture>(textureId);
+        auto textureLoadRes = Game::assetManager->getOrLoad<Texture>(textureID);
+        LOG_IF(ERROR, !textureLoadRes.ok()) << textureLoadRes.status().message();
+
+        texture = textureLoadRes.value();
+        animations = std::map<std::string, Animation*>();
+    }
+
+    SpriteComponent(AssetID textureID, Size2 size2, Point2 textureSrc): size2(size2), textureSrc(textureSrc)
+    {
+        auto textureLoadRes = Game::assetManager->getOrLoad<Texture>(textureID);
+        LOG_IF(ERROR, !textureLoadRes.ok()) << textureLoadRes.status().message();
+
+        texture = textureLoadRes.value();
         animations = std::map<std::string, Animation*>();
     }
 
@@ -45,10 +58,10 @@ class SpriteComponent: public Component
         dst.y = transform->point2.y - WindowManager::Instance()->camera.y;
         dst.w = dst.h = 44;
 
-        src.x = framePosition.x;
-        src.y = framePosition.y;
-        src.w = w;
-        src.h = h;
+        src.x = textureSrc.x;
+        src.y = textureSrc.y;
+        src.w = size2.w;
+        src.h = size2.h;
     }
 
     void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst); }
@@ -68,7 +81,7 @@ class SpriteComponent: public Component
         if (animation != nullptr)
         {
             texture->flip = animFlip;
-            framePosition = animation->getFramePos(frame);
+            textureSrc = animation->getFramePos(frame);
         }
     }
 
@@ -80,7 +93,7 @@ class SpriteComponent: public Component
         auto animation = animations[currentAnimation];
         if (animation != nullptr)
         {
-            framePosition = animation->getFramePos(0);
+            textureSrc = animation->getFramePos(0);
             currentAnimation = "";
         }
     }
@@ -98,7 +111,7 @@ class SpriteComponent: public Component
             int numFrames = animation->numFrames();
             int speed = animation->speed;
             int index = static_cast<int>((SDL_GetTicks() / speed) % numFrames);
-            framePosition = animation->getFramePos(index);
+            textureSrc = animation->getFramePos(index);
             animation->nextFrame();
         }
     }

@@ -53,6 +53,7 @@ class Entity
 {
   public:
     Entity(Manager& manager): manager(manager) {}
+    virtual ~Entity() {}
 
     virtual void init() {}
 
@@ -96,20 +97,6 @@ class Entity
         component->init();
         return *component;
     }
-
-    // template <typename T, typename... TArgs>
-    // std::shared_ptr<T> addComponent(TArgs&&... args)
-    // {
-    //     auto componentPtr = std::make_shared<T>(args...);
-    //     componentPtr->entity = this;
-
-    //     components.emplace_back(componentPtr.get());
-    //     componentArray[getComponentTypeID<T>()] = componentPtr.get();
-    //     componentBitSet[getComponentTypeID<T>()] = true;
-
-    //     componentPtr->init();
-    //     return componentPtr;
-    // }
 
     template <typename T>
     T& getComponent() const
