@@ -13,7 +13,7 @@
 
 extern Manager manager;
 
-void TileManager::addTile(Vector2 gridPos, Tile tile)
+void TileManager::addTile(Point2 gridPos, Tile tile)
 {
     auto tileEntity(manager.addEntity());
     tileEntity->addGroup(Game::groupMap);
@@ -21,7 +21,7 @@ void TileManager::addTile(Vector2 gridPos, Tile tile)
 
     if (tile.collides)
     {
-        tileEntity->addComponent<TransformComponent>(gridPos, Size2(44, 44));
+        tileEntity->addComponent<TransformComponent>(gridPos);
         tileEntity->addComponent<ColliderComponent>("tile");
         tileEntity->addGroup(Game::groupCollider);
     }

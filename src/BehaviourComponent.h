@@ -2,92 +2,67 @@
 
 #include "CharacterController.h"
 #include "ECS.h"
-#include "TransformComponent.h"
 #include "absl/log/log.h"
+#include "src/TransformComponent.h"
 
-#include <SDL2/SDL_timer.h>
-#include <cstdlib>
-#include <stdlib.h>
-#include <time.h>
+enum class Action
+{
+    GoNorth,
+    GoSouth,
+    GoEast,
+    GoWest,
+    RotNorth,
+    RotSouth,
+    RotEast,
+    RotWest,
+    Idle,
+};
 
-/*
- * 1. Go to player position
- * 2. Dialog
- *
- */
+using Behaviour = std::vector<Action>;
 
 class BehaviourComponent: public Component
 {
   public:
-    CharacterController* character;
-    TransformComponent* transform;
-    Uint64 lastMovementTick;
-
-    void init() override
-    {
-        srand(time(NULL));
-        character = &entity->getComponent<CharacterController>();
-        transform = &entity->getComponent<TransformComponent>();
-    }
+    BehaviourComponent(Behaviour behaviour): behaviour(std::move(behaviour)), actionIdx(0) {}
 
     void update() override
     {
-        int delay = 500;
+        if (behaviour.size() == 0)
+            return;
+        // TODO: Timer
+        int delay = 1000;
         Uint64 ticks = SDL_GetTicks64();
         if (ticks - lastMovementTick > delay)
         {
-            int randAction = rand() % 4 + 1;
-            // LOG(INFO) << "Player random action: " << randAction;
-            switch (randAction)
+            auto action = behaviour[actionIdx++];
+            if (actionIdx >= behaviour.size())
+                actionIdx = 0;
+            switch (action)
             {
-                // case 0: character->goNorth(); break;
-                // case 1: character->goSouth(); break;
-                // case 2: character->goEast(); break;
-                // case 3: character->goWest(); break;
-                case 0: character->setDirection(Direction::North); break;
-                case 1: character->setDirection(Direction::South); break;
-                case 2: character->setDirection(Direction::East); break;
-                case 3: character->setDirection(Direction::West); break;
+                case Action::GoNorth: entity->getComponent<CharacterController>().goNorth(); break;
+                case Action::GoSouth: entity->getComponent<CharacterController>().goSouth(); break;
+                case Action::GoEast: entity->getComponent<CharacterController>().goEast(); break;
+                case Action::GoWest: entity->getComponent<CharacterController>().goWest(); break;
+                case Action::RotNorth:
+                    entity->getComponent<CharacterController>().setDirection(Direction::North);
+                    break;
+                case Action::RotSouth:
+                    entity->getComponent<CharacterController>().setDirection(Direction::South);
+                    break;
+                case Action::RotEast:
+                    entity->getComponent<CharacterController>().setDirection(Direction::East);
+                    break;
+                case Action::RotWest:
+                    entity->getComponent<CharacterController>().setDirection(Direction::West);
+                    break;
+                case Action::Idle: break;
             }
             lastMovementTick = ticks;
         }
     }
-};
 
-class BehaviourComponent2: public Component
-{
-  public:
-    CharacterController* character;
-    TransformComponent* transform;
+  private:
+    int actionIdx;
+    Behaviour behaviour;
     Uint64 lastMovementTick;
-
-
-    void init() override
-    {
-        character = &entity->getComponent<CharacterController>();
-        transform = &entity->getComponent<TransformComponent>();
-    }
-
-    void update() override
-    {
-        // int delay = 500;
-        // Uint64 ticks = SDL_GetTicks64();
-        // if (ticks - lastMovementTick > delay)
-        // {
-        //     int randAction = rand() % 4 + 1;
-        //     LOG(INFO) << "Player random action: " << randAction;
-        //     switch (randAction)
-        //     {
-        //         // case 0: character->goNorth(); break;
-        //         // case 1: character->goSouth(); break;
-        //         // case 2: character->goEast(); break;
-        //         // case 3: character->goWest(); break;
-        //         case 0: character->setDirection(Direction::North); break;
-        //         case 1: character->setDirection(Direction::South); break;
-        //         case 2: character->setDirection(Direction::East); break;
-        //         case 3: character->setDirection(Direction::West); break;
-        //     }
-        //     lastMovementTick = ticks;
-        // }
-    }
 };

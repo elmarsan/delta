@@ -19,10 +19,7 @@ class ColliderComponent: public Component
 
     void init() override
     {
-        if (!entity->hasComponent<TransformComponent>())
-        {
-            entity->addComponent<TransformComponent>();
-        }
+        LOG_IF(ERROR, !entity->hasComponent<TransformComponent>()) << "Missing transform component";
         transform = &entity->getComponent<TransformComponent>();
     }
 
@@ -30,7 +27,7 @@ class ColliderComponent: public Component
     {
         collider.x = transform->point2.x - WindowManager::Instance()->camera.x;
         collider.y = transform->point2.y - WindowManager::Instance()->camera.y;
-        collider.w = transform->size2.w; 
+        collider.w = transform->size2.w;
         collider.h = transform->size2.h;
     }
 

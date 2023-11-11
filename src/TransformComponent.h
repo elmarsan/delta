@@ -23,10 +23,7 @@ struct TransformComponent: Component
 
     TransformComponent() { point2.zero(); }
 
-    TransformComponent(Point2 point2, Size2 size2):
-        point2(point2), size2(size2)
-    {
-    }
+    TransformComponent(Point2 point2): point2(point2), size2(Size2(44, 44)) {}
 
     void init() override { direction = Direction::South; }
 

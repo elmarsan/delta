@@ -8,6 +8,7 @@
 
 int main()
 {
+    // TODO: Timer
     const int FPS = 60;
     const int frameDelay = 1000 / FPS;
 
@@ -29,6 +30,7 @@ int main()
         game.update();
         game.render();
 
+        // TODO: Timer
         frameTime = SDL_GetTicks64() - frameStart;
         if (frameDelay > frameTime)
         {

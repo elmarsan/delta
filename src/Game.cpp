@@ -16,7 +16,7 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "sol/types.hpp"
-#include "src/RoutineComponent.h"
+#include "src/BehaviourComponent.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -26,6 +26,7 @@
 #include <SDL2/SDL_video.h>
 #include <memory>
 #include <sol/sol.hpp>
+#include <vector>
 
 const int mapWidth = 1024;
 const int mapHeight = 1024;
@@ -81,24 +82,31 @@ absl::Status Game::init()
     lua["camera"] = &WindowManager::Instance()->camera;
     lua["player_transform"] = &player->getComponent<TransformComponent>();
 
-    lua.new_usertype<GoNorthAction>("GoNorthAction", sol::constructors<GoNorthAction()>());
-    lua.new_usertype<GoSouthAction>("GoSouthAction", sol::constructors<GoSouthAction()>());
-    lua.set_function("action_go_north",
-                     []() -> std::shared_ptr<Action> { return std::make_shared<GoNorthAction>(); });
-    lua.set_function("action_go_south",
-                     []() -> std::shared_ptr<Action> { return std::make_shared<GoSouthAction>(); });
+    lua.new_enum<Action>("action", { { "go_north", Action::GoNorth }, { "go_south", Action::GoSouth } });
+    lua.new_enum<NpcType>("npc_type", { { "fat_man_blue", NpcType::FatManBlue } });
+    lua.set_function("add_npc", addNpc);
 
-    lua.set_function("add_npc", AddNpc);
-    lua.script(R"(
-         v = vec2.new(440, 220)
-         actions = {action_go_north, action_go_south}
-         npc = add_npc(v, "npc", actions)
-    )");
-    if (lua["v"].valid())
-    {
-        LOG(INFO) << "Vector2: " << lua["v"].get<Vector2>();
-    }
-    // AddNpc(Point2(440, 220), "npc");
+    // lua.script(R"(
+    //      npc1 = add_npc(vec2.new(396, 220), npc_type.fat_man_blue, {
+    //         action.go_north,
+    //         action.go_south,
+    //         action.go_south,
+    //         action.go_north,
+    //         action.go_north,
+    //         action.go_south,
+    //         action.go_south,
+    //      })
+
+    //     npc2 = add_npc(vec2.new(352, 220), npc_type.fat_man_blue, {
+    //         action.go_north,
+    //         action.go_south,
+    //         action.go_south,
+    //         action.go_north,
+    //         action.go_north,
+    //         action.go_south,
+    //         action.go_south,
+    //      })
+    // )");
 
     running = true;
     return absl::OkStatus();
@@ -157,22 +165,6 @@ void Game::update()
         camera.y = mapHeight - camera.h;
 
     WindowManager::Instance()->camera = camera;
-
-    // lua.script("cam = camera");
-    // if (lua["cam"].valid()) {
-    //     LOG(INFO) << "X camera " << lua["cam"].get<SDL_Rect>().x;
-    //     LOG(INFO) << "Y camera " << lua["cam"].get<SDL_Rect>().y;
-    //     LOG(INFO) << "W camera " << lua["cam"].get<SDL_Rect>().w;
-    // }
-
-    // lua.script("pt = player_transform.point2");
-    // lua.script("psize = player_transform.size2");
-    // if (lua["pt"].valid()) {
-    //     LOG(INFO) << "Player point2: " << lua["pt"].get<Point2>();
-    // }
-    // if (lua["psize"].valid()) {
-    //     LOG(INFO) << "Player size2: " << lua["psize"].get<Size2>();
-    // }
 }
 
 void Game::render()

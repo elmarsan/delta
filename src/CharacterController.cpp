@@ -13,6 +13,7 @@ void CharacterController::update()
     if (transform->point2 == targetPoint2)
         onTargetPoint2Reached();
 
+    // TODO: Timer
     const int FPS = 60;
     const int frameDelay = 10000 / FPS;
     int frameTime = SDL_GetTicks64() - collisionTick;
