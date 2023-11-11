@@ -24,6 +24,7 @@ void CharacterController::update()
     }
 }
 
+// TODO: Improve collision system and move this function to somewhere.
 bool CharacterController::hasCollider(Point2 point2)
 {
     for (auto& c: manager.getGroup(Game::groupCollider))

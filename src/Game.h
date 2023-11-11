@@ -23,7 +23,6 @@ class Game
         groupMap,
         groupPlayer,
         groupCollider,
-        groupTeleport,
         groupNpc
     };
 

@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_CXX_FLAGS "-Wall -fsanitize=address")
 
-
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG)
@@ -27,7 +26,7 @@ include_directories(
 )
 
 add_executable(Delta 
-    src/main.cpp 
+    src/Main.cpp 
     src/Game.cpp 
     src/MapManager.cpp
     src/WorldManager.cpp

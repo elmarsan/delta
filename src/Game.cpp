@@ -42,7 +42,6 @@ std::shared_ptr<Player> player;
 auto& tiles(manager.getGroup(Game::groupMap));
 auto& players(manager.getGroup(Game::groupPlayer));
 auto& colliders(manager.getGroup(Game::groupCollider));
-auto& teleports(manager.getGroup(Game::groupTeleport));
 
 WorldMap currentMap;
 

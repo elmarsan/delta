@@ -23,6 +23,7 @@ class SpriteComponent: public Component
     Size2 size2;
     Point2 textureSrc;
 
+    // TODO: Improve animation handling.
     std::map<std::string, Animation*> animations;
     std::string currentAnimation;
 

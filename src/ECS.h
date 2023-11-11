@@ -53,7 +53,6 @@ class Entity
 {
   public:
     Entity(Manager& manager): manager(manager) {}
-    virtual ~Entity() {}
 
     virtual void init() {}
 
