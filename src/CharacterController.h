@@ -20,6 +20,8 @@ class CharacterController: public Component
     void goEast();
     void goWest();
     void setDirection(Direction direction);
+    void lockMovement();
+    void unlockMovement();
 
   private:
     TransformComponent* transform;
@@ -27,6 +29,7 @@ class CharacterController: public Component
     Point2 targetPoint2;
     bool colliding;
     Uint64 collisionTick;
+    bool locked = false;
 
     void collidePoint2();
     void onTargetPoint2Reached();

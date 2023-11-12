@@ -1,6 +1,7 @@
 #include "Npc.h"
 
 #include "src/ColliderComponent.h"
+#include "src/DetectorComponent.h"
 
 void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour)
 {
@@ -23,6 +24,8 @@ void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour)
         for (auto& a: animations.value())
             sprite->addAnimation(a.first, a.second);
     }
+
+    npc->addComponent<DetectorComponent>(2, 3);
 
     npc->addGroup(Game::groupPlayer);
     npc->addGroup(Game::groupCollider);

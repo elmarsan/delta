@@ -1,4 +1,5 @@
 #include "CharacterController.h"
+
 #include "absl/log/log.h"
 #include "src/ColliderComponent.h"
 
@@ -10,6 +11,9 @@ void CharacterController::init()
 
 void CharacterController::update()
 {
+    if (locked)
+        return;
+
     if (transform->point2 == targetPoint2)
         onTargetPoint2Reached();
 
@@ -181,4 +185,13 @@ void CharacterController::collidePoint2()
 {
     colliding = true;
     collisionTick = SDL_GetTicks64();
+}
+
+void CharacterController::lockMovement()
+{
+    locked = true;
+}
+void CharacterController::unlockMovement()
+{
+    locked = false;
 }

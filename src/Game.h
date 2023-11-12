@@ -26,6 +26,9 @@ class Game
         groupNpc
     };
 
+    static void lockCharacterControllers();
+    static void unlockCharacterControllers();
+
   private:
     bool running;
 };
