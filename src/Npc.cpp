@@ -25,7 +25,7 @@ void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour)
             sprite->addAnimation(a.first, a.second);
     }
 
-    npc->addComponent<DetectorComponent>(2, 3);
+    npc->addComponent<DetectorComponent>(3, 4);
 
     npc->addGroup(Game::groupPlayer);
     npc->addGroup(Game::groupCollider);

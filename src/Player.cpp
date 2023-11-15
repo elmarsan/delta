@@ -9,7 +9,7 @@ void Player::init()
     auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
-    transform = &addComponent<TransformComponent>(Point2(440, 396));
+    transform = &addComponent<TransformComponent>(Point2(440, 308));
     sprite = &addComponent<SpriteComponent>("p1", Size2(14, 21));
     controller = &addComponent<CharacterController>();
     collider = &addComponent<ColliderComponent>("Player");

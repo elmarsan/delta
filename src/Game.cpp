@@ -85,16 +85,29 @@ absl::Status Game::init()
     lua.new_enum<NpcType>("npc_type", { { "fat_man_blue", NpcType::FatManBlue } });
     lua.set_function("add_npc", addNpc);
 
-    addNpc(Point2(440, 220),
+    addNpc(Point2(440, 264),
            NpcType::FatManBlue,
            Behaviour {
-               Action::Idle,
-               Action::RotEast,
-               Action::Idle,
+               // Action::Idle,
+               // Action::RotEast,
+               // Action::Idle,
                Action::RotNorth,
-               Action::Idle,
+               // Action::Idle,
+               // Action::RotWest,
+               // Action::Idle,
+               // Action::RotSouth,
+           });
+
+    addNpc(Point2(308, 308),
+           NpcType::FatManBlue,
+           Behaviour {
+               // Action::Idle,
+               Action::RotEast,
+               // Action::Idle,
+               Action::RotNorth,
+               // Action::Idle,
                Action::RotWest,
-               Action::Idle,
+               // Action::Idle,
                Action::RotSouth,
            });
 
@@ -107,7 +120,7 @@ absl::Status Game::init()
     //         action.go_north,
     //         action.go_south,
     //         action.go_south,
-    //      })
+    //      });
 
     //     npc2 = add_npc(vec2.new(352, 220), npc_type.fat_man_blue, {
     //         action.go_north,
@@ -140,10 +153,10 @@ void Game::handleEvents()
             auto key = event.key.keysym.sym;
             switch (key)
             {
-                case SDLK_UP: player->goNorth(); break;
-                case SDLK_DOWN: player->goSouth(); break;
-                case SDLK_LEFT: player->goWest(); break;
-                case SDLK_RIGHT: player->goEast(); break;
+                case SDLK_UP: player->go(Direction::North); break;
+                case SDLK_DOWN: player->go(Direction::South); break;
+                case SDLK_LEFT: player->go(Direction::West); break;
+                case SDLK_RIGHT: player->go(Direction::East); break;
             }
         }
     }
@@ -212,24 +225,24 @@ bool Game::isRunning()
     return running;
 }
 
-void Game::lockCharacterControllers()
-{
-    for (auto p: players)
-    {
-        if (!p->hasComponent<CharacterController>())
-            p->getComponent<CharacterController>().lockMovement();
-        else
-            LOG(ERROR) << "Player/Npc has not character controller";
-    }
-}
+// void Game::lockCharacterControllers()
+// {
+//     for (auto p: players)
+//     {
+//         if (!p->hasComponent<CharacterController>())
+//             p->getComponent<CharacterController>().lockMovement();
+//         else
+//             LOG(ERROR) << "Player/Npc has not character controller";
+//     }
+// }
 
-void Game::unlockCharacterControllers()
-{
-    for (auto p: players)
-    {
-        if (!p->hasComponent<CharacterController>())
-            p->getComponent<CharacterController>().unlockMovement();
-        else
-            LOG(ERROR) << "Player/Npc has not character controller";
-    }
-}
+// void Game::unlockCharacterControllers()
+// {
+//     for (auto p: players)
+//     {
+//         if (!p->hasComponent<CharacterController>())
+//             p->getComponent<CharacterController>().unlockMovement();
+//         else
+//             LOG(ERROR) << "Player/Npc has not character controller";
+//     }
+// }

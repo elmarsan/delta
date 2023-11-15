@@ -1,5 +1,7 @@
 #pragma once
 
+#include "absl/log/log.h"
+
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -102,6 +104,26 @@ class Entity
     {
         auto ptr(componentArray[getComponentTypeID<T>()]);
         return *static_cast<T*>(ptr);
+    }
+
+    template <typename T>
+    void removeComponent()
+    {
+        auto typeId = getComponentTypeID<T>();
+        auto it = std::remove_if(components.begin(), components.end(), [typeId, this](const auto& component) {
+            return componentArray[typeId] == component.get();
+        });
+
+        if (it != components.end())
+        {
+            // Delete the associated object before removing it from the vector
+            delete it->get();
+            components.erase(it, components.end());
+
+            // Update componentArray and componentBitSet
+            componentArray[typeId] = nullptr;
+            componentBitSet[typeId] = false;
+        }
     }
 
   private:
