@@ -23,7 +23,7 @@ class Game
         groupMap,
         groupPlayer,
         groupCollider,
-        groupNpc
+        groupNpc,
     };
 
   private:

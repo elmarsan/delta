@@ -3,7 +3,7 @@
 #include "Animation.h"
 #include "ECS.h"
 #include "TransformComponent.h"
-#include "Vector2.h"
+#include "Vec2.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
 #include "Game.h"

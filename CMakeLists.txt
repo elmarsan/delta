@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 project(delta)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_CXX_FLAGS "-Wall -fsanitize=address")
@@ -32,7 +32,8 @@ add_executable(Delta
     src/WorldManager.cpp
     src/TileManager.cpp
     src/ECS.cpp
-    src/Vector2.cpp 
+    src/Vec2.cpp 
+    src/Polygon.cpp 
     src/AssetLoader.cpp
     src/WindowManager.cpp
     src/CharacterController.cpp

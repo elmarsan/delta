@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector2.h"
+#include "Vec2.h"
 
 #include <SDL2/SDL_render.h>
 #include <map>

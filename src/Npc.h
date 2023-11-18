@@ -2,7 +2,7 @@
 
 #include "BehaviourComponent.h"
 #include "ECS.h"
-#include "Vector2.h"
+#include "Vec2.h"
 
 #include <memory>
 #include <vector>

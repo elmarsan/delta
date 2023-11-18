@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector2.h"
+#include "Vec2.h"
 
 #include <vector>
 
@@ -16,7 +16,7 @@ class Animation
     ~Animation() = default;
 
     int numFrames() const { return frames.size(); }
-    Vector2 getFramePos(int i) const { return frames[i]; }
+    Vec2<int> getFramePos(int i) const { return frames[i]; }
     void nextFrame()
     {
         if (index == numFrames() - 1)

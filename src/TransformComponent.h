@@ -2,7 +2,7 @@
 
 #include "ECS.h"
 #include "Game.h"
-#include "Vector2.h"
+#include "Vec2.h"
 
 enum class Direction
 {

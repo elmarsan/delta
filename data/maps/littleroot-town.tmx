@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="9">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="10">
+ <editorsettings>
+  <export target="../../../../littleroot-town.lua" format="lua"/>
+ </editorsettings>
  <tileset firstgid="1" source="../tiles/outdoor_16x16.tsx"/>
- <layer id="2" name="1" width="20" height="20" locked="1">
+ <layer id="2" name="1" width="20" height="20" visible="0" locked="1">
   <data encoding="csv">
 114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,
 114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,
@@ -25,7 +28,12 @@
 114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114
 </data>
  </layer>
- <layer id="1" name="2" width="20" height="20" locked="1">
+ <objectgroup id="6" name="Object Layer 1">
+  <object id="9" x="244.97" y="146.675">
+   <polygon points="-13.5455,10 1.57001,65.3851 54.6364,65.0582 54.3224,-8.50007 0.628004,-8.82699"/>
+  </object>
+ </objectgroup>
+ <layer id="1" name="2" width="20" height="20" visible="0" locked="1">
   <data encoding="csv">
 212,213,212,213,212,213,212,213,212,213,0,0,212,213,212,213,212,213,212,213,
 438,439,325,326,325,326,325,326,325,326,0,0,325,326,325,326,325,326,438,439,

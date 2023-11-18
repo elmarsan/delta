@@ -10,7 +10,7 @@
 #include "SpriteComponent.h"
 #include "TileComponent.h"
 #include "TransformComponent.h"
-#include "Vector2.h"
+#include "Vec2.h"
 #include "WindowManager.h"
 #include "WorldManager.h"
 #include "absl/log/log.h"
@@ -56,10 +56,10 @@ absl::Status Game::init()
     sol::usertype<Entity> entityType = lua.new_usertype<Entity>("entity");
     entityType["active"] = &Entity::isActive;
 
-    sol::usertype<Vector2> vec2Type =
-        lua.new_usertype<Vector2>("vec2", sol::constructors<Vector2(int, int)>());
-    vec2Type.set("x", sol::readonly(&Vector2::x));
-    vec2Type.set("y", sol::readonly(&Vector2::y));
+    sol::usertype<Vec2<int>> vec2Type =
+        lua.new_usertype<Vec2<int>>("vec2", sol::constructors<Vec2<int>(int, int)>());
+    vec2Type.set("x", sol::readonly(&Vec2<int>::x));
+    vec2Type.set("y", sol::readonly(&Vec2<int>::y));
 
     sol::usertype<TransformComponent> transformComponentType =
         lua.new_usertype<TransformComponent>("transform");

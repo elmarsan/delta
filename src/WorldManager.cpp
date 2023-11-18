@@ -2,7 +2,7 @@
 
 #include "MapManager.h"
 #include "TileManager.h"
-#include "Vector2.h"
+#include "Vec2.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_format.h"
@@ -45,7 +45,7 @@ bool WorldMap::isAdjacent(const WorldMap& map) const
     return false;
 }
 
-bool WorldMap::pointIn(const Vector2& point) const
+bool WorldMap::pointIn(const Point2& point) const
 {
     SDL_Point p { point.x, point.y };
     return SDL_PointInRect(&p, &rect) == SDL_TRUE;
@@ -61,7 +61,7 @@ SDL_Rect WorldMap::getRect() const
     return rect;
 }
 
-Vector2 WorldMap::getWorldPos() const
+Point2 WorldMap::getWorldPos() const
 {
     return point2;
 }
@@ -146,7 +146,7 @@ absl::Status WorldManager::setCurrentMap(MapID mapID)
 }
 
 
-absl::StatusOr<WorldMap> WorldManager::findMapFromPos(Vector2 pos) const
+absl::StatusOr<WorldMap> WorldManager::findMapFromPos(Point2 pos) const
 {
     SDL_Point point = { pos.x, pos.y };
     for (auto& map: maps)

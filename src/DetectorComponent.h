@@ -6,7 +6,6 @@
 #include "Game.h"
 #include "TransformComponent.h"
 #include "absl/log/log.h"
-#include "src/ActorManager.h"
 
 extern Manager manager;
 

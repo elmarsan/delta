@@ -22,7 +22,7 @@ class TileComponent: public Component
   public:
     Point2 gridPoint2;
 
-    TileComponent(Vector2 gridPos, const Tile& tile): tile(tile), tilePoint2(gridPos), gridPoint2(gridPos)
+    TileComponent(Point2 gridPos, const Tile& tile): tile(tile), tilePoint2(gridPos), gridPoint2(gridPos)
     {
         src = SDL_Rect { tile.point2.x, tile.point2.y, 16, 16 };
         dst = SDL_Rect { gridPos.x, gridPos.y, 44, 44 };

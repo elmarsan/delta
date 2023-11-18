@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Asset.h"
-#include "Vector2.h"
+#include "Vec2.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_format.h"
@@ -19,10 +19,10 @@ class WorldMap
 
     double distance(const WorldMap& map) const;
     bool isAdjacent(const WorldMap& map) const;
-    bool pointIn(const Vector2& point) const;
+    bool pointIn(const Point2& point) const;
     MapID getID() const;
     SDL_Rect getRect() const;
-    Vector2 getWorldPos() const;
+    Point2 getWorldPos() const;
 
   private:
     Point2 point2;
@@ -40,7 +40,7 @@ class WorldManager
     static std::shared_ptr<WorldManager> Instance();
 
     absl::Status setCurrentMap(MapID mapID);
-    absl::StatusOr<WorldMap> findMapFromPos(Vector2 pos) const;
+    absl::StatusOr<WorldMap> findMapFromPos(Point2 pos) const;
     MapID getCurrentMapID() const;
 
   private:
