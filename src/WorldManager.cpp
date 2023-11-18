@@ -2,7 +2,7 @@
 
 #include "MapManager.h"
 #include "TileManager.h"
-#include "Vec2.h"
+#include "math/Vec2.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_format.h"

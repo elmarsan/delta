@@ -1,20 +1,5 @@
 #include "Vec2.h"
 
-#include <ostream>
-#include <string>
-
-template <typename T>
-requires Math::arithmetic<T>
-Vec2<T>::Vec2(): x(0), y(0)
-{
-}
-
-template <typename T>
-requires Math::arithmetic<T>
-Vec2<T>::Vec2(T x, T y): x(x), y(y)
-{
-}
-
 template <typename T>
 requires Math::arithmetic<T>
 Vec2<T> Vec2<T>::operator+(const Vec2& v) const

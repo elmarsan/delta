@@ -2,7 +2,7 @@
 
 template <typename T>
 requires Math::arithmetic<T>
-bool Polygon<T>::isInside(const Point2& p) const
+bool Polygon<T>::contains(const Vec2<T>& p) const
 {
     int intersectCount = 0;
     int n = size();

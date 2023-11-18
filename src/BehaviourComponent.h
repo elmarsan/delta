@@ -4,7 +4,7 @@
 #include "ECS.h"
 #include "TransformComponent.h"
 #include "absl/log/log.h"
-#include "Vec2.h"
+#include "math/Vec2.h"
 
 enum class Action
 {

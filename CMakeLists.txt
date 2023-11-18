@@ -25,21 +25,11 @@ include_directories(
     ${LUA_INCLUDE_DIRS}
 )
 
-add_executable(Delta 
-    src/Main.cpp 
-    src/Game.cpp 
-    src/MapManager.cpp
-    src/WorldManager.cpp
-    src/TileManager.cpp
-    src/ECS.cpp
-    src/Vec2.cpp 
-    src/Polygon.cpp 
-    src/AssetLoader.cpp
-    src/WindowManager.cpp
-    src/CharacterController.cpp
-    src/Player.cpp
-    src/Npc.cpp
-)
+file(GLOB_RECURSE SOURCES "src/**.cpp")
+file(GLOB_RECURSE MATH_SOURCES "src/math/*.cpp")
+
+add_executable(Delta ${SOURCES} ${MATH_SOURCES})
+
 target_include_directories(Delta 
     PRIVATE ${SDL2_INCLUDE_DIR}
 )
@@ -49,3 +39,4 @@ target_link_libraries(
     PRIVATE absl::status absl::statusor absl::strings absl::log
     PRIVATE ${LUA_LIBRARIES}
 )
+target_include_directories(Delta PRIVATE "${CMAKE_SOURCE_DIR}/src")

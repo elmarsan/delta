@@ -21,8 +21,8 @@ struct Vec2
         };
     };
 
-    Vec2();
-    Vec2(T x, T y);
+    Vec2(): x(0), y(0) {}
+    Vec2(T x, T y): x(x), y(y) {}
 
     Vec2 operator+(const Vec2& v) const;
     void operator+=(const Vec2& v);

@@ -2,29 +2,11 @@
 #include "WindowManager.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
-#include "src/Polygon.h"
-#include "src/Vec2.h"
 
 #include <SDL2/SDL.h>
-#include <cstdlib>
-#include <iostream>
 
 int main()
 {
-    auto p = Polygon<int>(PolVertex<int> { Point2(1, 1), Point2(4, 5), Point2(7, 8), Point2(1, 8) });
-    Point2 testPoint = Point2( 3, 4 );
-
-    // Verificar si el punto está dentro del polígono
-    if (p.isInside(testPoint))
-    {
-        std::cout << "El punto esta dentro del poligono.";
-    }
-    else
-    {
-        std::cout << "El punto esta fuera del poligono.";
-    }
-    // abort();
-
     // TODO: Timer
     const int FPS = 60;
     const int frameDelay = 1000 / FPS;

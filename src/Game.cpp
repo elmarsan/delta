@@ -10,7 +10,7 @@
 #include "SpriteComponent.h"
 #include "TileComponent.h"
 #include "TransformComponent.h"
-#include "Vec2.h"
+#include "math/Vec2.h"
 #include "WindowManager.h"
 #include "WorldManager.h"
 #include "absl/log/log.h"

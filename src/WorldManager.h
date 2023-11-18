@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Asset.h"
-#include "Vec2.h"
+#include "math/Vec2.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_format.h"
