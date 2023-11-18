@@ -25,7 +25,7 @@ class WindowManager
     void setWidth(int w);
     void setHeight(int h);
     
-    void renderTexture(std::shared_ptr<Texture> texture, SDL_Rect* src, SDL_Rect* dst);
+    void renderTexture(std::shared_ptr<Texture> texture, SDL_Rect* src, SDL_Rect* dst, SDL_RendererFlip flip);
 
   private:
     WindowManager(const WindowManager&) = delete;

@@ -6,6 +6,7 @@
 #include "absl/log/log.h"
 #include "Game.h"
 
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <memory>
 
@@ -65,7 +66,7 @@ class TileComponent: public Component
 
     void draw() override
     {
-        WindowManager::Instance()->renderTexture(texture, &src, &dst);
+        WindowManager::Instance()->renderTexture(texture, &src, &dst, SDL_FLIP_NONE);
 #ifdef DEBUG
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0xff, 0, 0);
         SDL_RenderDrawRect(WindowManager::Instance()->renderer, &dst);

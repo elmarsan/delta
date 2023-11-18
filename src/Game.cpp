@@ -17,6 +17,7 @@
 #include "absl/status/status.h"
 #include "sol/types.hpp"
 #include "src/BehaviourComponent.h"
+#include "src/DetectorComponent.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -85,31 +86,42 @@ absl::Status Game::init()
     lua.new_enum<NpcType>("npc_type", { { "fat_man_blue", NpcType::FatManBlue } });
     lua.set_function("add_npc", addNpc);
 
-    addNpc(Point2(440, 264),
-           NpcType::FatManBlue,
-           Behaviour {
-               // Action::Idle,
-               // Action::RotEast,
-               // Action::Idle,
-               Action::RotNorth,
-               // Action::Idle,
-               // Action::RotWest,
-               // Action::Idle,
-               // Action::RotSouth,
-           });
+    addNpc(Point2(440, 308),
+                  NpcType::FatManBlue,
+                  Behaviour {
+                      // Action::Idle,
+                      Action::RotEast,
+                      // Action::Idle,
+                      // Action::RotNorth,
+                      // Action::Idle,
+                      Action::RotWest,
+                      // Action::Idle,
+                      // Action::RotSouth,
+                  });
 
-    addNpc(Point2(308, 308),
-           NpcType::FatManBlue,
-           Behaviour {
-               // Action::Idle,
-               Action::RotEast,
-               // Action::Idle,
-               Action::RotNorth,
-               // Action::Idle,
-               Action::RotWest,
-               // Action::Idle,
-               Action::RotSouth,
-           });
+    addNpc(Point2(308, 264),
+                  NpcType::FatManBlue,
+                  Behaviour {
+                      // Action::Idle,
+                      Action::RotEast,
+                      // Action::Idle,
+                      Action::RotNorth,
+                      // Action::Idle,
+                      Action::RotWest,
+                      // Action::Idle,
+                      Action::RotSouth,
+                  });
+
+    addNpc(Point2(440, 440),
+                       NpcType::FatManBlue,
+                       Behaviour {
+                           Action::GoSouth,
+                           Action::RotNorth,
+                           Action::GoNorth,
+                           Action::RotSouth,
+                           // Action::GoNorth,
+                           // Action::GoEast,
+                       }, false);
 
     // lua.script(R"(
     //      npc1 = add_npc(vec2.new(396, 220), npc_type.fat_man_blue, {
@@ -224,25 +236,3 @@ bool Game::isRunning()
 {
     return running;
 }
-
-// void Game::lockCharacterControllers()
-// {
-//     for (auto p: players)
-//     {
-//         if (!p->hasComponent<CharacterController>())
-//             p->getComponent<CharacterController>().lockMovement();
-//         else
-//             LOG(ERROR) << "Player/Npc has not character controller";
-//     }
-// }
-
-// void Game::unlockCharacterControllers()
-// {
-//     for (auto p: players)
-//     {
-//         if (!p->hasComponent<CharacterController>())
-//             p->getComponent<CharacterController>().unlockMovement();
-//         else
-//             LOG(ERROR) << "Player/Npc has not character controller";
-//     }
-// }

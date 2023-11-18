@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "src/Game.h"
 
 void Player::init()
 {
@@ -9,7 +10,7 @@ void Player::init()
     auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
-    transform = &addComponent<TransformComponent>(Point2(440, 308));
+    transform = &addComponent<TransformComponent>(Point2(528, 352));
     sprite = &addComponent<SpriteComponent>("p1", Size2(14, 21));
     controller = &addComponent<CharacterController>();
     collider = &addComponent<ColliderComponent>("Player");

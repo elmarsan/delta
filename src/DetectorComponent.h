@@ -1,11 +1,12 @@
 #pragma once
 
+#include "BehaviourComponent.h"
 #include "CharacterController.h"
 #include "ECS.h"
 #include "Game.h"
 #include "TransformComponent.h"
 #include "absl/log/log.h"
-#include "src/BehaviourComponent.h"
+#include "src/ActorManager.h"
 
 extern Manager manager;
 
@@ -17,16 +18,9 @@ class DetectorComponent: public Component
     {
     }
 
-    void init() override
-    {
-        LOG_IF(ERROR, !entity->hasComponent<CharacterController>()) << "Missing character controller";
-        LOG_IF(ERROR, !entity->hasComponent<TransformComponent>()) << "Missing transform component";
-        character = &entity->getComponent<CharacterController>();
-        transform = &entity->getComponent<TransformComponent>();
-    }
-
     void update() override
     {
+        auto character = &entity->getComponent<CharacterController>();
         if (character->isMoving())
             return;
 
@@ -34,92 +28,101 @@ class DetectorComponent: public Component
         auto& player = manager.getGroup(Game::groupPlayer)[0];
         auto& playerPoint2 = player->getComponent<TransformComponent>().point2;
 
+        auto transform = &entity->getComponent<TransformComponent>();
         auto distance = playerPoint2 - transform->point2;
         auto yCellDiff = distance.y / 44;
         auto xCellDiff = distance.x / 44;
 
+        // Player detected in south direction.
         if (distance.x == 0 && transform->direction == Direction::South
             && transform->point2.y < playerPoint2.y && yCellDiff <= yCellThreshold)
         {
-            if (yCellDiff > 1 && !playerDetected)
+            bool reachPlayer = yCellDiff > 1 && !playerDetected;
+            bool playerIsInFront = yCellDiff == 1;
+            if (reachPlayer)
             {
-                LOG(INFO) << "Detected South: " << yCellDiff;
                 character->go(Direction::South, yCellDiff - 1);
-                for (auto& actor: manager.getGroup(Game::groupPlayer))
-                {
-                    if (actor != entity)
-                        actor->getComponent<CharacterController>().lockMovement();
-                }
+                onApproachingPlayer();
             }
-            else if (yCellDiff == 1 && !playerDetected)
+            else if (playerIsInFront && !playerDetected)
             {
-                playerDetected = true;
-                LOG(INFO) << "Player reached";
-                for (auto& actor: manager.getGroup(Game::groupPlayer))
-                {
-                    actor->getComponent<CharacterController>().unlockMovement();
-                }
+                onPlayerInFront();
             }
         }
+        // Player detected in north direction.
         else if (distance.x == 0 && transform->direction == Direction::North
                  && transform->point2.y > playerPoint2.y && -yCellDiff <= yCellThreshold)
         {
-            if (-yCellDiff > 1 && !playerDetected)
+            bool reachPlayer = -yCellDiff > 1 && !playerDetected;
+            bool playerIsInFront = -yCellDiff == 1;
+            if (reachPlayer)
             {
-                LOG(INFO) << "Detected North" << -yCellDiff;
                 character->go(Direction::North, -yCellDiff - 1);
-                for (auto& actor: manager.getGroup(Game::groupPlayer))
-                {
-                    if (actor != entity)
-                        actor->getComponent<CharacterController>().lockMovement();
-                }
+                onApproachingPlayer();
             }
-            else if (-yCellDiff == 1 && !playerDetected)
+            else if (playerIsInFront && !playerDetected)
             {
-                playerDetected = true;
-                LOG(INFO) << "Player reached";
-                for (auto& actor: manager.getGroup(Game::groupPlayer))
-                {
-                    actor->getComponent<CharacterController>().unlockMovement();
-                }
-                entity->removeComponent<BehaviourComponent>();
+                onPlayerInFront();
             }
         }
+        // Player detected in west direction.
         else if (distance.y == 0 && transform->direction == Direction::West
                  && transform->point2.x > playerPoint2.x && -xCellDiff <= xCellThreshold)
         {
-            LOG(INFO) << "Detected West";
+            bool reachPlayer = -xCellDiff > 1 && !playerDetected;
+            bool playerIsInFront = -xCellDiff == 1;
+            if (reachPlayer)
+            {
+                character->go(Direction::West, -xCellDiff - 1);
+                onApproachingPlayer();
+            }
+            else if (playerIsInFront && !playerDetected)
+            {
+                onPlayerInFront();
+            }
         }
+        // Player detected in south direction.
         else if (distance.y == 0 && transform->direction == Direction::East
                  && transform->point2.x < playerPoint2.x && xCellDiff <= xCellThreshold)
         {
-            if (xCellDiff > 1 && !playerDetected)
+            bool reachPlayer = xCellDiff > 1 && !playerDetected;
+            bool playerIsInFront = xCellDiff == 1;
+            if (reachPlayer)
             {
-                LOG(INFO) << "Detected East" << xCellDiff;
                 character->go(Direction::East, xCellDiff - 1);
-                for (auto& actor: manager.getGroup(Game::groupPlayer))
-                {
-                    if (actor != entity)
-                        actor->getComponent<CharacterController>().lockMovement();
-                }
+                onApproachingPlayer();
             }
-            else if (xCellDiff == 1 && !playerDetected)
+            else if (playerIsInFront && !playerDetected)
             {
-                playerDetected = true;
-                LOG(INFO) << "Player reached";
-                for (auto& actor: manager.getGroup(Game::groupPlayer))
-                {
-                    actor->getComponent<CharacterController>().unlockMovement();
-                }
-                entity->removeComponent<BehaviourComponent>();
+                onPlayerInFront();
             }
         }
     }
 
   private:
-    CharacterController* character;
-    TransformComponent* transform;
     int xCellThreshold;
     int yCellThreshold;
     bool playerDetected;
+
+    void onPlayerInFront()
+    {
+        playerDetected = true;
+        for (auto& actor: manager.getGroup(Game::groupPlayer))
+        {
+            if (actor != entity)
+                actor->getComponent<CharacterController>().unlockMovement();
+        }
+    }
+
+    void onApproachingPlayer()
+    {
+        if (entity->hasComponent<BehaviourComponent>())
+            entity->removeComponent<BehaviourComponent>();
+
+        for (auto& actor: manager.getGroup(Game::groupPlayer))
+        {
+            if (actor != entity)
+                actor->getComponent<CharacterController>().lockMovement();
+        }
+    }
 };

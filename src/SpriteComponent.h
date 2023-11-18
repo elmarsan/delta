@@ -19,6 +19,7 @@ class SpriteComponent: public Component
   private:
     TransformComponent* transform;
     std::shared_ptr<Texture> texture;
+    SDL_RendererFlip flip;
     SDL_Rect src, dst;
     Size2 size2;
     Point2 textureSrc;
@@ -65,12 +66,12 @@ class SpriteComponent: public Component
         src.h = size2.h;
     }
 
-    void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst); }
+    void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst, flip); }
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
     {
         currentAnimation = name;
-        texture->flip = animFlip;
+        flip = animFlip;
     }
 
     void setAnimationFrame(const std::string& name, int frame, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
@@ -81,7 +82,7 @@ class SpriteComponent: public Component
         auto animation = animations[name];
         if (animation != nullptr)
         {
-            texture->flip = animFlip;
+            flip = animFlip;
             textureSrc = animation->getFramePos(frame);
         }
     }

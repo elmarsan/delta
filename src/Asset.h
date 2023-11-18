@@ -21,7 +21,6 @@ class Texture: public Asset
 {
   public:
     SDL_Texture* sdlTexture;
-    SDL_RendererFlip flip;
 
     Texture(AssetID ID, SDL_Texture* sdlTexture): sdlTexture(sdlTexture), ID(ID) {}
 

@@ -68,10 +68,10 @@ void WindowManager::setHeight(int h)
     camera.h = h;
 }
 
-void WindowManager::renderTexture(std::shared_ptr<Texture> texture, SDL_Rect* src, SDL_Rect* dst)
+void WindowManager::renderTexture(std::shared_ptr<Texture> texture, SDL_Rect* src, SDL_Rect* dst, SDL_RendererFlip flip)
 {
     SDL_RenderCopyEx(
-        WindowManager::Instance()->renderer, texture->sdlTexture, src, dst, 0, NULL, texture->flip);
+        WindowManager::Instance()->renderer, texture->sdlTexture, src, dst, 0, NULL, flip);
 }
 
 WindowManager::~WindowManager()

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "absl/log/log.h"
-
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -116,11 +114,8 @@ class Entity
 
         if (it != components.end())
         {
-            // Delete the associated object before removing it from the vector
             delete it->get();
             components.erase(it, components.end());
-
-            // Update componentArray and componentBitSet
             componentArray[typeId] = nullptr;
             componentBitSet[typeId] = false;
         }

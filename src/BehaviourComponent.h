@@ -2,8 +2,9 @@
 
 #include "CharacterController.h"
 #include "ECS.h"
+#include "TransformComponent.h"
 #include "absl/log/log.h"
-#include "src/TransformComponent.h"
+#include "src/Vector2.h"
 
 enum class Action
 {
@@ -25,12 +26,6 @@ class BehaviourComponent: public Component
   public:
     BehaviourComponent(Behaviour behaviour): behaviour(std::move(behaviour)), actionIdx(0) {}
 
-    void init() override 
-    {
-        LOG_IF(ERROR, !entity->hasComponent<TransformComponent>()) << "Missing transform component";
-        character = &entity->getComponent<CharacterController>();
-    }
-
     void update() override
     {
         if (behaviour.size() == 0)
@@ -44,6 +39,7 @@ class BehaviourComponent: public Component
             if (actionIdx >= behaviour.size())
                 actionIdx = 0;
 
+            auto character = &entity->getComponent<CharacterController>();
             switch (action)
             {
                 case Action::GoNorth: character->go(Direction::North); break;
@@ -61,7 +57,6 @@ class BehaviourComponent: public Component
     }
 
   private:
-    CharacterController* character;
     int actionIdx;
     Behaviour behaviour;
     Uint64 lastMovementTick;

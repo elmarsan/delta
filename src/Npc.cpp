@@ -2,14 +2,17 @@
 
 #include "src/ColliderComponent.h"
 #include "src/DetectorComponent.h"
+#include "src/ECS.h"
 
-void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour)
+#include <memory>
+
+void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour, bool detector)
 {
     auto loadTextureRes = Game::assetManager->getOrLoad<Texture>("npc");
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
     auto npc = manager.addEntity();
-    auto transform = &npc->addComponent<TransformComponent>(point2);
+    npc->addComponent<TransformComponent>(point2);
     // TODO: Do not hardcode npc texture src.
     auto sprite = &npc->addComponent<SpriteComponent>("npc", Size2(16, 20), Point2(2, 325));
     npc->addComponent<CharacterController>();
@@ -25,7 +28,8 @@ void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour)
             sprite->addAnimation(a.first, a.second);
     }
 
-    npc->addComponent<DetectorComponent>(3, 4);
+    if (detector)
+        npc->addComponent<DetectorComponent>(5, 4);
 
     npc->addGroup(Game::groupPlayer);
     npc->addGroup(Game::groupCollider);

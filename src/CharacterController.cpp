@@ -142,6 +142,9 @@ void CharacterController::goWest(int cells)
 
 void CharacterController::setDirection(Direction direction)
 {
+    if (locked)
+        return;
+
     switch (direction)
     {
         case Direction::North:
