@@ -10,11 +10,12 @@
 #include "SpriteComponent.h"
 #include "TileComponent.h"
 #include "TransformComponent.h"
-#include "math/Vec2.h"
 #include "WindowManager.h"
 #include "WorldManager.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
+#include "math/Rect.h"
+#include "math/Vec2.h"
 #include "sol/types.hpp"
 #include "src/BehaviourComponent.h"
 #include "src/DetectorComponent.h"
@@ -39,6 +40,8 @@ Manager manager;
 std::unique_ptr<AssetManager> Game::assetManager = std::make_unique<AssetManager>();
 
 std::shared_ptr<Player> player;
+std::shared_ptr<Entity> npc3;
+Rect<int> rect(396, 396, 44 * 3, 44 * 3);
 
 auto& tiles(manager.getGroup(Game::groupMap));
 auto& players(manager.getGroup(Game::groupPlayer));
@@ -87,41 +90,41 @@ absl::Status Game::init()
     lua.set_function("add_npc", addNpc);
 
     addNpc(Point2(440, 308),
-                  NpcType::FatManBlue,
-                  Behaviour {
-                      // Action::Idle,
-                      Action::RotEast,
-                      // Action::Idle,
-                      // Action::RotNorth,
-                      // Action::Idle,
-                      Action::RotWest,
-                      // Action::Idle,
-                      // Action::RotSouth,
-                  });
+           NpcType::FatManBlue,
+           Behaviour {
+               // Action::Idle,
+               Action::RotEast,
+               // Action::Idle,
+               // Action::RotNorth,
+               // Action::Idle,
+               Action::RotWest,
+               // Action::Idle,
+               // Action::RotSouth,
+           });
 
     addNpc(Point2(308, 264),
+           NpcType::FatManBlue,
+           Behaviour {
+               // Action::Idle,
+               Action::RotEast,
+               // Action::Idle,
+               Action::RotNorth,
+               // Action::Idle,
+               Action::RotWest,
+               // Action::Idle,
+               Action::RotSouth,
+           });
+
+    npc3 = addNpc(Point2(440, 440),
                   NpcType::FatManBlue,
                   Behaviour {
-                      // Action::Idle,
-                      Action::RotEast,
-                      // Action::Idle,
-                      Action::RotNorth,
-                      // Action::Idle,
-                      Action::RotWest,
-                      // Action::Idle,
-                      Action::RotSouth,
-                  });
-
-    addNpc(Point2(440, 440),
-                       NpcType::FatManBlue,
-                       Behaviour {
-                           Action::GoSouth,
-                           Action::RotNorth,
-                           Action::GoNorth,
-                           Action::RotSouth,
-                           // Action::GoNorth,
-                           // Action::GoEast,
-                       }, false);
+                      Action::GoSouth,
+                      // Action::GoSouth, Action::RotNorth, Action::GoNorth, Action::RotSouth,
+                      // Action::GoNorth,
+                      // Action::GoEast,
+                  },
+                  false);
+    npc3->getComponent<BehaviourComponent>().plane2 = &rect;
 
     // lua.script(R"(
     //      npc1 = add_npc(vec2.new(396, 220), npc_type.fat_man_blue, {
@@ -229,6 +232,12 @@ void Game::render()
             t->draw();
         }
     }
+    auto x = 396 - WindowManager::Instance()->camera.x;
+    auto y = 396 - WindowManager::Instance()->camera.y;
+    SDL_Rect npcRect { x, y, 44 * 3, 44 * 3 };
+    SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
+    SDL_RenderDrawRect(WindowManager::Instance()->renderer, &npcRect);
+    SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     SDL_RenderPresent(WindowManager::Instance()->renderer);
 }
 

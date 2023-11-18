@@ -6,7 +6,8 @@
 
 #include <memory>
 
-void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour, bool detector)
+// void (addNpcPoint2 point2, NpcType npcType, Behaviour behaviour, bool detector)
+std::shared_ptr<Entity> addNpc(Point2 point2, NpcType npcType, Behaviour behaviour, bool detector)
 {
     auto loadTextureRes = Game::assetManager->getOrLoad<Texture>("npc");
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
@@ -33,6 +34,7 @@ void addNpc(Point2 point2, NpcType npcType, Behaviour behaviour, bool detector)
 
     npc->addGroup(Game::groupPlayer);
     npc->addGroup(Game::groupCollider);
+    return npc;
 }
 
 absl::StatusOr<std::map<std::string, Animation*>> getNpcAnimations(NpcType npcType)

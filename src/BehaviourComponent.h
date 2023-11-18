@@ -4,7 +4,10 @@
 #include "ECS.h"
 #include "TransformComponent.h"
 #include "absl/log/log.h"
+#include "math/Plane2.h"
 #include "math/Vec2.h"
+#include <memory>
+#include <utility>
 
 enum class Action
 {
@@ -24,6 +27,7 @@ using Behaviour = std::vector<Action>;
 class BehaviourComponent: public Component
 {
   public:
+    Plane2<int>* plane2;
     BehaviourComponent(Behaviour behaviour): behaviour(std::move(behaviour)), actionIdx(0) {}
 
     void update() override
@@ -40,10 +44,29 @@ class BehaviourComponent: public Component
                 actionIdx = 0;
 
             auto character = &entity->getComponent<CharacterController>();
+            auto transform = &entity->getComponent<TransformComponent>();
             switch (action)
             {
-                case Action::GoNorth: character->go(Direction::North); break;
-                case Action::GoSouth: character->go(Direction::South); break;
+                case Action::GoNorth: 
+                    if (plane2 != nullptr)
+                    {
+                        auto target = Point2(transform->point2.x, transform->point2.y - 44);
+                        if (plane2->contains(target))
+                            character->go(Direction::North); 
+                        else 
+                            LOG(INFO) << "Plane2 limit";
+                    }
+                    break;
+                case Action::GoSouth: 
+                    if (plane2 != nullptr)
+                    {
+                        auto target = Point2(transform->point2.x, transform->point2.y + 44);
+                        if (plane2->contains(target))
+                            character->go(Direction::South); 
+                        else 
+                            LOG(INFO) << "Plane2 limit";
+                    }
+                    break;
                 case Action::GoEast: character->go(Direction::East); break;
                 case Action::GoWest: character->go(Direction::West); break;
                 case Action::RotNorth: character->setDirection(Direction::North); break;

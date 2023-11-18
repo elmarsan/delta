@@ -14,6 +14,7 @@ template <typename T>
 requires Math::arithmetic<T>
 struct Polygon: Plane2<T>
 {
+    Point2 pos;
     PolVertex<T> vertex;
 
     Polygon(PolVertex<T> vertex): vertex(std::move(vertex)) {}
