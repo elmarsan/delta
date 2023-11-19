@@ -115,15 +115,7 @@ absl::Status Game::init()
                Action::RotSouth,
            });
 
-    npc3 = addNpc(Point2(440, 440),
-                  NpcType::FatManBlue,
-                  Behaviour {
-                      Action::GoSouth,
-                      // Action::GoSouth, Action::RotNorth, Action::GoNorth, Action::RotSouth,
-                      // Action::GoNorth,
-                      // Action::GoEast,
-                  },
-                  false);
+    npc3 = addNpc(Point2(440, 440), NpcType::FatManBlue, Behaviour { Action::Random }, false);
     npc3->getComponent<BehaviourComponent>().plane2 = &rect;
 
     // lua.script(R"(

@@ -6,6 +6,7 @@
 #include "absl/log/log.h"
 #include "math/Plane2.h"
 #include "math/Vec2.h"
+
 #include <memory>
 #include <utility>
 
@@ -20,6 +21,7 @@ enum class Action
     RotEast,
     RotWest,
     Idle,
+    Random,
 };
 
 using Behaviour = std::vector<Action>;
@@ -45,35 +47,73 @@ class BehaviourComponent: public Component
 
             auto character = &entity->getComponent<CharacterController>();
             auto transform = &entity->getComponent<TransformComponent>();
+
+            if (action == Action::Random)
+            {
+                std::srand(std::time(nullptr));
+                int rand_action = std::rand() % 8;
+                action = static_cast<Action>(rand_action);
+            }
             switch (action)
             {
-                case Action::GoNorth: 
+                case Action::GoNorth:
                     if (plane2 != nullptr)
                     {
                         auto target = Point2(transform->point2.x, transform->point2.y - 44);
                         if (plane2->contains(target))
-                            character->go(Direction::North); 
-                        else 
-                            LOG(INFO) << "Plane2 limit";
+                            character->go(Direction::North);
+                        else
+                            LOG(INFO) << "Plane2 north limit";
                     }
                     break;
-                case Action::GoSouth: 
+                case Action::GoSouth:
                     if (plane2 != nullptr)
                     {
                         auto target = Point2(transform->point2.x, transform->point2.y + 44);
                         if (plane2->contains(target))
-                            character->go(Direction::South); 
-                        else 
-                            LOG(INFO) << "Plane2 limit";
+                            character->go(Direction::South);
+                        else
+                            LOG(INFO) << "Plane2 south limit";
                     }
                     break;
-                case Action::GoEast: character->go(Direction::East); break;
-                case Action::GoWest: character->go(Direction::West); break;
-                case Action::RotNorth: character->setDirection(Direction::North); break;
-                case Action::RotSouth: character->setDirection(Direction::South); break;
-                case Action::RotEast: character->setDirection(Direction::East); break;
-                case Action::RotWest: character->setDirection(Direction::West); break;
+                case Action::GoEast:
+                    if (plane2 != nullptr)
+                    {
+                        auto target = Point2(transform->point2.x + 44, transform->point2.y);
+                        if (plane2->contains(target))
+                            character->go(Direction::East);
+                        else
+                            LOG(INFO) << "Plane2 east limit";
+                    }
+                    break;
+                case Action::GoWest:
+                    if (plane2 != nullptr)
+                    {
+                        auto target = Point2(transform->point2.x - 44, transform->point2.y);
+                        if (plane2->contains(target))
+                            character->go(Direction::West);
+                        else
+                            LOG(INFO) << "Plane2 west limit";
+                    }
+                    break;
+                case Action::RotNorth:
+                    if (transform->direction != Direction::North)
+                        character->setDirection(Direction::North);
+                    break;
+                case Action::RotSouth:
+                    if (transform->direction != Direction::South)
+                        character->setDirection(Direction::South);
+                    break;
+                case Action::RotEast:
+                    if (transform->direction != Direction::East)
+                        character->setDirection(Direction::East);
+                    break;
+                case Action::RotWest:
+                    if (transform->direction != Direction::West)
+                        character->setDirection(Direction::West);
+                    break;
                 case Action::Idle: break;
+                case Action::Random: break;
             }
             lastMovementTick = ticks;
         }
