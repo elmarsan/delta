@@ -8,7 +8,7 @@
 #include "absl/strings/str_format.h"
 #include "nlohmann/json.hpp"
 
-#include <SDL2/SDL_Rect.h>
+#include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
 #include <filesystem>

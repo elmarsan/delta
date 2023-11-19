@@ -45,7 +45,7 @@ class ColliderComponent: public Component
 class Collision
 {
   public:
-    static bool AABB(const SDL_FRect a, SDL_FRect b) { return SDL_HasRectIntersectionFloat(&a, &b) == SDL_TRUE; }
+    static bool AABB(const SDL_FRect a, SDL_FRect b) { return SDL_HasIntersectionF(&a, &b) == SDL_TRUE; }
     static bool AABB(const ColliderComponent& colA, const ColliderComponent& colB)
     {
         return AABB(colA.collider, colB.collider);
