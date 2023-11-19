@@ -8,14 +8,13 @@
 #include "absl/strings/str_format.h"
 #include "nlohmann/json.hpp"
 
-#include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_Rect.h>
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
 
-WorldMap::WorldMap(std::string filename, int x, int y, int w, int h)
+WorldMap::WorldMap(std::string filename, float x, float y, float w, float h)
 {
     size_t lastDotPos = filename.find_last_of('.');
     if (lastDotPos != std::string::npos)
@@ -47,8 +46,8 @@ bool WorldMap::isAdjacent(const WorldMap& map) const
 
 bool WorldMap::pointIn(const Point2& point) const
 {
-    SDL_Point p { point.x, point.y };
-    return SDL_PointInRect(&p, &rect) == SDL_TRUE;
+    SDL_FPoint p { point.x, point.y };
+    return SDL_PointInFRect(&p, &rect) == SDL_TRUE;
 }
 
 MapID WorldMap::getID() const
@@ -56,7 +55,7 @@ MapID WorldMap::getID() const
     return mapID;
 }
 
-SDL_Rect WorldMap::getRect() const
+SDL_FRect WorldMap::getRect() const
 {
     return rect;
 }
@@ -148,11 +147,11 @@ absl::Status WorldManager::setCurrentMap(MapID mapID)
 
 absl::StatusOr<WorldMap> WorldManager::findMapFromPos(Point2 pos) const
 {
-    SDL_Point point = { pos.x, pos.y };
+    SDL_FPoint point = { pos.x, pos.y };
     for (auto& map: maps)
     {
         auto rect = map.getRect();
-        if (SDL_PointInRect(&point, &rect))
+        if (SDL_PointInFRect(&point, &rect))
             return map;
     }
 

@@ -41,7 +41,7 @@ std::unique_ptr<AssetManager> Game::assetManager = std::make_unique<AssetManager
 
 std::shared_ptr<Player> player;
 std::shared_ptr<Entity> npc3;
-Rect<int> rect(396, 396, 44 * 3, 44 * 3);
+Rect rect(396, 396, 44 * 3, 44 * 3);
 
 auto& tiles(manager.getGroup(Game::groupMap));
 auto& players(manager.getGroup(Game::groupPlayer));
@@ -59,21 +59,21 @@ absl::Status Game::init()
     sol::usertype<Entity> entityType = lua.new_usertype<Entity>("entity");
     entityType["active"] = &Entity::isActive;
 
-    sol::usertype<Vec2<int>> vec2Type =
-        lua.new_usertype<Vec2<int>>("vec2", sol::constructors<Vec2<int>(int, int)>());
-    vec2Type.set("x", sol::readonly(&Vec2<int>::x));
-    vec2Type.set("y", sol::readonly(&Vec2<int>::y));
+    sol::usertype<Vec2> vec2Type =
+        lua.new_usertype<Vec2>("vec2", sol::constructors<Vec2(int, int)>());
+    vec2Type.set("x", sol::readonly(&Vec2::x));
+    vec2Type.set("y", sol::readonly(&Vec2::y));
 
     sol::usertype<TransformComponent> transformComponentType =
         lua.new_usertype<TransformComponent>("transform");
     transformComponentType.set("point2", sol::readonly<Point2>(&TransformComponent::point2));
     transformComponentType.set("size2", sol::readonly<Size2>(&TransformComponent::size2));
 
-    sol::usertype<SDL_Rect> cameraType = lua.new_usertype<SDL_Rect>("camera");
-    cameraType.set("x", sol::readonly(&SDL_Rect::x));
-    cameraType.set("y", sol::readonly(&SDL_Rect::y));
-    cameraType.set("w", sol::readonly(&SDL_Rect::w));
-    cameraType.set("h", sol::readonly(&SDL_Rect::h));
+    sol::usertype<SDL_FRect> cameraType = lua.new_usertype<SDL_FRect>("camera");
+    cameraType.set("x", sol::readonly(&SDL_FRect::x));
+    cameraType.set("y", sol::readonly(&SDL_FRect::y));
+    cameraType.set("w", sol::readonly(&SDL_FRect::w));
+    cameraType.set("h", sol::readonly(&SDL_FRect::h));
 
     player = manager.addEntity<Player>();
     auto initialMapRes = WorldManager::Instance()->findMapFromPos(player->currentPos());
@@ -226,9 +226,9 @@ void Game::render()
     }
     auto x = 396 - WindowManager::Instance()->camera.x;
     auto y = 396 - WindowManager::Instance()->camera.y;
-    SDL_Rect npcRect { x, y, 44 * 3, 44 * 3 };
+    SDL_FRect npcRect { x, y, 44 * 3, 44 * 3 };
     SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
-    SDL_RenderDrawRect(WindowManager::Instance()->renderer, &npcRect);
+    SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &npcRect);
     SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     SDL_RenderPresent(WindowManager::Instance()->renderer);
 }

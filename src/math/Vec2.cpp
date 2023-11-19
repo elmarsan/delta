@@ -1,99 +1,71 @@
 #include "Vec2.h"
 
-template <typename T>
-requires Math::arithmetic<T>
-Vec2<T> Vec2<T>::operator+(const Vec2& v) const
+Vec2 Vec2::operator+(const Vec2& v) const
 {
     return Vec2(x + v.x, y + v.y);
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-void Vec2<T>::operator+=(const Vec2& v)
+void Vec2::operator+=(const Vec2& v)
 {
     x += v.x;
     y += v.y;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-Vec2<T> Vec2<T>::operator-(const Vec2& v) const
+Vec2 Vec2::operator-(const Vec2& v) const
 {
     return Vec2(x - v.x, y - v.y);
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-void Vec2<T>::operator-=(const Vec2& v)
+void Vec2::operator-=(const Vec2& v)
 {
     x -= v.x;
     y -= v.y;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-Vec2<T> Vec2<T>::operator*(const Vec2& v) const
+Vec2 Vec2::operator*(const Vec2& v) const 
 {
     return Vec2(x * v.x, y * v.y);
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-void Vec2<T>::operator*=(const Vec2& v)
+void Vec2::operator*=(const Vec2& v)
 {
     x *= v.x;
     y *= v.y;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-Vec2<T> Vec2<T>::operator*(const T& rval) const
+Vec2 Vec2::operator*(const float& rval) const
 {
     return Vec2(x * rval, y * rval);
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-void Vec2<T>::operator*=(const T& rval) 
+void Vec2::operator*=(const float& rval) 
 {
     x *= rval;
     y *= rval;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-bool Vec2<T>::operator==(const Vec2& v) const
+bool Vec2::operator==(const Vec2& v) const
 {
     return x == v.x && y == v.y;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-bool Vec2<T>::operator!=(const Vec2& v) const
+bool Vec2::operator!=(const Vec2& v) const
 {
     return x != v.x || y != v.y;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-void Vec2<T>::zero()
+void Vec2::zero()
 {
     x = 0;
     y = 0;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-bool Vec2<T>::isZero() const
+bool Vec2::isZero() const
 {
     return x == 0 && y == 0;
 }
 
-template <typename T>
-requires Math::arithmetic<T>
-double Vec2<T>::distanceTo(const Vec2& v) const
+double Vec2::distanceTo(const Vec2& v) const
 {
     return std::sqrt(std::pow(x - v.x, 2) + std::pow(y - v.y, 2));
 }
-
-template struct Vec2<int>;

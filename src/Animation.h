@@ -15,7 +15,7 @@ class Animation
     ~Animation() = default;
 
     int numFrames() const { return frames.size(); }
-    Vec2<int> getFramePos(int i) const { return frames[i]; }
+    Point2 getFramePoint2(int i) const { return frames[i]; }
     void nextFrame()
     {
         if (index == numFrames() - 1)

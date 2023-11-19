@@ -1,25 +1,20 @@
 #pragma once
 
-#include "Math.h"
 #include "Plane2.h"
 #include "Vec2.h"
 
 #include <vector>
 
-template <typename T>
-requires Math::arithmetic<T>
-using PolVertex = std::vector<Vec2<T>>;
+using Vertex = std::vector<Vec2>;
 
-template <typename T>
-requires Math::arithmetic<T>
-struct Polygon: Plane2<T>
+struct Polygon: Plane2
 {
-    Point2 pos;
-    PolVertex<T> vertex;
+    Vec2 pos;
+    Vertex vertex;
 
-    Polygon(PolVertex<T> vertex): vertex(std::move(vertex)) {}
-    Polygon(): vertex(PolVertex<T> {}) {}
+    Polygon(Vertex vertex): vertex(std::move(vertex)) {}
+    Polygon(): vertex(Vertex {}) {}
 
-    bool contains(const Vec2<T>& p) const override;
+    bool contains(const Vec2& p) const override;
     inline std::size_t size() const { return vertex.size(); }
 };

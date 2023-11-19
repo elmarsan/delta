@@ -15,17 +15,17 @@ class WindowManager
 
     SDL_Window* window;
     SDL_Renderer* renderer;
-    SDL_Rect camera;
+    SDL_FRect camera;
 
     static std::shared_ptr<WindowManager> Instance();
-    static absl::Status init(int width, int height);
+    static absl::Status init(float width, float height);
 
     int width();
     int height();
     void setWidth(int w);
     void setHeight(int h);
-    
-    void renderTexture(std::shared_ptr<Texture> texture, SDL_Rect* src, SDL_Rect* dst, SDL_RendererFlip flip);
+
+    void renderTexture(std::shared_ptr<Texture> texture, SDL_FRect* src, SDL_FRect* dst, SDL_RendererFlip flip);
 
   private:
     WindowManager(const WindowManager&) = delete;

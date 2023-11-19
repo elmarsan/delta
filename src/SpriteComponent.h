@@ -20,7 +20,7 @@ class SpriteComponent: public Component
     TransformComponent* transform;
     std::shared_ptr<Texture> texture;
     SDL_RendererFlip flip;
-    SDL_Rect src, dst;
+    SDL_FRect src, dst;
     Size2 size2;
     Point2 textureSrc;
 
@@ -83,7 +83,7 @@ class SpriteComponent: public Component
         if (animation != nullptr)
         {
             flip = animFlip;
-            textureSrc = animation->getFramePos(frame);
+            textureSrc = animation->getFramePoint2(frame);
         }
     }
 
@@ -95,7 +95,7 @@ class SpriteComponent: public Component
         auto animation = animations[currentAnimation];
         if (animation != nullptr)
         {
-            textureSrc = animation->getFramePos(0);
+            textureSrc = animation->getFramePoint2(0);
             currentAnimation = "";
         }
     }
@@ -113,7 +113,7 @@ class SpriteComponent: public Component
             int numFrames = animation->numFrames();
             int speed = animation->speed;
             int index = static_cast<int>((SDL_GetTicks() / speed) % numFrames);
-            textureSrc = animation->getFramePos(index);
+            textureSrc = animation->getFramePoint2(index);
             animation->nextFrame();
         }
     }

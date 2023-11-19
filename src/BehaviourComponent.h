@@ -29,7 +29,7 @@ using Behaviour = std::vector<Action>;
 class BehaviourComponent: public Component
 {
   public:
-    Plane2<int>* plane2;
+    Plane2* plane2;
     BehaviourComponent(Behaviour behaviour): behaviour(std::move(behaviour)), actionIdx(0) {}
 
     void update() override

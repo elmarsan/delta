@@ -15,20 +15,20 @@ class WorldMap
 {
   public:
     WorldMap() {};
-    WorldMap(std::string filename, int x, int y, int w, int h);
+    WorldMap(std::string filename, float x, float y, float w, float h);
 
     double distance(const WorldMap& map) const;
     bool isAdjacent(const WorldMap& map) const;
     bool pointIn(const Point2& point) const;
     MapID getID() const;
-    SDL_Rect getRect() const;
+    SDL_FRect getRect() const;
     Point2 getWorldPos() const;
 
   private:
     Point2 point2;
     Size2 size2;
     MapID mapID;
-    SDL_Rect rect;
+    SDL_FRect rect;
 };
 
 class WorldManager

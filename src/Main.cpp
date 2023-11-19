@@ -3,7 +3,7 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL_main.h>
 
 int main()
 {

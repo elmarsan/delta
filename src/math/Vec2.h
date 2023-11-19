@@ -1,28 +1,25 @@
 #pragma once
 
-#include "Math.h"
 #include "absl/strings/str_format.h"
 
-template <typename T>
-requires Math::arithmetic<T>
 struct Vec2
 {
     union {
         struct
         {
             union {
-                T x;
-                T w;
+                float x;
+                float w;
             };
             union {
-                T y;
-                T h;
+                float y;
+                float h;
             };
         };
     };
 
     Vec2(): x(0), y(0) {}
-    Vec2(T x, T y): x(x), y(y) {}
+    Vec2(float x, float y): x(x), y(y) {}
 
     Vec2 operator+(const Vec2& v) const;
     void operator+=(const Vec2& v);
@@ -30,8 +27,8 @@ struct Vec2
     void operator-=(const Vec2& v);
     Vec2 operator*(const Vec2& v) const;
 
-    void operator*=(const T& rval);
-    Vec2 operator*(const T& rval) const;
+    void operator*=(const float& rval);
+    Vec2 operator*(const float& rval) const;
     Vec2 operator*(const Vec2& v);
     void operator*=(const Vec2& v);
 
@@ -50,5 +47,5 @@ struct Vec2
     }
 };
 
-using Point2 = Vec2<int>;
-using Size2 = Vec2<int>;
+using Point2 = Vec2;
+using Size2 = Vec2;

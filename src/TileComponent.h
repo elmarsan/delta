@@ -6,6 +6,7 @@
 #include "absl/log/log.h"
 #include "Game.h"
 
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <memory>
@@ -13,7 +14,7 @@
 class TileComponent: public Component
 {
   private:
-    SDL_Rect src, dst;
+    SDL_FRect src, dst;
     Tile tile;
     std::shared_ptr<Tileset> tileset;
     std::shared_ptr<Texture> texture;
@@ -24,8 +25,8 @@ class TileComponent: public Component
 
     TileComponent(Point2 gridPos, const Tile& tile): tile(tile), tilePoint2(gridPos), gridPoint2(gridPos)
     {
-        src = SDL_Rect { tile.point2.x, tile.point2.y, 16, 16 };
-        dst = SDL_Rect { gridPos.x, gridPos.y, 44, 44 };
+        src = SDL_FRect { tile.point2.x, tile.point2.y, 16, 16 };
+        dst = SDL_FRect { gridPos.x, gridPos.y, 44, 44 };
     }
 
     int zindex() { return tile.zindex; }
@@ -55,10 +56,10 @@ class TileComponent: public Component
             int tileIndex = static_cast<int>((SDL_GetTicks() / speed) % numFrames);
             auto frames = std::get<FrameIDs>(tile.frames);
             tilePoint2 = tileset->getTile(frames[tileIndex]).point2;
-            src = SDL_Rect { tilePoint2.x, tilePoint2.y, tile.size2.w, tile.size2.h};
+            src = SDL_FRect { tilePoint2.x, tilePoint2.y, tile.size2.w, tile.size2.h};
         }
 
-        dst = SDL_Rect { gridPoint2.x - WindowManager::Instance()->camera.x,
+        dst = SDL_FRect { gridPoint2.x - WindowManager::Instance()->camera.x,
                          gridPoint2.y - WindowManager::Instance()->camera.y,
                          44,
                          44 };
@@ -69,7 +70,7 @@ class TileComponent: public Component
         WindowManager::Instance()->renderTexture(texture, &src, &dst, SDL_FLIP_NONE);
 #ifdef DEBUG
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0xff, 0, 0);
-        SDL_RenderDrawRect(WindowManager::Instance()->renderer, &dst);
+        SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &dst);
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
 #endif
     }

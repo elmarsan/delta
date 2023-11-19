@@ -1,8 +1,6 @@
 #include "Polygon.h"
 
-template <typename T>
-requires Math::arithmetic<T>
-bool Polygon<T>::contains(const Vec2<T>& p) const
+bool Polygon::contains(const Vec2& p) const
 {
     int intersectCount = 0;
     int n = size();
@@ -16,12 +14,10 @@ bool Polygon<T>::contains(const Vec2<T>& p) const
         double px = static_cast<float>(p.x);
         double py = static_cast<float>(p.y);
 
-        if ((viy > py) != (vjy > py) && px < (vjx - vix) * (py - viy) / (vjy - viy) + vix) {
+        if ((viy > py) != (vjy > py) && px < (vjx - vix) * (py - viy) / (vjy - viy) + vix)
+        {
             intersectCount++;
         }
     }
     return intersectCount % 2 == 1;
 }
-
-template struct Polygon<int>;
-template struct Polygon<float>;

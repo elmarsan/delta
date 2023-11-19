@@ -1,26 +1,19 @@
 #pragma once
 
-#include "math/Plane2.h"
+#include "Plane2.h"
+#include "Vec2.h"
 
-#include <SDL2/SDL_rect.h>
-
-template <typename T>
-requires Math::arithmetic<T>
-struct Rect: Plane2<T>
+struct Rect: Plane2
 {
-    T x;
-    T y;
-    T w;
-    T h;
+    float x;
+    float y;
+    float w;
+    float h;
 
-    Rect(T x, T y, T w, T h): x(x), y(y), w(w), h(h) {}
+    Rect(float x, float y, float w, float h): x(x), y(y), w(w), h(h) {}
 
-    bool contains(const Vec2<T>& p) const override
+    bool contains(const Vec2& p) const override
     {
-        return ( (p.x >= x) && (p.x < (x + w)) &&
-                 (p.y >= y) && (p.y < (y + h)) ); 
+        return ((p.x >= x) && (p.x < (x + w)) && (p.y >= y) && (p.y < (y + h)));
     }
 };
-
-
-template struct Rect<int>;

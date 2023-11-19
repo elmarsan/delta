@@ -3,8 +3,8 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_video.h>
@@ -26,7 +26,7 @@ std::shared_ptr<WindowManager> WindowManager::Instance()
     return instance;
 }
 
-absl::Status WindowManager::init(int width, int height)
+absl::Status WindowManager::init(float width, float height)
 {
     DLOG(INFO) << "Initializing WindowManager...";
 
@@ -68,10 +68,16 @@ void WindowManager::setHeight(int h)
     camera.h = h;
 }
 
-void WindowManager::renderTexture(std::shared_ptr<Texture> texture, SDL_Rect* src, SDL_Rect* dst, SDL_RendererFlip flip)
+void WindowManager::renderTexture(std::shared_ptr<Texture> texture,
+                                  SDL_FRect* src,
+                                  SDL_FRect* dst,
+                                  SDL_RendererFlip flip)
 {
-    SDL_RenderCopyEx(
-        WindowManager::Instance()->renderer, texture->sdlTexture, src, dst, 0, NULL, flip);
+    SDL_Rect srcRect {
+        static_cast<int>(src->x), static_cast<int>(src->y), static_cast<int>(src->w), static_cast<int>(src->h)
+    };
+    SDL_RenderCopyExF(
+        WindowManager::Instance()->renderer, texture->sdlTexture, &srcRect, dst, 0, NULL, flip);
 }
 
 WindowManager::~WindowManager()
