@@ -13,8 +13,18 @@ endif()
 
 set(EXTERNAL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/external")
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/abseil-cpp")
 set(ABSL_PROPAGATE_CXX_STD TRUE) 
+add_subdirectory("${EXTERNAL_INCLUDE_DIR}/abseil-cpp")
+add_subdirectory("${EXTERNAL_INCLUDE_DIR}/SDL")
+add_subdirectory("${EXTERNAL_INCLUDE_DIR}/SDL_image")
+
+install(TARGETS SDL2
+        EXPORT SDL2Targets
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+install(EXPORT SDL2Targets
+        FILE SDL2Targets.cmake
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/SDL2)
 
 find_package(Lua REQUIRED)
 include_directories(
@@ -35,7 +45,7 @@ target_include_directories(Delta
 )
 target_link_libraries(
     Delta 
-    PRIVATE SDL2main SDL2 SDL2_image
+    PRIVATE SDL2 SDL2_image
     PRIVATE absl::status absl::statusor absl::strings absl::log
     PRIVATE ${LUA_LIBRARIES}
 )
