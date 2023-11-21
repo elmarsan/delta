@@ -32,6 +32,8 @@ struct Vec2
     Vec2 operator*(const Vec2& v);
     void operator*=(const Vec2& v);
 
+    Vec2 operator/(const float& rval) const;
+
     bool operator==(const Vec2& v) const;
     bool operator!=(const Vec2& v) const;
 
@@ -43,7 +45,7 @@ struct Vec2
     template <typename Sink>
     friend void AbslStringify(Sink& sink, const Vec2& vec)
     {
-        absl::Format(&sink, "Vec2(%d, %d)", vec.x, vec.y);
+        absl::Format(&sink, "Vec2(%f, %f)", vec.x, vec.y);
     }
 };
 

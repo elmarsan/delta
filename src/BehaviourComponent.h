@@ -7,9 +7,6 @@
 #include "math/Plane2.h"
 #include "math/Vec2.h"
 
-#include <memory>
-#include <utility>
-
 enum class Action
 {
     GoNorth,
@@ -118,6 +115,15 @@ class BehaviourComponent: public Component
             lastMovementTick = ticks;
         }
     }
+
+// #ifdef DEBUG
+//     void draw() override
+//     {
+//         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
+//         // SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &collider);
+//         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
+//     }
+// #endif
 
   private:
     int actionIdx;

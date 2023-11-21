@@ -36,7 +36,7 @@ class ColliderComponent: public Component
     void draw() override
     {
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
-        SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &collider);
+        // SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &collider);
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     }
 #endif

@@ -46,12 +46,12 @@ absl::Status WindowManager::init(float width, float height)
     return absl::OkStatus();
 }
 
-int WindowManager::width()
+float WindowManager::width()
 {
     return w;
 }
 
-int WindowManager::height()
+float WindowManager::height()
 {
     return h;
 }

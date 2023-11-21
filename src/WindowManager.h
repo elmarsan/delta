@@ -20,8 +20,8 @@ class WindowManager
     static std::shared_ptr<WindowManager> Instance();
     static absl::Status init(float width, float height);
 
-    int width();
-    int height();
+    float width();
+    float height();
     void setWidth(int w);
     void setHeight(int h);
 
@@ -32,6 +32,6 @@ class WindowManager
     void operator=(const WindowManager&) = delete;
 
     static std::shared_ptr<WindowManager> instance;
-    int w;
-    int h;
+    float w;
+    float h;
 };

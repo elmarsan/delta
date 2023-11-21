@@ -44,6 +44,12 @@ void Vec2::operator*=(const float& rval)
     y *= rval;
 }
 
+
+Vec2 Vec2::operator/(const float& rval) const
+{
+    return Vec2(x / rval, y / rval);
+}
+
 bool Vec2::operator==(const Vec2& v) const
 {
     return x == v.x && y == v.y;

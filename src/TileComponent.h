@@ -70,7 +70,7 @@ class TileComponent: public Component
         WindowManager::Instance()->renderTexture(texture, &src, &dst, SDL_FLIP_NONE);
 #ifdef DEBUG
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0xff, 0, 0);
-        SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &dst);
+        // SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &dst);
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
 #endif
     }
