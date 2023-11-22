@@ -251,14 +251,7 @@ void Game::render()
             t->draw();
         }
     }
-    // float x = (244.97 / 16) * 44;
-    // float y = (146.675 / 16) * 44;
-    // SDL_FRect rect { x, y, 44, 44 };
-    // SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
-    // SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &rect);
-    // SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
 
-    // ***********************************
     float x = 120.437;
     float y = 30.4235;
     
