@@ -1,3 +1,7 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #pragma once
 
 #include "ECS.h"
@@ -15,11 +19,11 @@ class CharacterController: public Component
     void init() override;
     void update() override;
 
-    void goNorth();
-    void goSouth();
-    void goEast();
-    void goWest();
+    void go(Direction direction, int cells = 1);
     void setDirection(Direction direction);
+    void lockMovement();
+    void unlockMovement();
+    bool isMoving();
 
   private:
     TransformComponent* transform;
@@ -27,7 +31,12 @@ class CharacterController: public Component
     Point2 targetPoint2;
     bool colliding;
     Uint64 collisionTick;
+    bool locked;
 
+    void goNorth(int cells);
+    void goSouth(int cells);
+    void goEast(int cells);
+    void goWest(int cells);
     void collidePoint2();
     void onTargetPoint2Reached();
     bool hasCollider(Point2 point2);

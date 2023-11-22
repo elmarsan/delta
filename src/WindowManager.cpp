@@ -1,10 +1,14 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #include "WindowManager.h"
 
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_video.h>
@@ -26,7 +30,7 @@ std::shared_ptr<WindowManager> WindowManager::Instance()
     return instance;
 }
 
-absl::Status WindowManager::init(int width, int height)
+absl::Status WindowManager::init(float width, float height)
 {
     DLOG(INFO) << "Initializing WindowManager...";
 
@@ -46,12 +50,12 @@ absl::Status WindowManager::init(int width, int height)
     return absl::OkStatus();
 }
 
-int WindowManager::width()
+float WindowManager::width()
 {
     return w;
 }
 
-int WindowManager::height()
+float WindowManager::height()
 {
     return h;
 }
@@ -68,10 +72,16 @@ void WindowManager::setHeight(int h)
     camera.h = h;
 }
 
-void WindowManager::renderTexture(std::shared_ptr<Texture> texture, SDL_Rect* src, SDL_Rect* dst)
+void WindowManager::renderTexture(std::shared_ptr<Texture> texture,
+                                  SDL_FRect* src,
+                                  SDL_FRect* dst,
+                                  SDL_RendererFlip flip)
 {
-    SDL_RenderCopyEx(
-        WindowManager::Instance()->renderer, texture->sdlTexture, src, dst, 0, NULL, texture->flip);
+    SDL_Rect srcRect {
+        static_cast<int>(src->x), static_cast<int>(src->y), static_cast<int>(src->w), static_cast<int>(src->h)
+    };
+    SDL_RenderCopyExF(
+        WindowManager::Instance()->renderer, texture->sdlTexture, &srcRect, dst, 0, NULL, flip);
 }
 
 WindowManager::~WindowManager()

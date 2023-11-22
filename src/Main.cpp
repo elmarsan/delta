@@ -1,10 +1,13 @@
-#include "absl/log/log.h"
-#include "absl/status/status.h"
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #include "Game.h"
 #include "WindowManager.h"
+#include "absl/log/log.h"
+#include "absl/status/status.h"
 
 #include <SDL2/SDL.h>
-#include <iostream>
 
 int main()
 {

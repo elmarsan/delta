@@ -1,7 +1,11 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #pragma once
 
 #include "Asset.h"
-#include "Vector2.h"
+#include "math/Vec2.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_format.h"
@@ -15,20 +19,20 @@ class WorldMap
 {
   public:
     WorldMap() {};
-    WorldMap(std::string filename, int x, int y, int w, int h);
+    WorldMap(std::string filename, float x, float y, float w, float h);
 
     double distance(const WorldMap& map) const;
     bool isAdjacent(const WorldMap& map) const;
-    bool pointIn(const Vector2& point) const;
+    bool pointIn(const Point2& point) const;
     MapID getID() const;
-    SDL_Rect getRect() const;
-    Vector2 getWorldPos() const;
+    SDL_FRect getRect() const;
+    Point2 getWorldPos() const;
 
   private:
     Point2 point2;
     Size2 size2;
     MapID mapID;
-    SDL_Rect rect;
+    SDL_FRect rect;
 };
 
 class WorldManager
@@ -40,7 +44,7 @@ class WorldManager
     static std::shared_ptr<WorldManager> Instance();
 
     absl::Status setCurrentMap(MapID mapID);
-    absl::StatusOr<WorldMap> findMapFromPos(Vector2 pos) const;
+    absl::StatusOr<WorldMap> findMapFromPos(Point2 pos) const;
     MapID getCurrentMapID() const;
 
   private:

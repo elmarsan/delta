@@ -2,10 +2,12 @@
 // See "LICENSE" for details.
 // Copyright 2023, Elías Martínez (mselias97@gmail.com)
 
-#include "ECS.h"
+#pragma once
 
-void Entity::addGroup(Group group)
+#include "Vec2.h"
+
+struct Plane2 
 {
-    groupBitSet[group] = true;
-    manager.addGroup(this, group);
-}
+    virtual bool contains(const Vec2& p) const = 0; 
+    // virtual void draw() const = 0;
+};

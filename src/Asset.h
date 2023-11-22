@@ -1,6 +1,10 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #pragma once
 
-#include "Vector2.h"
+#include "math/Vec2.h"
 
 #include <SDL2/SDL_render.h>
 #include <map>
@@ -21,7 +25,6 @@ class Texture: public Asset
 {
   public:
     SDL_Texture* sdlTexture;
-    SDL_RendererFlip flip;
 
     Texture(AssetID ID, SDL_Texture* sdlTexture): sdlTexture(sdlTexture), ID(ID) {}
 

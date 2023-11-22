@@ -1,5 +1,10 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #include "Game.h"
 
+#include "Asset.h"
 #include "AssetManager.h"
 #include "CharacterController.h"
 #include "ColliderComponent.h"
@@ -10,13 +15,16 @@
 #include "SpriteComponent.h"
 #include "TileComponent.h"
 #include "TransformComponent.h"
-#include "Vector2.h"
 #include "WindowManager.h"
 #include "WorldManager.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
+#include "math/Polygon.h"
+#include "math/Rect.h"
+#include "math/Vec2.h"
 #include "sol/types.hpp"
 #include "src/BehaviourComponent.h"
+#include "src/DetectorComponent.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -38,6 +46,8 @@ Manager manager;
 std::unique_ptr<AssetManager> Game::assetManager = std::make_unique<AssetManager>();
 
 std::shared_ptr<Player> player;
+std::shared_ptr<Entity> npc3;
+Rect rect(396, 396, 44 * 3, 44 * 3);
 
 auto& tiles(manager.getGroup(Game::groupMap));
 auto& players(manager.getGroup(Game::groupPlayer));
@@ -55,21 +65,20 @@ absl::Status Game::init()
     sol::usertype<Entity> entityType = lua.new_usertype<Entity>("entity");
     entityType["active"] = &Entity::isActive;
 
-    sol::usertype<Vector2> vec2Type =
-        lua.new_usertype<Vector2>("vec2", sol::constructors<Vector2(int, int)>());
-    vec2Type.set("x", sol::readonly(&Vector2::x));
-    vec2Type.set("y", sol::readonly(&Vector2::y));
+    sol::usertype<Vec2> vec2Type = lua.new_usertype<Vec2>("vec2", sol::constructors<Vec2(float, float)>());
+    vec2Type.set("x", sol::readonly(&Vec2::x));
+    vec2Type.set("y", sol::readonly(&Vec2::y));
 
     sol::usertype<TransformComponent> transformComponentType =
         lua.new_usertype<TransformComponent>("transform");
     transformComponentType.set("point2", sol::readonly<Point2>(&TransformComponent::point2));
     transformComponentType.set("size2", sol::readonly<Size2>(&TransformComponent::size2));
 
-    sol::usertype<SDL_Rect> cameraType = lua.new_usertype<SDL_Rect>("camera");
-    cameraType.set("x", sol::readonly(&SDL_Rect::x));
-    cameraType.set("y", sol::readonly(&SDL_Rect::y));
-    cameraType.set("w", sol::readonly(&SDL_Rect::w));
-    cameraType.set("h", sol::readonly(&SDL_Rect::h));
+    sol::usertype<SDL_FRect> cameraType = lua.new_usertype<SDL_FRect>("camera");
+    cameraType.set("x", sol::readonly(&SDL_FRect::x));
+    cameraType.set("y", sol::readonly(&SDL_FRect::y));
+    cameraType.set("w", sol::readonly(&SDL_FRect::w));
+    cameraType.set("h", sol::readonly(&SDL_FRect::h));
 
     player = manager.addEntity<Player>();
     auto initialMapRes = WorldManager::Instance()->findMapFromPos(player->currentPos());
@@ -85,6 +94,35 @@ absl::Status Game::init()
     lua.new_enum<NpcType>("npc_type", { { "fat_man_blue", NpcType::FatManBlue } });
     lua.set_function("add_npc", addNpc);
 
+    addNpc(Point2(440, 308),
+           NpcType::FatManBlue,
+           Behaviour {
+               // Action::Idle,
+               Action::RotEast,
+               // Action::Idle,
+               // Action::RotNorth,
+               // Action::Idle,
+               Action::RotWest,
+               // Action::Idle,
+               // Action::RotSouth,
+           });
+
+    addNpc(Point2(308, 264),
+           NpcType::FatManBlue,
+           Behaviour {
+               // Action::Idle,
+               Action::RotEast,
+               // Action::Idle,
+               Action::RotNorth,
+               // Action::Idle,
+               Action::RotWest,
+               // Action::Idle,
+               Action::RotSouth,
+           });
+
+    npc3 = addNpc(Point2(440, 440), NpcType::FatManBlue, Behaviour { Action::Random }, false);
+    npc3->getComponent<BehaviourComponent>().plane2 = &rect;
+
     // lua.script(R"(
     //      npc1 = add_npc(vec2.new(396, 220), npc_type.fat_man_blue, {
     //         action.go_north,
@@ -94,7 +132,7 @@ absl::Status Game::init()
     //         action.go_north,
     //         action.go_south,
     //         action.go_south,
-    //      })
+    //      });
 
     //     npc2 = add_npc(vec2.new(352, 220), npc_type.fat_man_blue, {
     //         action.go_north,
@@ -127,10 +165,10 @@ void Game::handleEvents()
             auto key = event.key.keysym.sym;
             switch (key)
             {
-                case SDLK_UP: player->goNorth(); break;
-                case SDLK_DOWN: player->goSouth(); break;
-                case SDLK_LEFT: player->goWest(); break;
-                case SDLK_RIGHT: player->goEast(); break;
+                case SDLK_UP: player->go(Direction::North); break;
+                case SDLK_DOWN: player->go(Direction::South); break;
+                case SDLK_LEFT: player->go(Direction::West); break;
+                case SDLK_RIGHT: player->go(Direction::East); break;
             }
         }
     }
@@ -191,6 +229,7 @@ void Game::render()
             t->draw();
         }
     }
+    SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     SDL_RenderPresent(WindowManager::Instance()->renderer);
 }
 

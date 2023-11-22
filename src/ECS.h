@@ -1,3 +1,7 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #pragma once
 
 #include <algorithm>
@@ -102,6 +106,23 @@ class Entity
     {
         auto ptr(componentArray[getComponentTypeID<T>()]);
         return *static_cast<T*>(ptr);
+    }
+
+    template <typename T>
+    void removeComponent()
+    {
+        auto typeId = getComponentTypeID<T>();
+        auto it = std::remove_if(components.begin(), components.end(), [typeId, this](const auto& component) {
+            return componentArray[typeId] == component.get();
+        });
+
+        if (it != components.end())
+        {
+            delete it->get();
+            components.erase(it, components.end());
+            componentArray[typeId] = nullptr;
+            componentBitSet[typeId] = false;
+        }
     }
 
   private:

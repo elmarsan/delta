@@ -1,15 +1,20 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #pragma once
 
 #include "ECS.h"
 #include "TransformComponent.h"
 #include "WindowManager.h"
 
+#include <SDL2/SDL_rect.h>
 #include <string>
 
 class ColliderComponent: public Component
 {
   public:
-    SDL_Rect collider;
+    SDL_FRect collider;
     std::string tag;
 
     TransformComponent* transform;
@@ -35,7 +40,7 @@ class ColliderComponent: public Component
     void draw() override
     {
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
-        SDL_RenderDrawRect(WindowManager::Instance()->renderer, &collider);
+        SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &collider);
         SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     }
 #endif
@@ -44,7 +49,7 @@ class ColliderComponent: public Component
 class Collision
 {
   public:
-    static bool AABB(const SDL_Rect a, SDL_Rect b) { return SDL_HasIntersection(&a, &b) == SDL_TRUE; }
+    static bool AABB(const SDL_FRect a, SDL_FRect b) { return SDL_HasIntersectionF(&a, &b) == SDL_TRUE; }
     static bool AABB(const ColliderComponent& colA, const ColliderComponent& colB)
     {
         return AABB(colA.collider, colB.collider);

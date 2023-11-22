@@ -1,3 +1,7 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #include "src/CharacterController.h"
 #include "src/ColliderComponent.h"
 #include "src/ECS.h"
@@ -11,10 +15,7 @@ class Player: public Entity
 
     void init() override;
 
-    inline void goNorth() const { controller->goNorth(); };
-    inline void goSouth() const { controller->goSouth(); };
-    inline void goEast() const { controller->goEast(); };
-    inline void goWest() const { controller->goWest(); };
+    inline void go(Direction direction) const { controller->go(direction); };
     inline Point2 currentPos() const { return transform->point2; }
 
   private:

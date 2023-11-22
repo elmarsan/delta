@@ -1,8 +1,12 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #pragma once
 
 #include "ECS.h"
 #include "Game.h"
-#include "Vector2.h"
+#include "math/Vec2.h"
 
 enum class Direction
 {

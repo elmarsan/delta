@@ -1,3 +1,7 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #include "MapManager.h"
 
 #include "Asset.h"
@@ -32,7 +36,7 @@ Tile MapManager::getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets,
     return tile;
 }
 
-absl::Status MapManager::draw(const std::string mapID, const Vector2 gridPos)
+absl::Status MapManager::draw(const std::string mapID, const Point2 gridPos)
 {
     LOG(INFO) << absl::StrFormat("Drawing map: %s", mapID);
     auto mapRes = Game::assetManager->getOrLoad<Map>(mapID);

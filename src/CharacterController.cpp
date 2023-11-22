@@ -1,11 +1,18 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #include "CharacterController.h"
+
 #include "absl/log/log.h"
 #include "src/ColliderComponent.h"
+#include "src/TransformComponent.h"
 
 void CharacterController::init()
 {
     transform = &entity->getComponent<TransformComponent>();
     sprite = &entity->getComponent<SpriteComponent>();
+    locked = false;
 }
 
 void CharacterController::update()
@@ -50,19 +57,32 @@ void CharacterController::onTargetPoint2Reached()
     sprite->stopAnimation();
 }
 
-void CharacterController::goNorth()
+void CharacterController::go(Direction direction, int cells)
 {
+    if (locked)
+        return;
+
     if (!targetPoint2.isZero())
         return;
 
-    if (transform->direction != Direction::North)
+    if (transform->direction != direction)
     {
-        transform->direction = Direction::North;
-        sprite->setAnimationFrame("walk_up", 0);
+        setDirection(direction);
         return;
     }
 
-    auto newTarget = Point2(transform->point2.x, transform->point2.y - 44);
+    switch (direction)
+    {
+        case Direction::North: goNorth(cells); break;
+        case Direction::South: goSouth(cells); break;
+        case Direction::East: goEast(cells); break;
+        case Direction::West: goWest(cells); break;
+    }
+}
+
+void CharacterController::goNorth(int cells)
+{
+    auto newTarget = Point2(transform->point2.x, transform->point2.y - 44 * cells);
     sprite->setAnimation("walk_up");
     if (!hasCollider(newTarget))
     {
@@ -76,19 +96,9 @@ void CharacterController::goNorth()
         collidePoint2();
 }
 
-void CharacterController::goSouth()
+void CharacterController::goSouth(int cells)
 {
-    if (!targetPoint2.isZero())
-        return;
-
-    if (transform->direction != Direction::South)
-    {
-        transform->direction = Direction::South;
-        sprite->setAnimationFrame("walk_down", 0);
-        return;
-    }
-
-    auto newTarget = Point2(transform->point2.x, transform->point2.y + 44);
+    auto newTarget = Point2(transform->point2.x, transform->point2.y + 44 * cells);
     sprite->setAnimation("walk_down");
     if (!hasCollider(newTarget))
     {
@@ -102,19 +112,9 @@ void CharacterController::goSouth()
         collidePoint2();
 }
 
-void CharacterController::goEast()
+void CharacterController::goEast(int cells)
 {
-    if (!targetPoint2.isZero())
-        return;
-
-    if (transform->direction != Direction::East)
-    {
-        transform->direction = Direction::East;
-        sprite->setAnimationFrame("walk_lateral", 0, SDL_FLIP_HORIZONTAL);
-        return;
-    }
-
-    auto newTarget = Point2(transform->point2.x + 44, transform->point2.y);
+    auto newTarget = Point2(transform->point2.x + 44 * cells, transform->point2.y);
     sprite->setAnimation("walk_lateral", SDL_FLIP_HORIZONTAL);
     if (!hasCollider(newTarget))
     {
@@ -128,19 +128,9 @@ void CharacterController::goEast()
         collidePoint2();
 }
 
-void CharacterController::goWest()
+void CharacterController::goWest(int cells)
 {
-    if (!targetPoint2.isZero())
-        return;
-
-    if (transform->direction != Direction::West)
-    {
-        transform->direction = Direction::West;
-        sprite->setAnimationFrame("walk_lateral", 0);
-        return;
-    }
-
-    auto newTarget = Point2(transform->point2.x - 44, transform->point2.y);
+    auto newTarget = Point2(transform->point2.x - 44 * cells, transform->point2.y);
     sprite->setAnimation("walk_lateral");
     if (!hasCollider(newTarget))
     {
@@ -156,6 +146,9 @@ void CharacterController::goWest()
 
 void CharacterController::setDirection(Direction direction)
 {
+    if (locked)
+        return;
+
     switch (direction)
     {
         case Direction::North:
@@ -181,4 +174,19 @@ void CharacterController::collidePoint2()
 {
     colliding = true;
     collisionTick = SDL_GetTicks64();
+}
+
+void CharacterController::lockMovement()
+{
+    locked = true;
+}
+
+void CharacterController::unlockMovement()
+{
+    locked = false;
+}
+
+bool CharacterController::isMoving()
+{
+    return targetPoint2 != Point2();
 }

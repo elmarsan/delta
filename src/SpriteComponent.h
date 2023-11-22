@@ -1,9 +1,13 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #pragma once
 
 #include "Animation.h"
 #include "ECS.h"
 #include "TransformComponent.h"
-#include "Vector2.h"
+#include "math/Vec2.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
 #include "Game.h"
@@ -19,7 +23,8 @@ class SpriteComponent: public Component
   private:
     TransformComponent* transform;
     std::shared_ptr<Texture> texture;
-    SDL_Rect src, dst;
+    SDL_RendererFlip flip;
+    SDL_FRect src, dst;
     Size2 size2;
     Point2 textureSrc;
 
@@ -65,12 +70,12 @@ class SpriteComponent: public Component
         src.h = size2.h;
     }
 
-    void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst); }
+    void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst, flip); }
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
     {
         currentAnimation = name;
-        texture->flip = animFlip;
+        flip = animFlip;
     }
 
     void setAnimationFrame(const std::string& name, int frame, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
@@ -81,8 +86,8 @@ class SpriteComponent: public Component
         auto animation = animations[name];
         if (animation != nullptr)
         {
-            texture->flip = animFlip;
-            textureSrc = animation->getFramePos(frame);
+            flip = animFlip;
+            textureSrc = animation->getFramePoint2(frame);
         }
     }
 
@@ -94,7 +99,7 @@ class SpriteComponent: public Component
         auto animation = animations[currentAnimation];
         if (animation != nullptr)
         {
-            textureSrc = animation->getFramePos(0);
+            textureSrc = animation->getFramePoint2(0);
             currentAnimation = "";
         }
     }
@@ -112,7 +117,7 @@ class SpriteComponent: public Component
             int numFrames = animation->numFrames();
             int speed = animation->speed;
             int index = static_cast<int>((SDL_GetTicks() / speed) % numFrames);
-            textureSrc = animation->getFramePos(index);
+            textureSrc = animation->getFramePoint2(index);
             animation->nextFrame();
         }
     }

@@ -1,4 +1,9 @@
+// This file is distributed under the BSD License.
+// See "LICENSE" for details.
+// Copyright 2023, Elías Martínez (mselias97@gmail.com)
+
 #include "Player.h"
+#include "src/Game.h"
 
 void Player::init()
 {
@@ -9,7 +14,7 @@ void Player::init()
     auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
     LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
 
-    transform = &addComponent<TransformComponent>(Point2(440, 396));
+    transform = &addComponent<TransformComponent>(Point2(528, 352));
     sprite = &addComponent<SpriteComponent>("p1", Size2(14, 21));
     controller = &addComponent<CharacterController>();
     collider = &addComponent<ColliderComponent>("Player");
