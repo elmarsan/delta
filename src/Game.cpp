@@ -200,32 +200,6 @@ void Game::update()
     WindowManager::Instance()->camera = camera;
 }
 
-void drawPoly(std::vector<SDL_FPoint> points, std::string color)
-{
-    if (color == "green")
-    {
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 255, 0, 255);
-    }
-    else if (color == "red")
-    {
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 255, 0, 0, 255);
-    }
-    else if (color == "purple")
-    {
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 159, 90, 253, 255);
-    }
-    else if (color == "blue")
-    {
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 255, 255);
-    }
-    SDL_RenderDrawLinesF(WindowManager::Instance()->renderer, points.data(), points.size());
-    SDL_RenderDrawLine(WindowManager::Instance()->renderer,
-                       points.back().x,
-                       points.back().y,
-                       points.front().x,
-                       points.front().y);
-}
-
 void Game::render()
 {
     SDL_RenderClear(WindowManager::Instance()->renderer);
@@ -251,25 +225,6 @@ void Game::render()
             t->draw();
         }
     }
-
-    float x = 120.437;
-    float y = 30.4235;
-    
-    std::vector<SDL_FPoint> yetPoints { SDL_FPoint{ 47.789, 7.32649 },
-                                        SDL_FPoint{ 0.229755, 121.076 },
-                                        SDL_FPoint{ 143.98, 63.033 } };
-    std::vector<SDL_FPoint> normalised;
-    for (const SDL_FPoint& p: yetPoints)
-    {
-        float fx = ((p.x + x) / 16) * 44;
-        float fy = ((p.y + y) / 16) * 44;
-        fx -= WindowManager::Instance()->camera.x;
-        fy -= WindowManager::Instance()->camera.y;
-        SDL_FPoint fp {fx, fy};
-        normalised.emplace_back(fp);
-    }
-    drawPoly(normalised, "blue");
-
     SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     SDL_RenderPresent(WindowManager::Instance()->renderer);
 }

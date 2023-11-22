@@ -16,6 +16,6 @@ struct Polygon: Plane2
     Polygon(): pos(Vec2()), vertex(Vertex {}) {}
 
     bool contains(const Vec2& p) const override;
-    void draw() const override;
+    // void draw() const override;
     inline std::size_t size() const { return vertex.size(); }
 };
