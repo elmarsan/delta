@@ -25,6 +25,7 @@
             114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114, 114],
          "height":20,
          "id":2,
+         "locked":true,
          "name":"1",
          "opacity":1,
          "type":"tilelayer",
@@ -56,6 +57,7 @@
             438, 439, 99, 100, 99, 100, 99, 100, 99, 100, 99, 100, 99, 100, 99, 100, 438, 439, 438, 439],
          "height":20,
          "id":1,
+         "locked":true,
          "name":"2",
          "opacity":1,
          "type":"tilelayer",
@@ -63,9 +65,79 @@
          "width":20,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
+         "locked":true,
+         "name":"3",
+         "objects":[
+                {
+                 "height":0,
+                 "id":13,
+                 "name":"fat_man_blue",
+                 "polygon":[
+                        {
+                         "x":-0.363636363636346,
+                         "y":3.45454545454544
+                        }, 
+                        {
+                         "x":-0.666666666666657,
+                         "y":-52
+                        }, 
+                        {
+                         "x":85.0303030303031,
+                         "y":-52.4242424242424
+                        }, 
+                        {
+                         "x":85.8484848484849,
+                         "y":-15.8787878787879
+                        }, 
+                        {
+                         "x":67,
+                         "y":-15.6666666666666
+                        }, 
+                        {
+                         "x":67.6666666666667,
+                         "y":2.66666666666669
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":191.333333333333,
+                 "y":305.666666666667
+                }, 
+                {
+                 "height":50.3636363636363,
+                 "id":15,
+                 "name":"fat_man_blue",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":83.2727272727273,
+                 "x":158.545454545455,
+                 "y":190.727272727273
+                }, 
+                {
+                 "height":68.7272727272727,
+                 "id":16,
+                 "name":"fat_man_blue",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":50.1818181818182,
+                 "x":239.090909090909,
+                 "y":141.272727272727
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":9,
+ "nextlayerid":8,
+ "nextobjectid":17,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

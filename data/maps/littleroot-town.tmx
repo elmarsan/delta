@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="13">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="17">
  <editorsettings>
-  <export target="../../../../littleroot-town.lua" format="lua"/>
+  <export target="export/littleroot-town.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="../tiles/outdoor_16x16.tsx"/>
  <layer id="2" name="1" width="20" height="20" locked="1">
@@ -52,12 +52,11 @@
 438,439,99,100,99,100,99,100,99,100,99,100,99,100,99,100,438,439,438,439
 </data>
  </layer>
- <objectgroup id="6" name="Object Layer 1" locked="1">
-  <object id="9" x="244.97" y="146.675">
-   <polygon points="-13.5455,10 1.57001,65.3851 54.6364,65.0582 54.3224,-8.50007 0.628004,-8.82699"/>
+ <objectgroup id="7" name="3" locked="1">
+  <object id="13" name="fat_man_blue" x="191.333" y="305.667">
+   <polygon points="-0.363636,3.45455 -0.666667,-52 85.0303,-52.4242 85.8485,-15.8788 67,-15.6667 67.6667,2.66667"/>
   </object>
-  <object id="12" x="120.437" y="30.4235">
-   <polygon points="47.789,7.32649 0.229755,121.076 143.98,63.033"/>
-  </object>
+  <object id="15" name="fat_man_blue" x="158.545" y="190.727" width="83.2727" height="50.3636"/>
+  <object id="16" name="fat_man_blue" x="239.091" y="141.273" width="50.1818" height="68.7273"/>
  </objectgroup>
 </map>

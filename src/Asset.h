@@ -4,7 +4,10 @@
 
 #pragma once
 
+#include "math/Plane2.h"
+#include "math/Rect.h"
 #include "math/Vec2.h"
+#include "absl/log/log.h"
 
 #include <SDL2/SDL_render.h>
 #include <map>
@@ -50,17 +53,12 @@ class Map: public Asset
     int tileHeight;
     std::vector<std::vector<int>> layers;
     std::vector<std::tuple<int, std::string>> tilesets;
+    std::vector<std::unique_ptr<Plane2>> planes;
 
     AssetID getID() override { return ID; }
 
   private:
     AssetID ID;
-};
-
-struct MapMetadata
-{
-    int worldX;
-    int worldY;
 };
 
 using TileID = int;
@@ -105,10 +103,7 @@ class Tileset: public Asset
     int tileWidth;
     int tileHeight;
     int numTiles;
-    int imageWidth;
-    int imageHeight;
     int margin;
-    int spacing;
 
     Tile getTile(const TileID tileID)
     {
@@ -134,4 +129,4 @@ class Tileset: public Asset
     AssetID ID;
 };
 
-using AssetMetadata = std::variant<TextureMetadata, MapMetadata>;
+using AssetMetadata = std::variant<TextureMetadata>;

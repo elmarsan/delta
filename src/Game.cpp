@@ -229,6 +229,15 @@ void Game::render()
             t->draw();
         }
     }
+    auto map = Game::assetManager->get<Map>(WorldManager::Instance()->getCurrentMapID());
+    if (map != nullptr)
+    {
+        for(const auto& p: map->planes)
+        {
+            p->draw();
+        }
+    }
+    for (auto& p: WorldManager::Instance()->getCurrentMapID())
     SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     SDL_RenderPresent(WindowManager::Instance()->renderer);
 }

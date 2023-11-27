@@ -7,14 +7,10 @@
 #include "Asset.h"
 #include "Game.h"
 #include "TileManager.h"
-#include "nlohmann/json.hpp"
 
 #include <absl/log/log.h>
 #include <absl/status/status.h>
 #include <absl/strings/str_format.h>
-#include <filesystem>
-#include <fstream>
-#include <memory>
 
 const unsigned TiledFlippedHorizontally = 0x80000000;
 const unsigned TiledFlippedVertically = 0x40000000;
@@ -41,7 +37,9 @@ absl::Status MapManager::draw(const std::string mapID, const Point2 gridPos)
     LOG(INFO) << absl::StrFormat("Drawing map: %s", mapID);
     auto mapRes = Game::assetManager->getOrLoad<Map>(mapID);
     if (!mapRes.ok())
+    {
         return mapRes.status();
+    }
 
     auto map = mapRes.value();
 
@@ -54,12 +52,16 @@ absl::Status MapManager::draw(const std::string mapID, const Point2 gridPos)
 
         auto loadRes = Game::assetManager->getOrLoad<Tileset>(tilesetID);
         if (!loadRes.ok())
+        {
             LOG(ERROR) << loadRes.status().message();
+        }
         else
+        {
             tilesets.push_back(loadRes.value());
+        }
     }
 
-    for (auto& layer: map->layers)
+    for (const auto& layer: map->layers)
     {
         int yPos = gridPos.y;
         int xPos = 0;
@@ -74,13 +76,6 @@ absl::Status MapManager::draw(const std::string mapID, const Point2 gridPos)
                 const unsigned tileGID = layer[i];
                 if (tileGID > 0)
                 {
-                    // bool flippedHorizontally = (tileGID & TiledFlippedHorizontally);
-                    // bool flippedVertically = (tileGID & TiledFlippedVertically);
-                    // auto flip = SDL_FLIP_NONE;
-                    // if (flippedHorizontally)
-                    //     flip = SDL_FLIP_HORIZONTAL;
-                    // else if (flippedVertically)
-                    //     flip = SDL_FLIP_VERTICAL;
                     int tileID = tileGID;
                     tileID &= ~(TiledFlippedHorizontally | TiledFlippedVertically);
 

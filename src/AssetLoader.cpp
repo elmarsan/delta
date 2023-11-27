@@ -5,17 +5,16 @@
 #include "AssetLoader.h"
 
 #include "Asset.h"
+#include "Tiled.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "nlohmann/json.hpp"
+#include "math/Polygon.h"
 
 #include <SDL2/SDL_image.h>
-#include <cstdlib>
 #include <filesystem>
-#include <fstream>
 #include <memory>
-#include <variant>
+#include <vector>
 
 AssetLoadResult TextureLoader::load(const std::string& assetID, AssetMetadata* metadata)
 {
@@ -44,67 +43,37 @@ AssetLoadResult TextureLoader::load(const std::string& assetID, AssetMetadata* m
 
 AssetLoadResult TilesetLoader::load(const std::string& assetID, AssetMetadata* metadata)
 {
-    LOG(INFO) << absl::StrFormat("Loading Tileset: %s", assetID);
-    std::string path = absl::StrFormat("data/tiles/export/%s.json", assetID);
-    if (!std::filesystem::exists(path))
-        return absl::NotFoundError(absl::StrFormat("Tileset: %s not found", assetID));
+    auto loadRes = Tiled::loadJSONTileset(assetID);
+    if (!loadRes.ok())
+    {
+        return loadRes.status();
+    }
 
-    std::ifstream f(path);
-    nlohmann::json data = nlohmann::json::parse(f);
-
-    // Tileset tileset(assetID);
+    auto tiledTileset = loadRes.value();
     Tileset tileset;
     tileset.setID(assetID);
-    tileset.columns = data["columns"];
-    tileset.margin = data["margin"];
-    tileset.spacing = data["spacing"];
-    tileset.numTiles = data["tilecount"];
-    tileset.tileWidth = data["tilewidth"];
-    tileset.tileHeight = data["tilewidth"];
+    tileset.columns = tiledTileset.columns;
+    tileset.margin = tiledTileset.margin;
+    tileset.numTiles = tiledTileset.tileCount;
+    tileset.tileWidth = tiledTileset.tileWidth;
+    tileset.tileHeight = tiledTileset.tileHeight;
+    tileset.textureID = tiledTileset.image;
 
-    std::string image = data["image"];
-    size_t lastSlash = image.find_last_of("/\\");
-    std::string filename = image.substr(lastSlash + 1);
-    size_t lastDot = filename.find_last_of(".");
-    std::string textureID = filename.substr(0, lastDot);
-
-    // TODO Load asset texture
-    tileset.textureID = textureID;
-
-    // Load animations and colliders
-    for (auto& tile: data["tiles"])
+    for (const auto& t: tiledTileset.tiles)
     {
-        auto tileAnimation = tile["animation"];
-        if (!tileAnimation.is_null())
+        if (t.hasCollider())
         {
-            auto frames = std::vector<int>();
+            tileset.tileCollider[t.ID] = true;
+        }
+
+        if (t.isAnimated())
+        {
+            std::vector<int> frames;
             int speed;
-            for (auto& frame: tileAnimation)
+            for (const auto& f: t.frames)
             {
-                frames.emplace_back(frame["tileid"]);
-                speed = frame["duration"];
-            }
-
-            tileset.tileFrame[tile["id"]] = std::make_tuple(frames, speed);
-        }
-
-        auto objectGroup = tile["objectgroup"];
-        if (!objectGroup.is_null())
-        {
-            tileset.tileCollider[tile["id"]] = true;
-        }
-
-        auto properties = tile["properties"];
-        if (!properties.is_null() && properties.is_array())
-        {
-            for (auto& p: properties)
-            {
-                auto name = p["name"];
-                if (!name.is_null() && name == "zindex")
-                {
-                    auto zindex = p["value"];
-                    tileset.tileZindex[tile["id"]] = zindex;
-                }
+                frames.push_back(f.tileID);
+                speed = f.duration;
             }
         }
     }
@@ -114,62 +83,59 @@ AssetLoadResult TilesetLoader::load(const std::string& assetID, AssetMetadata* m
 
 AssetLoadResult MapLoader::load(const std::string& assetID, AssetMetadata* metadata)
 {
-    LOG(INFO) << "Loading Map: " << assetID;
-    std::string path = absl::StrFormat("data/maps/export/%s.json", assetID);
-    if (!std::filesystem::exists(path))
-        return absl::NotFoundError(absl::StrFormat("Map: %s not found", assetID));
-
-    std::ifstream file(path);
-    if (!file.is_open())
-        return absl::InternalError("Unable to open the map file");
-
-    nlohmann::json data = nlohmann::json::parse(file);
-    Map map;
-    map.width = data["width"];
-    map.height = data["height"];
-    map.tileWidth = data["tilewidth"];
-    map.tileHeight = data["tileheight"];
-    map.tilesets = std::vector<std::tuple<int, std::string>>();
-
-    for (auto& tileset: data["tilesets"])
+    auto loadRes = Tiled::loadJSONMap(assetID);
+    if (!loadRes.ok())
     {
-        std::string source = tileset["source"];
-        size_t lastSlash = source.find_last_of("/\\");
-        std::string filename = source.substr(lastSlash + 1);
-        size_t lastDot = filename.find_last_of(".");
-        std::string tilesetID = filename.substr(0, lastDot);
+        return loadRes.status();
+    }
+    auto tiledMap = loadRes.value();
+    auto map = std::make_shared<Map>();
+    map->width = tiledMap.width;
+    map->height = tiledMap.height;
+    map->tileWidth = tiledMap.tileWidth;
+    map->tileHeight = tiledMap.tileHeight;
 
-        map.tilesets.push_back({ tileset["firstgid"], tilesetID });
+    for (const auto& tiledTileset: tiledMap.tilesets)
+    {
+        map->tilesets.push_back({ tiledTileset.firstGid, tiledTileset.tilesetID });
     }
 
-    // Not checking layer name, type and dimensions.
-    // Here we assume every layer has same dimensions and must be
-    // drawn at given order.
-    for (auto& tiledLayer: data["layers"])
+    for (const auto& tileLayer: tiledMap.tileLayers)
     {
-        int width = tiledLayer["width"];
-        int height = tiledLayer["height"];
-        auto data = tiledLayer["data"];
-        std::vector<int> mapLayer;
+        map->layers.emplace_back(tileLayer.data);
+    }
 
-        for (int y = 0; y < height; y++)
+    for (const auto& objLayer: tiledMap.objectLayers)
+    {
+        // Parse and scale polygons.
+        for (const auto& tiledPolygon: objLayer.polygons)
         {
-            for (int x = 0; x < width; x++)
+            Vertex vertex;
+            float x = tiledPolygon.x;
+            float y = tiledPolygon.y;
+
+            for (const auto& tiledPoint: tiledPolygon.vertex)
             {
-                int i = y * width + x;
-                int tileID = data[i];
-                mapLayer.push_back(tileID);
+                float vx = ((tiledPoint.x + x) / map->tileWidth) * 44;
+                float vy = ((tiledPoint.y + y) / map->tileHeight) * 44;
+                SDL_FPoint fp { vx, vy };
+                vertex.emplace_back(Vec2(vx, vy));
             }
+
+            map->planes.emplace_back(std::make_unique<Polygon>(vertex));
         }
-        map.layers.emplace_back(mapLayer);
+
+        for (const auto& tiledRect: objLayer.rects)
+        {
+            float rx = (tiledRect.x / map->tileWidth) * 44;
+            float ry = (tiledRect.y / map->tileHeight) * 44;
+            float rw = (tiledRect.width / map->tileWidth) * 44;
+            float rh = (tiledRect.height / map->tileHeight) * 44;
+
+            map->planes.emplace_back(
+                std::make_unique<Rect>(rx, ry, rw, rh));
+        }
     }
 
-    if (metadata != nullptr)
-    {
-        auto mapMetadata = std::get<MapMetadata>(*metadata);
-        map.worldX = mapMetadata.worldX;
-        map.worldY = mapMetadata.worldY;
-    }
-
-    return std::make_shared<Map>(map);
+    return map;
 }
