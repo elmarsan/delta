@@ -45,32 +45,3 @@ void TileManager::destroyMapTiles(WorldMap map)
         }
     }
 }
-
-int TileManager::findClosestNumber(int num)
-{
-    if (num % 44 == 0)
-        return num;
-
-    int closestNumber = 0;
-    int closestDifference = abs(num - closestNumber);
-
-    for (int i = 44; i < num; i += 44)
-    {
-        int difference = abs(num - i);
-        if (difference < closestDifference)
-        {
-            closestNumber = i;
-            closestDifference = difference;
-        }
-    }
-
-    return closestNumber;
-}
-
-Point2 TileManager::findClosestPoint2(Point2 point2)
-{
-    int closestX = findClosestNumber(point2.x);
-    LOG(INFO) << closestX;
-    int closestY = findClosestNumber(point2.y);
-    return Point2(closestX, closestY);
-}
