@@ -9,7 +9,7 @@
 #include "absl/log/log.h"
 #include "math/Vec2.h"
 
-bool Polygon::contains(const Vec2& p)
+[[nodiscard]] bool Polygon::contains(const Vec2& p) const
 {
     int intersectCount = 0;
     int n = size();
@@ -31,21 +31,21 @@ bool Polygon::contains(const Vec2& p)
     return intersectCount % 2 == 1;
 }
 
-void Polygon::draw()
-{
-    std::vector<SDL_FPoint> points;
-    for (const auto& v: vertex)
-    {
-        points.push_back(SDL_FPoint {
-            v.x - WindowManager::Instance()->camera.x,
-            v.y - WindowManager::Instance()->camera.y + 44,
-        });
-    }
-    SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 255, 255);
-    SDL_RenderDrawLinesF(WindowManager::Instance()->renderer, points.data(), points.size());
-    SDL_RenderDrawLine(WindowManager::Instance()->renderer,
-                       points.back().x,
-                       points.back().y,
-                       points.front().x,
-                       points.front().y);
-}
+// void Polygon::draw()
+// {
+//     std::vector<SDL_FPoint> points;
+//     for (const auto& v: vertex)
+//     {
+//         points.push_back(SDL_FPoint {
+//             v.x - WindowManager::Instance()->camera.x,
+//             v.y - WindowManager::Instance()->camera.y + 44,
+//         });
+//     }
+//     SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 255, 255);
+//     SDL_RenderDrawLinesF(WindowManager::Instance()->renderer, points.data(), points.size());
+//     SDL_RenderDrawLine(WindowManager::Instance()->renderer,
+//                        points.back().x,
+//                        points.back().y,
+//                        points.front().x,
+//                        points.front().y);
+// }

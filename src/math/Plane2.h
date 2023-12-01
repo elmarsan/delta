@@ -9,7 +9,6 @@
 class Plane2
 {
   public:
-    virtual bool contains(const Vec2& p) = 0;
-    virtual void draw() = 0;
     virtual ~Plane2() = default;
+    [[nodiscard]] virtual bool contains(const Vec2& p) const = 0;
 };

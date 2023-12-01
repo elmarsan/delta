@@ -25,6 +25,7 @@
 #include "sol/types.hpp"
 #include "src/BehaviourComponent.h"
 #include "src/DetectorComponent.h"
+#include "System.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -87,7 +88,8 @@ absl::Status Game::init()
     LOG_IF(FATAL, !setMapRes.ok()) << setMapRes.message();
 
     // Link
-    lua["camera"] = &WindowManager::Instance()->camera;
+    // TODO: Camera binding with new actor system.
+    // lua["camera"] = &WindowManager::Instance()->camera;
     lua["player_transform"] = &player->getComponent<TransformComponent>();
 
     lua.new_enum<Action>("action", { { "go_north", Action::GoNorth }, { "go_south", Action::GoSouth } });
@@ -188,20 +190,25 @@ void Game::update()
     manager.refresh();
     manager.update();
 
-    auto camera = WindowManager::Instance()->camera;
-    camera.x = playerPos.x - WindowManager::Instance()->width() / 2;
-    camera.y = playerPos.y - WindowManager::Instance()->height() / 2;
+    // auto camera = WindowManager::Instance()->camera;
+    auto cameraPos = System::actorSystem().getCameraPos();
+    auto cameraSize = System::actorSystem().getCameraSize();
+    auto windowSize = System::windowSystem().getSize();
 
-    if (camera.x < 0)
-        camera.x = 0;
-    if (camera.x > mapWidth - camera.w)
-        camera.x = mapWidth - camera.w;
+    cameraPos.x = playerPos.x - windowSize.w / 2;
+    cameraPos.y = playerPos.y - windowSize.h / 2;
+
+    if (cameraPos.x < 0)
+        cameraPos.x = 0;
+    if (cameraPos.x > mapWidth - cameraSize.w)
+        cameraPos.x = mapWidth - cameraSize.w;
     // if (camera.y < 0)
     //     camera.y = 0;
-    if (camera.y > mapHeight - camera.h)
-        camera.y = mapHeight - camera.h;
+    if (cameraPos.y > mapHeight - cameraSize.h)
+        cameraPos.y = mapHeight - cameraSize.h;
 
-    WindowManager::Instance()->camera = camera;
+    System::actorSystem().setCameraPos(Vec2(cameraPos.x, cameraPos.y));
+    // WindowManager::Instance()->camera = cameraPos;
 }
 
 void Game::render()
@@ -229,16 +236,16 @@ void Game::render()
             t->draw();
         }
     }
-    auto map = Game::assetManager->get<Map>(WorldManager::Instance()->getCurrentMapID());
-    if (map != nullptr)
-    {
-        for(const auto& p: map->planes)
-        {
-            p->draw();
-        }
-    }
+    // auto map = Game::assetManager->get<Map>(WorldManager::Instance()->getCurrentMapID());
+    // if (map != nullptr)
+    // {
+    //     for(const auto& p: map->planes)
+    //     {
+    //         p->draw();
+    //     }
+    // }
     for (auto& p: WorldManager::Instance()->getCurrentMapID())
-    SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
+    // SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
     SDL_RenderPresent(WindowManager::Instance()->renderer);
 }
 

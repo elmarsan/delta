@@ -12,6 +12,7 @@
 #include "absl/log/log.h"
 #include "Game.h"
 #include "src/Asset.h"
+#include "System.h"
 
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
@@ -60,8 +61,9 @@ class SpriteComponent: public Component
         if (isAnimated())
             playAnimation();
 
-        dst.x = transform->point2.x - WindowManager::Instance()->camera.x;
-        dst.y = transform->point2.y - WindowManager::Instance()->camera.y;
+        auto camPos = System::actorSystem().getCameraPos();
+        dst.x = transform->point2.x - camPos.x;
+        dst.y = transform->point2.y - camPos.y;
         dst.w = dst.h = 44;
 
         src.x = textureSrc.x;
@@ -70,7 +72,8 @@ class SpriteComponent: public Component
         src.h = size2.h;
     }
 
-    void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst, flip); }
+    // void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst, flip); }
+    void draw() override { System::windowSystem().renderTexture(*texture.get(), &src, &dst, flip); }
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
     {

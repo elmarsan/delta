@@ -26,8 +26,8 @@ class WindowManager
 
     float width();
     float height();
-    void setWidth(int w);
-    void setHeight(int h);
+    // void setWidth(int w);
+    // void setHeight(int h);
 
     void renderTexture(std::shared_ptr<Texture> texture, SDL_FRect* src, SDL_FRect* dst, SDL_RendererFlip flip);
 

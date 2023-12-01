@@ -60,17 +60,17 @@ float WindowManager::height()
     return h;
 }
 
-void WindowManager::setWidth(int w)
-{
-    w = w;
-    camera.w = w;
-}
+// void WindowManager::setWidth(int w)
+// {
+//     w = w;
+//     camera.w = w;
+// }
 
-void WindowManager::setHeight(int h)
-{
-    h = h;
-    camera.h = h;
-}
+// void WindowManager::setHeight(int h)
+// {
+//     h = h;
+//     camera.h = h;
+// }
 
 void WindowManager::renderTexture(std::shared_ptr<Texture> texture,
                                   SDL_FRect* src,
