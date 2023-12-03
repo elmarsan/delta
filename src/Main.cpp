@@ -3,7 +3,7 @@
 // Copyright 2023, Elías Martínez (mselias97@gmail.com)
 
 #include "Game.h"
-#include "System.h"
+#include "Engine.h"
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 
@@ -12,7 +12,7 @@
 int main()
 {
     LOG(INFO) << "Starting delta...";
-    System::init();
+    Engine::init();
 
     // TODO: Timer
     const int FPS = 60;
@@ -20,9 +20,6 @@ int main()
 
     Uint64 frameStart;
     int frameTime;
-
-    // absl::Status windowManagerStatus = WindowManager::init(840, 680);
-    // LOG_IF(FATAL, !windowManagerStatus.ok()) << windowManagerStatus.message();
 
     Game game;
     absl::Status status = game.init();

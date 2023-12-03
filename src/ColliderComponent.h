@@ -5,7 +5,7 @@
 #pragma once
 
 #include "ECS.h"
-#include "System.h"
+#include "Engine.h"
 #include "TransformComponent.h"
 
 #include <string>
@@ -14,7 +14,6 @@ class ColliderComponent: public Component
 {
   public:
     Rect collider;
-    // SDL_FRect collider;
     std::string tag;
 
     TransformComponent* transform;
@@ -30,7 +29,7 @@ class ColliderComponent: public Component
 
     void update() override
     {
-        auto camPos = System::actorSystem().getCameraPos();
+        auto camPos = Engine::actor().getCameraPos();
         collider.x = transform->point2.x - camPos.x;
         collider.y = transform->point2.y - camPos.y;
         collider.w = transform->size2.w;
@@ -40,10 +39,7 @@ class ColliderComponent: public Component
 #ifdef DEBUG
     void draw() override
     {
-        System::windowSystem().renderRect(collider);
-        // SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0xff, 0, 0, 0);
-        // SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &collider);
-        // SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
+        System::RenderManager().addRect(collider);
     }
 #endif
 };

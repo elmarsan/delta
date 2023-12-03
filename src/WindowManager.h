@@ -4,38 +4,35 @@
 
 #pragma once
 
-#include "Asset.h"
+#include "math/Polygon.h"
+#include "math/Rect.h"
 #include "math/Vec2.h"
-#include "absl/status/status.h"
 
-#include <SDL2/SDL_render.h>
-#include <memory>
+#include <SDL2/SDL_video.h>
 
 class WindowManager
 {
   public:
-    WindowManager() = default;
-    ~WindowManager();
+    virtual ~WindowManager() = default;
 
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    SDL_FRect camera;
+    [[nodiscard]] virtual Vec2 getSize() const = 0;
+};
 
-    static std::shared_ptr<WindowManager> Instance();
-    static absl::Status init(float width, float height);
+class SDLWindowManager: public WindowManager
+{
+  public:
+    SDLWindowManager(SDL_Window* window): window(window) {}
+    SDLWindowManager(const SDLWindowManager&) = delete;
+    SDLWindowManager(SDLWindowManager&&) = delete;
 
-    float width();
-    float height();
-    // void setWidth(int w);
-    // void setHeight(int h);
-
-    void renderTexture(std::shared_ptr<Texture> texture, SDL_FRect* src, SDL_FRect* dst, SDL_RendererFlip flip);
+    [[nodiscard]] inline Vec2 getSize() const override
+    {
+        int w;
+        int h;
+        SDL_GetWindowSize(window, &w, &h);
+        return Vec2(w, h);
+    }
 
   private:
-    WindowManager(const WindowManager&) = delete;
-    void operator=(const WindowManager&) = delete;
-
-    static std::shared_ptr<WindowManager> instance;
-    float w;
-    float h;
+    SDL_Window* window;
 };

@@ -5,7 +5,6 @@
 #include "Game.h"
 
 #include "Asset.h"
-#include "AssetManager.h"
 #include "CharacterController.h"
 #include "ColliderComponent.h"
 #include "ECS.h"
@@ -25,7 +24,7 @@
 #include "sol/types.hpp"
 #include "src/BehaviourComponent.h"
 #include "src/DetectorComponent.h"
-#include "System.h"
+#include "Engine.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -43,8 +42,6 @@ const int mapHeight = 1024;
 std::shared_ptr<Texture> background;
 
 Manager manager;
-
-std::unique_ptr<AssetManager> Game::assetManager = std::make_unique<AssetManager>();
 
 std::shared_ptr<Player> player;
 std::shared_ptr<Entity> npc3;
@@ -191,29 +188,29 @@ void Game::update()
     manager.update();
 
     // auto camera = WindowManager::Instance()->camera;
-    auto cameraPos = System::actorSystem().getCameraPos();
-    auto cameraSize = System::actorSystem().getCameraSize();
-    auto windowSize = System::windowSystem().getSize();
+    auto camPos = Engine::actor().getCameraPos();
+    auto camSize = Engine::actor().getCameraSize();
+    auto windowSize = Engine::window().getSize();
 
-    cameraPos.x = playerPos.x - windowSize.w / 2;
-    cameraPos.y = playerPos.y - windowSize.h / 2;
+    camPos.x = playerPos.x - windowSize.w / 2;
+    camPos.y = playerPos.y - windowSize.h / 2;
 
-    if (cameraPos.x < 0)
-        cameraPos.x = 0;
-    if (cameraPos.x > mapWidth - cameraSize.w)
-        cameraPos.x = mapWidth - cameraSize.w;
+    if (camPos.x < 0)
+        camPos.x = 0;
+    if (camPos.x > mapWidth - camSize.w)
+        camPos.x = mapWidth - camSize.w;
     // if (camera.y < 0)
     //     camera.y = 0;
-    if (cameraPos.y > mapHeight - cameraSize.h)
-        cameraPos.y = mapHeight - cameraSize.h;
+    if (camPos.y > mapHeight - camSize.h)
+        camPos.y = mapHeight - camSize.h;
 
-    System::actorSystem().setCameraPos(Vec2(cameraPos.x, cameraPos.y));
+    Engine::actor().setCameraPos(Vec2(camPos.x, camPos.y));
     // WindowManager::Instance()->camera = cameraPos;
 }
 
 void Game::render()
 {
-    SDL_RenderClear(WindowManager::Instance()->renderer);
+    Engine::render().clear();
     for (auto& t: tiles)
     {
         if (t->getComponent<TileComponent>().zindex() == 0)
@@ -236,17 +233,7 @@ void Game::render()
             t->draw();
         }
     }
-    // auto map = Game::assetManager->get<Map>(WorldManager::Instance()->getCurrentMapID());
-    // if (map != nullptr)
-    // {
-    //     for(const auto& p: map->planes)
-    //     {
-    //         p->draw();
-    //     }
-    // }
-    for (auto& p: WorldManager::Instance()->getCurrentMapID())
-    // SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
-    SDL_RenderPresent(WindowManager::Instance()->renderer);
+    Engine::render().render();
 }
 
 bool Game::isRunning()

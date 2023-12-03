@@ -37,11 +37,6 @@ class Texture: public Asset
     AssetID ID;
 };
 
-struct TextureMetadata
-{
-    SDL_Color* colorMod;
-};
-
 class Map: public Asset
 {
   public:
@@ -128,5 +123,3 @@ class Tileset: public Asset
   private:
     AssetID ID;
 };
-
-using AssetMetadata = std::variant<TextureMetadata>;

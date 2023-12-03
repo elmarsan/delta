@@ -4,25 +4,24 @@
 
 #pragma once
 
+#include "math/Rect.h"
 #include "math/Vec2.h"
 
-#include <SDL2/SDL_rect.h>
-
-class ActorSystem
+class ActorManager
 {
   public:
-    virtual ~ActorSystem() {}
+    virtual ~ActorManager() {}
     virtual void setCameraPos(const Vec2& pos) = 0;
     [[nodiscard]] virtual Vec2 getCameraPos() const = 0;
     [[nodiscard]] virtual Vec2 getCameraSize() const = 0;
 };
 
-class DeltaActorSystem: public ActorSystem
+class DeltaActorManager: public ActorManager
 {
   public:
-    DeltaActorSystem() = default;
-    DeltaActorSystem(const DeltaActorSystem&) = delete;
-    DeltaActorSystem(DeltaActorSystem&&) = delete;
+    DeltaActorManager() = default;
+    DeltaActorManager(const DeltaActorManager&) = delete;
+    DeltaActorManager(DeltaActorManager&&) = delete;
 
     void inline setCameraPos(const Vec2& pos) override
     {
@@ -34,5 +33,5 @@ class DeltaActorSystem: public ActorSystem
     [[nodiscard]] Vec2 inline getCameraSize() const override { return Vec2(camera.w, camera.h); }
 
   private:
-    SDL_FRect camera;
+    Rect camera;
 };

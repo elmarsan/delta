@@ -6,6 +6,7 @@
 
 #include "Plane2.h"
 #include "Vec2.h"
+#include "absl/strings/str_format.h"
 
 struct Rect: Plane2
 {
@@ -18,5 +19,10 @@ struct Rect: Plane2
     Rect(float x, float y, float w, float h): x(x), y(y), w(w), h(h) {}
 
     [[nodiscard]] bool contains(const Vec2& p) const override;
-    // void draw() override;
+
+    template <typename Sink>
+    friend void AbslStringify(Sink& sink, const Rect& rect)
+    {
+        absl::Format(&sink, "Rect(%f, %f, %f, %f)", rect.x, rect.y, rect.w, rect.h);
+    }
 };

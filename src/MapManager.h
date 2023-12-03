@@ -12,7 +12,20 @@
 class MapManager
 {
   public:
-    static absl::Status draw(const AssetID mapID, const Point2 gridPos);
-    static int getTileID(std::vector<std::tuple<int, std::string>> tilesets, int tileGID);
-    static Tile getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets, int tileGID, int mapTilesetFirstGID);
+    virtual ~MapManager() = default;
+
+    [[nodiscard]] virtual Map* get(const std::string id) = 0;
+    [[nodiscard]] virtual absl::Status draw(const AssetID mapID, const Point2 gridPos) = 0;
+};
+
+class DeltaMapManager: public MapManager
+{
+  public:
+    DeltaMapManager() {}
+
+    [[nodiscard]] Map* get(const std::string id) override;
+    [[nodiscard]] absl::Status draw(const AssetID mapID, const Point2 gridPos) override;
+
+  private:
+    std::unordered_map<std::string, std::unique_ptr<Map>> maps;
 };

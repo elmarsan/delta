@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "math/Vec2.h"
-#include "WorldManager.h"
 #include "Asset.h"
+#include "WorldManager.h"
+#include "math/Vec2.h"
 
-class TileManager
-{
-  public:
-    static void addTile(Point2 point2, Tile tile);
-    static void destroyMapTiles(WorldMap map);
-};
+// class TileManager
+// {
+//   public:
+//     static void addTile(Point2 point2, Tile tile);
+//     static void destroyMapTiles(WorldMap map);
+// };

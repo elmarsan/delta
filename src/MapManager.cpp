@@ -6,7 +6,9 @@
 
 #include "Asset.h"
 #include "Game.h"
+#include "Engine.h"
 #include "TileManager.h"
+#include "Tiled.h"
 
 #include <absl/log/log.h>
 #include <absl/status/status.h>
@@ -15,50 +17,21 @@
 const unsigned TiledFlippedHorizontally = 0x80000000;
 const unsigned TiledFlippedVertically = 0x40000000;
 
-Tile MapManager::getTileV2(std::vector<std::shared_ptr<Tileset>> tilesets,
-                           int tileGID,
-                           int mapTilesetFirstGID)
+absl::Status DeltaMapManager::draw(const std::string mapId, const Point2 gridPos)
 {
-    Tile tile;
-    for (auto& mapTileset: tilesets)
+    auto map = get(mapId);
+
+    if (map == nullptr)
     {
-        if (tileGID >= mapTilesetFirstGID && tileGID <= mapTileset->numTiles - 1)
-        {
-            int tileID = tileGID - mapTilesetFirstGID;
-            return mapTileset->getTile(tileID);
-        }
+        return absl::NotFoundError(absl::StrFormat("Map '%s' not found", mapId));
     }
 
-    return tile;
-}
-
-absl::Status MapManager::draw(const std::string mapID, const Point2 gridPos)
-{
-    LOG(INFO) << absl::StrFormat("Drawing map: %s", mapID);
-    auto mapRes = Game::assetManager->getOrLoad<Map>(mapID);
-    if (!mapRes.ok())
-    {
-        return mapRes.status();
-    }
-
-    auto map = mapRes.value();
-
-    // Load tilesets
-    std::vector<std::shared_ptr<Tileset>> tilesets;
+    int tileOffset = 1;
+    std::vector<std::string> tilesetIds;
     for (auto& tileset: map->tilesets)
     {
-        int mapTilesetFirstGID = std::get<0>(tileset);
-        std::string tilesetID = std::get<1>(tileset);
-
-        auto loadRes = Game::assetManager->getOrLoad<Tileset>(tilesetID);
-        if (!loadRes.ok())
-        {
-            LOG(ERROR) << loadRes.status().message();
-        }
-        else
-        {
-            tilesets.push_back(loadRes.value());
-        }
+        tileOffset = std::get<0>(tileset);
+        tilesetIds.emplace_back(std::get<1>(tileset));
     }
 
     for (const auto& layer: map->layers)
@@ -73,15 +46,15 @@ absl::Status MapManager::draw(const std::string mapID, const Point2 gridPos)
             for (int x = 0; x < map->width; x++)
             {
                 int i = y * map->width + x;
-                const unsigned tileGID = layer[i];
-                if (tileGID > 0)
+                const unsigned tileGid = layer[i];
+                if (tileGid > 0)
                 {
-                    int tileID = tileGID;
+                    int tileID = tileGid;
                     tileID &= ~(TiledFlippedHorizontally | TiledFlippedVertically);
 
                     auto gridPoint2 = Point2(xPos, yPos);
-                    auto tile = getTileV2(tilesets, tileID, 1);
-                    TileManager::addTile(gridPoint2, tile);
+                    auto tile = Engine::tileset().getTile(tilesetIds, tileGid, tileOffset);
+                    Engine::terrain().addCell(gridPoint2, tile);
                 }
                 xPos += 44;
             }
@@ -89,4 +62,71 @@ absl::Status MapManager::draw(const std::string mapID, const Point2 gridPos)
     }
 
     return absl::OkStatus();
+}
+
+[[nodiscard]] Map* DeltaMapManager::get(const std::string id)
+{
+    auto it = maps.find(id);
+    if (it != maps.end())
+    {
+        return it->second.get();
+    }
+
+    auto loadRes = Tiled::loadJSONMap(id);
+    if (!loadRes.ok())
+    {
+        LOG(ERROR) << loadRes.status().message();
+        return nullptr;
+    }
+
+    auto tiledMap = loadRes.value();
+    auto map = std::make_unique<Map>();
+    map->width = tiledMap.width;
+    map->height = tiledMap.height;
+    map->tileWidth = tiledMap.tileWidth;
+    map->tileHeight = tiledMap.tileHeight;
+
+    for (const auto& tiledTileset: tiledMap.tilesets)
+    {
+        map->tilesets.push_back({ tiledTileset.firstGid, tiledTileset.tilesetID });
+    }
+
+    for (const auto& tileLayer: tiledMap.tileLayers)
+    {
+        map->layers.emplace_back(tileLayer.data);
+    }
+
+    for (const auto& objLayer: tiledMap.objectLayers)
+    {
+        // Parse and scale polygons.
+        for (const auto& tiledPolygon: objLayer.polygons)
+        {
+            Vertex vertex;
+            float x = tiledPolygon.x;
+            float y = tiledPolygon.y;
+
+            for (const auto& tiledPoint: tiledPolygon.vertex)
+            {
+                float vx = ((tiledPoint.x + x) / map->tileWidth) * 44;
+                float vy = ((tiledPoint.y + y) / map->tileHeight) * 44;
+                SDL_FPoint fp { vx, vy };
+                vertex.emplace_back(Vec2(vx, vy));
+            }
+
+            map->planes.emplace_back(std::make_unique<Polygon>(vertex));
+        }
+
+        for (const auto& tiledRect: objLayer.rects)
+        {
+            float rx = (tiledRect.x / map->tileWidth) * 44;
+            float ry = (tiledRect.y / map->tileHeight) * 44;
+            float rw = (tiledRect.width / map->tileWidth) * 44;
+            float rh = (tiledRect.height / map->tileHeight) * 44;
+
+            map->planes.emplace_back(std::make_unique<Rect>(rx, ry, rw, rh));
+        }
+    }
+
+    maps[id] = std::move(map);
+    return maps[id].get();
 }

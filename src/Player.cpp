@@ -3,17 +3,11 @@
 // Copyright 2023, Elías Martínez (mselias97@gmail.com)
 
 #include "Player.h"
+#include "Engine.h"
 #include "src/Game.h"
 
 void Player::init()
 {
-    // Load player texture
-    SDL_Color colorMod { 255, 0, 228 };
-    AssetMetadata meta;
-    meta = TextureMetadata { &colorMod };
-    auto loadTextureRes = Game::assetManager->load<Texture>("p1", &meta);
-    LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
-
     transform = &addComponent<TransformComponent>(Point2(528, 352));
     sprite = &addComponent<SpriteComponent>("p1", Size2(14, 21));
     controller = &addComponent<CharacterController>();

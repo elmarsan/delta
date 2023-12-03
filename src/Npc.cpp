@@ -13,9 +13,6 @@
 // void (addNpcPoint2 point2, NpcType npcType, Behaviour behaviour, bool detector)
 std::shared_ptr<Entity> addNpc(Point2 point2, NpcType npcType, Behaviour behaviour, bool detector)
 {
-    auto loadTextureRes = Game::assetManager->getOrLoad<Texture>("npc");
-    LOG_IF(ERROR, !loadTextureRes.ok()) << loadTextureRes.status().message();
-
     auto npc = manager.addEntity();
     npc->addComponent<TransformComponent>(point2);
     // TODO: Do not hardcode npc texture src.

@@ -5,6 +5,7 @@
 #include "WorldManager.h"
 
 #include "MapManager.h"
+#include "Engine.h"
 #include "TileManager.h"
 #include "math/Vec2.h"
 #include "absl/log/log.h"
@@ -140,7 +141,7 @@ absl::Status WorldManager::setCurrentMap(MapID mapID)
 
         if (!alreadyLoaded)
         {
-            auto drawRes = MapManager::draw(m.getID(), m.getWorldPos());
+            auto drawRes = Engine::map().draw(m.getID(), m.getWorldPos());
             LOG_IF(ERROR, !drawRes.ok()) << drawRes.message(); 
         }
     }
@@ -202,7 +203,9 @@ absl::Status WorldManager::destroyNonAdjMaps()
 
     LOG(INFO) << absl::StrFormat("Destroying non adj maps to: %s", currentMap.getID());
     for (auto& m: nonAdjMaps)
-        TileManager::destroyMapTiles(m);
+    {
+       Engine::terrain().destroy(m);
+    }
 
     return absl::OkStatus();
 }

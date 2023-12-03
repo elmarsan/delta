@@ -7,12 +7,11 @@
 #include "Asset.h"
 #include "ECS.h"
 #include "Game.h"
-#include "System.h"
+#include "Engine.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 
-#include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <memory>
 
@@ -21,10 +20,9 @@ class TileComponent: public Component
   private:
     Rect src;
     Rect dst;
-    // SDL_FRect src, dst;
     Tile tile;
-    std::shared_ptr<Tileset> tileset;
-    std::shared_ptr<Texture> texture;
+    Tileset* tileset;
+    Texture* texture;
     Point2 tilePoint2;
 
   public:
@@ -40,17 +38,17 @@ class TileComponent: public Component
 
     void init() override
     {
-        auto res = Game::assetManager->getOrLoad<Texture>(tile.textureID);
-        LOG_IF(ERROR, !res.ok()) << res.status().message();
-        if (res.ok())
-            texture = res.value();
+        texture = Engine::render().getTexture(tile.textureID);
+        LOG_IF(ERROR, texture == nullptr) << absl::StrFormat("Texture '%s', not found", tile.textureID);
 
         if (tile.isAnimated())
         {
-            auto res = Game::assetManager->getOrLoad<Tileset>(tile.tilesetID);
-            LOG_IF(ERROR, !res.ok()) << res.status().message();
-            if (res.ok())
-                tileset = res.value();
+            texture = Engine::render().getTexture(tile.textureID);
+            LOG_IF(ERROR, texture == nullptr) << absl::StrFormat("Texture '%s', not found", tile.textureID);
+            // auto res = System::asset().getOrLoad<Tileset>(tile.tilesetID);
+            // LOG_IF(ERROR, !res.ok()) << res.status().message();
+            // if (res.ok())
+                // tileset = res.value();
         }
     }
 
@@ -65,19 +63,15 @@ class TileComponent: public Component
             tilePoint2 = tileset->getTile(frames[tileIndex]).point2;
             src = Rect { tilePoint2.x, tilePoint2.y, tile.size2.w, tile.size2.h };
         }
-        auto camPos = System::actorSystem().getCameraPos();
+        auto camPos = Engine::actor().getCameraPos();
         dst = Rect { gridPoint2.x - camPos.x, gridPoint2.y - camPos.y, 44, 44 };
     }
 
     void draw() override
     {
-        System::windowSystem().renderTexture(*texture.get(), *src, const SDL_FRect *dst, const SDL_RendererFlip flip)
-        // WindowManager::Instance()->renderTexture(texture, &src, &dst, SDL_FLIP_NONE);
+        Engine::render().addTexture(texture, &src, &dst, SDL_FLIP_NONE);
 #ifdef DEBUG
-        System::windowSystem().renderRect();
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0xff, 0, 0);
-        SDL_RenderDrawRectF(WindowManager::Instance()->renderer, &dst);
-        SDL_SetRenderDrawColor(WindowManager::Instance()->renderer, 0, 0, 0, 0);
+        System::window().renderRect(dst);
 #endif
     }
 };

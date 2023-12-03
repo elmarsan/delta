@@ -2,22 +2,14 @@
 // See "LICENSE" for details.
 // Copyright 2023, Elías Martínez (mselias97@gmail.com)
 
-#include "TileManager.h"
+#include "TerrainManager.h"
 
 #include "ColliderComponent.h"
-#include "ECS.h"
-#include "TileComponent.h"
-#include "WorldManager.h"
-#include "absl/strings/str_format.h"
 #include "Game.h"
-#include "Animation.h"
-#include "Asset.h"
-#include "SpriteComponent.h"
+#include "TileComponent.h"
 #include "TransformComponent.h"
 
-extern Manager manager;
-
-void TileManager::addTile(Point2 gridPos, Tile tile)
+void DeltaTerrainManager::addCell(Point2 gridPos, Tile tile)
 {
     auto tileEntity(manager.addEntity());
     tileEntity->addGroup(Game::groupMap);
@@ -31,7 +23,7 @@ void TileManager::addTile(Point2 gridPos, Tile tile)
     }
 }
 
-void TileManager::destroyMapTiles(WorldMap map)
+void DeltaTerrainManager::destroy(WorldMap map)
 {
     LOG(INFO) << absl::StrFormat("Destroying tiles of map: %s", map.getID());
 

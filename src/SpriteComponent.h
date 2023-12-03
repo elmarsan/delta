@@ -6,49 +6,32 @@
 
 #include "Animation.h"
 #include "ECS.h"
+#include "Game.h"
+#include "Engine.h"
 #include "TransformComponent.h"
-#include "math/Vec2.h"
 #include "WindowManager.h"
 #include "absl/log/log.h"
-#include "Game.h"
+#include "math/Vec2.h"
 #include "src/Asset.h"
-#include "System.h"
 
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <map>
-#include <string_view>
 
 class SpriteComponent: public Component
 {
-  private:
-    TransformComponent* transform;
-    std::shared_ptr<Texture> texture;
-    SDL_RendererFlip flip;
-    SDL_FRect src, dst;
-    Size2 size2;
-    Point2 textureSrc;
-
-    // TODO: Improve animation handling.
-    std::map<std::string, Animation*> animations;
-    std::string currentAnimation;
-
   public:
     SpriteComponent(AssetID textureID, Size2 size2): size2(size2)
     {
-        auto textureLoadRes = Game::assetManager->getOrLoad<Texture>(textureID);
-        LOG_IF(ERROR, !textureLoadRes.ok()) << textureLoadRes.status().message();
-
-        texture = textureLoadRes.value();
+        texture = Engine::render().getTexture(textureID);
+        LOG_IF(ERROR, texture == nullptr) << absl::StrFormat("Texture '%s', not found", textureID);
         animations = std::map<std::string, Animation*>();
     }
 
     SpriteComponent(AssetID textureID, Size2 size2, Point2 textureSrc): size2(size2), textureSrc(textureSrc)
     {
-        auto textureLoadRes = Game::assetManager->getOrLoad<Texture>(textureID);
-        LOG_IF(ERROR, !textureLoadRes.ok()) << textureLoadRes.status().message();
-
-        texture = textureLoadRes.value();
+        texture = Engine::render().getTexture(textureID);
+        LOG_IF(ERROR, texture == nullptr) << absl::StrFormat("Texture '%s', not found", textureID);
         animations = std::map<std::string, Animation*>();
     }
 
@@ -61,7 +44,7 @@ class SpriteComponent: public Component
         if (isAnimated())
             playAnimation();
 
-        auto camPos = System::actorSystem().getCameraPos();
+        auto camPos = Engine::actor().getCameraPos();
         dst.x = transform->point2.x - camPos.x;
         dst.y = transform->point2.y - camPos.y;
         dst.w = dst.h = 44;
@@ -72,8 +55,13 @@ class SpriteComponent: public Component
         src.h = size2.h;
     }
 
-    // void draw() override { WindowManager::Instance()->renderTexture(texture, &src, &dst, flip); }
-    void draw() override { System::windowSystem().renderTexture(*texture.get(), &src, &dst, flip); }
+    void draw() override
+    {
+        if (texture != nullptr)
+        {
+            Engine::render().addTexture(texture, &src, &dst, flip);
+        }
+    }
 
     void setAnimation(const std::string& name, SDL_RendererFlip animFlip = SDL_FLIP_NONE)
     {
@@ -124,4 +112,17 @@ class SpriteComponent: public Component
             animation->nextFrame();
         }
     }
+
+  private:
+    TransformComponent* transform;
+    Texture* texture;
+    SDL_RendererFlip flip;
+    Rect src;
+    Rect dst;
+    Size2 size2;
+    Point2 textureSrc;
+
+    // TODO: Improve animation handling.
+    std::map<std::string, Animation*> animations;
+    std::string currentAnimation;
 };
