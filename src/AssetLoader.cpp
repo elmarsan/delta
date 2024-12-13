@@ -10,7 +10,7 @@
 #include "absl/strings/str_format.h"
 #include "nlohmann/json.hpp"
 
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>

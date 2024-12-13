@@ -22,18 +22,18 @@
 #include "math/Polygon.h"
 #include "math/Rect.h"
 #include "math/Vec2.h"
-#include "sol/types.hpp"
 #include "src/BehaviourComponent.h"
 #include "src/DetectorComponent.h"
 
 #include <SDL2/SDL_events.h>
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <memory>
-#include <sol/sol.hpp>
+/* #include <sol/sol.hpp> */
+/* #include <sol/types.hpp> */
 #include <vector>
 
 const int mapWidth = 1024;
@@ -55,30 +55,30 @@ auto& colliders(manager.getGroup(Game::groupCollider));
 
 WorldMap currentMap;
 
-sol::state lua;
+/* sol::state lua; */
 
 absl::Status Game::init()
 {
     // Creates lua types
-    lua.open_libraries(sol::lib::base);
+    /* lua.open_libraries(sol::lib::base); */
 
-    sol::usertype<Entity> entityType = lua.new_usertype<Entity>("entity");
-    entityType["active"] = &Entity::isActive;
+    /* sol::usertype<Entity> entityType = lua.new_usertype<Entity>("entity"); */
+    /* entityType["active"] = &Entity::isActive; */
 
-    sol::usertype<Vec2> vec2Type = lua.new_usertype<Vec2>("vec2", sol::constructors<Vec2(float, float)>());
-    vec2Type.set("x", sol::readonly(&Vec2::x));
-    vec2Type.set("y", sol::readonly(&Vec2::y));
+    /* sol::usertype<Vec2> vec2Type = lua.new_usertype<Vec2>("vec2", sol::constructors<Vec2(float, float)>()); */
+    /* vec2Type.set("x", sol::readonly(&Vec2::x)); */
+    /* vec2Type.set("y", sol::readonly(&Vec2::y)); */
 
-    sol::usertype<TransformComponent> transformComponentType =
-        lua.new_usertype<TransformComponent>("transform");
-    transformComponentType.set("point2", sol::readonly<Point2>(&TransformComponent::point2));
-    transformComponentType.set("size2", sol::readonly<Size2>(&TransformComponent::size2));
+    /* sol::usertype<TransformComponent> transformComponentType = */
+    /*     lua.new_usertype<TransformComponent>("transform"); */
+    /* transformComponentType.set("point2", sol::readonly<Point2>(&TransformComponent::point2)); */
+    /* transformComponentType.set("size2", sol::readonly<Size2>(&TransformComponent::size2)); */
 
-    sol::usertype<SDL_FRect> cameraType = lua.new_usertype<SDL_FRect>("camera");
-    cameraType.set("x", sol::readonly(&SDL_FRect::x));
-    cameraType.set("y", sol::readonly(&SDL_FRect::y));
-    cameraType.set("w", sol::readonly(&SDL_FRect::w));
-    cameraType.set("h", sol::readonly(&SDL_FRect::h));
+    /* sol::usertype<SDL_FRect> cameraType = lua.new_usertype<SDL_FRect>("camera"); */
+    /* cameraType.set("x", sol::readonly(&SDL_FRect::x)); */
+    /* cameraType.set("y", sol::readonly(&SDL_FRect::y)); */
+    /* cameraType.set("w", sol::readonly(&SDL_FRect::w)); */
+    /* cameraType.set("h", sol::readonly(&SDL_FRect::h)); */
 
     player = manager.addEntity<Player>();
     auto initialMapRes = WorldManager::Instance()->findMapFromPos(player->currentPos());
@@ -87,12 +87,12 @@ absl::Status Game::init()
     LOG_IF(FATAL, !setMapRes.ok()) << setMapRes.message();
 
     // Link
-    lua["camera"] = &WindowManager::Instance()->camera;
-    lua["player_transform"] = &player->getComponent<TransformComponent>();
+    /* lua["camera"] = &WindowManager::Instance()->camera; */
+    /* lua["player_transform"] = &player->getComponent<TransformComponent>(); */
 
-    lua.new_enum<Action>("action", { { "go_north", Action::GoNorth }, { "go_south", Action::GoSouth } });
-    lua.new_enum<NpcType>("npc_type", { { "fat_man_blue", NpcType::FatManBlue } });
-    lua.set_function("add_npc", addNpc);
+    /* lua.new_enum<Action>("action", { { "go_north", Action::GoNorth }, { "go_south", Action::GoSouth } }); */
+    /* lua.new_enum<NpcType>("npc_type", { { "fat_man_blue", NpcType::FatManBlue } }); */
+    /* lua.set_function("add_npc", addNpc); */
 
     addNpc(Point2(440, 308),
            NpcType::FatManBlue,

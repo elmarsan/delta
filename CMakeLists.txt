@@ -26,7 +26,6 @@ install(EXPORT SDL2Targets
         FILE SDL2Targets.cmake
         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/SDL2)
 
-find_package(Lua REQUIRED)
 include_directories(
     ${CMAKE_SOURCE_DIR}/external
     ${CMAKE_SOURCE_DIR}
@@ -44,6 +43,5 @@ target_link_libraries(
     Delta 
     PRIVATE SDL2 SDL2_image
     PRIVATE absl::status absl::statusor absl::strings absl::log
-    PRIVATE ${LUA_LIBRARIES}
 )
 target_include_directories(Delta PRIVATE "${CMAKE_SOURCE_DIR}/src")
