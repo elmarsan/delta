@@ -17,6 +17,7 @@ set(ABSL_PROPAGATE_CXX_STD TRUE)
 add_subdirectory("${EXTERNAL_INCLUDE_DIR}/abseil-cpp")
 add_subdirectory("${EXTERNAL_INCLUDE_DIR}/SDL")
 add_subdirectory("${EXTERNAL_INCLUDE_DIR}/SDL_image")
+add_subdirectory("${EXTERNAL_INCLUDE_DIR}/lua")
 
 install(TARGETS SDL2
         EXPORT SDL2Targets
